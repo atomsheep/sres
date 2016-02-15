@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<application projectName="sres" tablePrefix="sres" projectDescription="Your description here">
+
+    <tables>
+
+        <!-- test table -->
+        <table>
+            <name>test</name>
+            <description>Test</description>
+            <fields>
+                <field formType="hidden">
+                    <name>id</name>
+                    <description>ID</description>
+                    <type>Long</type>
+                </field>
+                <field>
+                    <name>testName</name>
+                    <description>Test Name</description>
+                    <type></type>
+                </field>
+                <field useFCKEditor="true">
+                    <name>testDescription</name>
+                    <description>Test Description</description>
+                    <type></type>
+                    <hibernate type="text"/>
+                </field>
+                <field>
+                    <name>randomCode</name>
+                    <description>Random Code</description>
+                    <type></type>
+                </field>
+                <field tableReference="user" mapping="manytoone" disableRowsetColumn="true">
+                    <name>owner</name>
+                    <description>Owner</description>
+                    <type></type>
+                    <hibernate/>
+                </field>
+            </fields>
+        </table>
+
+    </tables>
+
+</application>
+

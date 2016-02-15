@@ -1,0 +1,86 @@
+[#ftl]
+
+[#function hasTableReference tableObject]
+    [#list tableObject.fields.list as field]
+        [#if field.tableReference??]
+            [#return true]
+        [/#if]
+    [/#list]
+    [#return false]
+[/#function]
+
+[#function hasUser tableObject]
+    [#list tableObject.fields.list as field]
+        [#if field.tableReference?? && field.tableReference?uncap_first == "user"]
+            [#return true]
+        [/#if]
+    [/#list]
+    [#return false]
+[/#function]
+
+[#function hasRandomCode tableObject]
+    [#list tableObject.fields.list as field]
+        [#if field.name == "randomCode"]
+            [#return true]
+        [/#if]
+    [/#list]
+    [#return false]
+[/#function]
+
+[#function hasUpload tableObject]
+    [#list tableObject.fields.list as field]
+        [#if field.formType == "FILE"]
+            [#return true]
+        [/#if]
+    [/#list]
+    [#return false]
+[/#function]
+
+[#function hasDate tableObject]
+    [#list tableObject.fields.list as field]
+        [#if field.type == "java.util.Date"]
+            [#return true]
+        [/#if]
+    [/#list]
+    [#return false]
+[/#function]
+
+<#-- Retrieve the table descriptor bean with name matching tableName-->
+[#function getTable tableName]
+    [#list tables.list as table]
+        [#if table.name?cap_first == tableName?cap_first]
+                [#return table]
+        [/#if]
+    [/#list]
+[/#function]
+
+[#function isChild tableObject fieldObject]
+    [#if fieldObject.tableReference?? && fieldObject.mapping?ends_with("MANY")]
+        [#assign association = getTable(fieldObject.tableReference)]
+        [#if association.parent?? && (association.parent?uncap_first = tableObject.name?uncap_first)]
+            [#return true]
+        [/#if]
+    [/#if]
+    [#return false]
+[/#function]
+
+[#macro formSingleSelect options]
+<select name="">
+    [#list options as option]
+        <option value="${option.id?c}">${option.userName}</option>
+    [/#list]
+</select>
+[/#macro]
+
+[#macro formMultiSelect ]
+
+[/#macro]
+
+
+[#macro formRadio ]
+
+[/#macro]
+
+[#macro formCheckbox ]
+
+[/#macro]

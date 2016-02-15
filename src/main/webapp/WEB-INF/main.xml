@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
+       http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd">
+
+    <bean class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="locations">
+            <value>classpath:config.properties</value>
+        </property>
+    </bean>
+
+    <bean id="myTxManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="mySessionFactory"/>
+    </bean>
+
+    <bean id="myBaseDao" class="nz.ac.otago.edtech.spring.dao.HibernateBaseDaoImpl">
+        <property name="sessionFactory" ref="mySessionFactory"/>
+    </bean>
+
+    <bean id="myBaseService" class="nz.ac.otago.edtech.spring.service.BaseServiceImpl">
+        <property name="dao" ref="myBaseDao"/>
+    </bean>
+
+    <aop:config>
+        <aop:pointcut id="defaultOperation"
+                      expression="execution(* nz.ac.otago.edtech.spring.service.BaseServiceImpl.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="defaultOperation"/>
+    </aop:config>
+
+    <tx:advice id="txAdvice" transaction-manager="myTxManager">
+        <tx:attributes>
+            <!--
+            <tx:method name="list*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            -->
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <!--
+        id for ResourceBundleMessageSource must be messageSource
+    -->
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basename" value="/WEB-INF/messages"/>
+        <property name="cacheSeconds" value="1"/>
+    </bean>
+
+    <!-- set maximum upload size -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="${maxUploadSize}"/>
+    </bean>
+
+    <bean id="uploadLocation" class="nz.ac.otago.edtech.spring.bean.UploadLocation">
+        <property name="uploadPath" value="${uploadLocation.uploadPath}"/>
+        <property name="baseUrl" value="${uploadLocation.baseUrl}"/>
+    </bean>
+
+    <!-- freemarker config -->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="/WEB-INF/freemarker/"/>
+    </bean>
+
+    <!--
+      View resolvers can also be configured with ResourceBundles or XML files. If you need
+      different successView resolving based on Locale, you have to use the resource bundle resolver.
+
+      if you want to use the Spring FreeMarker macros, set exposeSpringMacroHelpers to true
+    -->
+    <bean id="freemarkerViewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value=""/>
+        <property name="suffix" value=".ftl"/>
+        <property name="contentType" value="text/html;charset=UTF-8"/>
+        <property name="exposeSpringMacroHelpers" value="true"/>
+    </bean>
+
+    <!--
+        Exception handler.
+    -->
+    <!-- -->
+    <bean id="exceptionHandler" class="nz.ac.otago.edtech.spring.exception.ExceptionHandler">
+    </bean>
+    <!-- -->
+
+
+</beans>

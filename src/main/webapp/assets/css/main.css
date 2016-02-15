@@ -1,0 +1,39 @@
+body {
+    background-image: url("../img/background-paper-tile.png");
+    background-repeat: repeat;
+}
+
+div#footer {
+    padding-top: 40px;
+    clear: both;
+    text-align: center;
+}
+
+/** changes from Adon in bootstrap.css */
+
+a:hover,
+a:active {
+    text-decoration: none !important;
+}
+
+h1 {
+    font-size: 36px;
+    padding-bottom: 15px;
+}
+
+/**  in bootstrap.css
+.page-header {
+  padding-bottom: 9px;
+  margin: 20px 0 30px;
+  border-bottom: 1px solid #eeeeee;
+}  */
+
+.page-header {
+    margin: 0 0 30px;
+}
+
+.page-header a {
+    display: inline-block;
+}
+
+/** end of Adon's changes */

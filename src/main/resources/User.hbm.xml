@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="nz.ac.otago.edtech.spring.bean">
+
+    <class name="User" table="sres_user">
+
+        <id name="id">
+            <column name="id" not-null="true"/>
+            <generator class="native"/>
+        </id>
+
+        <!-- User Name -->
+        <property name="userName">
+            <column name="username"/>
+        </property>
+
+        <!-- Pass Word -->
+        <property name="passWord">
+            <column name="password"/>
+        </property>
+
+        <!-- Where Are You From -->
+        <property name="wayf">
+            <column name="wayf"/>
+        </property>
+
+        <!-- First Name -->
+        <property name="firstName">
+            <column name="firstname"/>
+        </property>
+
+        <!-- Last Name -->
+        <property name="lastName">
+            <column name="lastname"/>
+        </property>
+
+        <!-- Email Address -->
+        <property name="email">
+            <column name="email"/>
+        </property>
+
+        <!-- Login Times -->
+        <property name="loginTimes">
+            <column name="logintimes"/>
+        </property>
+
+        <!-- First Login Time -->
+        <property name="firstLoginTime">
+            <column name="firstlogintime"/>
+        </property>
+
+        <!-- Last Login Time -->
+        <property name="lastLoginTime">
+            <column name="lastlogintime"/>
+        </property>
+
+        <!-- Last Login IP -->
+        <property name="lastLoginIP">
+            <column name="lastloginip"/>
+        </property>
+
+        <!-- Online Time(ms) -->
+        <property name="onlineTime">
+            <column name="onlinetime"/>
+        </property>
+
+        <!-- Is this user an instructor? -->
+        <property name="isInstructor">
+            <column name="isinstructor"/>
+        </property>
+
+        <!-- Is this user an enrolled student? -->
+        <property name="isEnrolledStudent">
+            <column name="isenrolledstudent"/>
+        </property>
+
+        <!-- Is this user a guest? -->
+        <property name="isGuest">
+            <column name="isguest"/>
+        </property>
+
+        <!-- Disabled access? -->
+        <property name="disabled">
+            <column name="disabled"/>
+        </property>
+
+        <!-- Unique Code -->
+        <property name="randomCode">
+            <column name="randomcode"/>
+        </property>
+
+    </class>
+
+</hibernate-mapping>
