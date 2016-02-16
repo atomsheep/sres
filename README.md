@@ -4,7 +4,7 @@ A collaborative open-source learning analytics project between New Zealand and A
 
 Our philosophy is that learning analytics should be about empowering teachers and students with data, and that good analytics needs to focus on humans, hence the name 'Student Relationship Engagement System'.
 
-Check out the project [https://github.com/atomsheep/sres/wiki](wiki).
+Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
 
 ## Contributors
 
