@@ -37,8 +37,6 @@ public class Common implements ServletContextAware {
     public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
     private static final Logger log = LoggerFactory.getLogger(Common.class);
     ServletContext servletContext;
-    @Autowired
-    private BaseService service;
 
     public void setServletContext(ServletContext servletContext) {
         this.servletContext = servletContext;
@@ -72,11 +70,6 @@ public class Common implements ServletContextAware {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("time", new Date().toString());
         String answer = JSONUtil.toJSONString(map);
-        User who = OtherUtil.getCurrentUser(service, request);
-        if (who != null)
-            log.debug("keep alive @ {} from {} {}", map.get("time"), AuthUtil.getIpAddress(request), who.getUserName());
-        else
-            log.debug("keep alive @ {} from {}", map.get("time"), AuthUtil.getIpAddress(request));
         return OtherUtil.outputJSON(answer);
     }
 

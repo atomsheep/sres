@@ -15,33 +15,10 @@
         </property>
     </bean>
 
-    <bean id="myTxManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
-        <property name="sessionFactory" ref="mySessionFactory"/>
-    </bean>
 
-    <bean id="myBaseDao" class="nz.ac.otago.edtech.spring.dao.HibernateBaseDaoImpl">
-        <property name="sessionFactory" ref="mySessionFactory"/>
-    </bean>
+    <bean id="mongoClient" class="com.mongodb.MongoClient"></bean>
 
-    <bean id="myBaseService" class="nz.ac.otago.edtech.spring.service.BaseServiceImpl">
-        <property name="dao" ref="myBaseDao"/>
-    </bean>
 
-    <aop:config>
-        <aop:pointcut id="defaultOperation"
-                      expression="execution(* nz.ac.otago.edtech.spring.service.BaseServiceImpl.*(..))"/>
-        <aop:advisor advice-ref="txAdvice" pointcut-ref="defaultOperation"/>
-    </aop:config>
-
-    <tx:advice id="txAdvice" transaction-manager="myTxManager">
-        <tx:attributes>
-            <!--
-            <tx:method name="list*" read-only="true"/>
-            <tx:method name="get*" read-only="true"/>
-            -->
-            <tx:method name="*"/>
-        </tx:attributes>
-    </tx:advice>
 
     <!--
         id for ResourceBundleMessageSource must be messageSource

@@ -9,17 +9,10 @@
 
     <context:component-scan base-package="nz.ac.otago.edtech.sres.controller"/>
 
-    <import resource="spring/dataSource.xml"/>
     <import resource="main.xml"/>
 
     <mvc:annotation-driven/>
 
-    <mvc:interceptors>
-        <bean name="openSessionInViewInterceptor"
-              class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
-            <property name="sessionFactory" ref="mySessionFactory"/>
-        </bean>
-    </mvc:interceptors>
 
     <mvc:resources mapping="/assets/**" location="/assets/"/>
 
