@@ -69,7 +69,7 @@ public class UserController {
     private String dbName;
 
 
-    private String collectionNamePaper = "papers";
+    private static final String COLLECTION_NAME_PAPERS = "papers";
 
     MongoDatabase db =null;
 
@@ -81,7 +81,7 @@ public class UserController {
     @RequestMapping(method = RequestMethod.GET)
     public String home(ModelMap model) {
 
-        List<Document> documents = MongoUtil.getAllDocuments(db, collectionNamePaper);
+        List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("list", documents);
         model.put("pageName", "user");
         return Common.DEFAULT_VIEW_NAME;
@@ -97,7 +97,7 @@ public class UserController {
 
     @RequestMapping(value = "/addPaper", method = RequestMethod.POST)
     public String addPaper(HttpServletRequest request) {
-        ObjectId id = MongoUtil.insertOne(request, db, collectionNamePaper);
+        ObjectId id = MongoUtil.insertOne(request, db, COLLECTION_NAME_PAPERS);
         log.debug("id {}", id);
         return "redirect:/user/addStudentList/" + id.toString();
     }
@@ -214,7 +214,7 @@ public class UserController {
                     list.add(doc);
                 }
                 ObjectId ii = new ObjectId(id);
-                db.getCollection(collectionNamePaper).updateOne(new Document("_id", ii),
+                db.getCollection(COLLECTION_NAME_PAPERS).updateOne(new Document("_id", ii),
                         new Document("$set", new Document("users", list)));
             }
         } catch (FileNotFoundException e) {
@@ -233,7 +233,7 @@ public class UserController {
 
         ObjectId oi = new ObjectId(id);
 
-        DeleteResult result =  db.getCollection(collectionNamePaper).deleteOne(eq("_id", oi));
+        DeleteResult result =  db.getCollection(COLLECTION_NAME_PAPERS).deleteOne(eq("_id", oi));
         if(result.getDeletedCount() ==1)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);
@@ -242,7 +242,7 @@ public class UserController {
     @RequestMapping(value = "/viewPaper/{id}", method = RequestMethod.GET)
     public String viewPaper(@PathVariable String id, ModelMap model) {
         model.put("id", id);
-        model.put("doc", MongoUtil.getDocument(db, collectionNamePaper, id));
+        model.put("doc", MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, id));
         model.put("pageName", "viewPaper");
         return Common.DEFAULT_VIEW_NAME;
     }
@@ -255,7 +255,7 @@ public class UserController {
 
 
 
-        Document doc = MongoUtil.getDocument(db, collectionNamePaper, id);
+        Document doc = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, id);
         model.put("doc", doc);
         model.put("pageName", "viewStudentList");
         return Common.DEFAULT_VIEW_NAME;
@@ -271,7 +271,7 @@ public class UserController {
 
         ObjectId id = new ObjectId("56c29ee5628be38bcea305bf");
 
-        FindIterable<Document> iterable = db.getCollection(collectionNamePaper).find(eq("_id", id));
+        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_PAPERS).find(eq("_id", id));
 
 
         for (Document document : iterable) {

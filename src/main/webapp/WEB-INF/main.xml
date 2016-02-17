@@ -15,10 +15,7 @@
         </property>
     </bean>
 
-
     <bean id="mongoClient" class="com.mongodb.MongoClient"></bean>
-
-
 
     <!--
         id for ResourceBundleMessageSource must be messageSource

@@ -10,7 +10,7 @@
     <packaging>war</packaging>
     <version>0.1</version>
 
-    <name>sres</name>
+    <name>Student Relationship Engagement System</name>
     <description></description>
     <url>http://hedc.otago.ac.nz</url>
 

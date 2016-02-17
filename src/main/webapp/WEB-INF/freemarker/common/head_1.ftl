@@ -5,15 +5,12 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="Author" content="Educational Technology, HEDC, University of Otago"/>
-    <meta name="keywords" content="sres, Educational Technology, HEDC, University of Otago"/>
+    <meta name="Author" content=""/>
+    <meta name="keywords" content="Student Relationship Engagement System"/>
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/bootstrap-3.3.6-dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/font-awesome-4.5.0/css/font-awesome.min.css"/>
-    <link rel="stylesheet" type="text/css" media="all" href="http://edtech.otago.ac.nz/jquery-ui/1.11.4/jquery-ui.min.css"/>
     <link rel="stylesheet" type="text/css" media="all" href="${baseUrl}/assets/css/main.css"/>
-    <script type="text/javascript" src="${baseUrl}/assets/js/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="http://edtech.otago.ac.nz/jquery-ui/1.11.4/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="http://edtech.otago.ac.nz/ckeditor/ckeditor.js"></script>
+    <script type="text/javascript" src="${baseUrl}/assets/js/jquery-1.12.0.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/javascript.js"></script>
 <script>
