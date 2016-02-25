@@ -1,22 +1,35 @@
 <h1>View Student List</h1>
 
-<#if (doc.users)?has_content>
-    <ul>
-    <#list doc.users as user>
-        <li>
-
-        ${user.username} ${user.givenNames} ${user.surname} ${user.email}
-
-        <#if user.extra?has_content>
-        [
-        <#list user.extra?keys as key>
-            ${key}: ${user.extra[key]}
+<#if (results)?has_content>
+<table border="1">
+    <tr>
+        <th>Username</th>
+        <th>Given Names</th>
+        <th>Surname</th>
+        <th>Email</th>
+        <#list columns as c>
+            <th>${c.name}</th>
         </#list>
-        ]
-        </#if>
+    </tr>
 
-        </li>
+    <#list results as r>
+        <tr>
+            <td>${r.username}</td>
+            <td>${r.givenNames}</td>
+            <td>${r.surname}</td>
+            <td>${r.email}</td>
+            <#list r.data as d>
+                <td>
+                    <#if d.data?has_content>
+                 ${d.data.value}
+             </#if>
 
-      </#list>
-    </ul>
+                </td>
+            </#list>
+        </tr>
+    </#list>
+
+
+</table>
+
 </#if>

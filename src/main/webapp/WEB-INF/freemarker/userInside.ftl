@@ -30,6 +30,7 @@
                         <td>
                             <input class='btn btn-default btn-primary' type="button" id="viewList"
                                    value="view full list"/>
+                            <button id="viewPaper" class="btn btn-default btn-primary">View Paper Information</button>
                             <input class='btn btn-default btn-primary' type="button" id="showPerson"
                                    value="show information for one person"
                                    onClick="javascript:window.location='showPersonInfo.cfm?tableuuid=' + $('##studentLists').val();"/>
@@ -98,19 +99,39 @@
 
         $('#viewList').on('click', function () {
             var val = $('#studentLists').val();
-            location.href = "${baseUrl}/user/viewStudentList/" + val;
+            if (val.length > 0)
+                location.href = "${baseUrl}/user/viewStudentList/" + val;
+            else {
+                alert("Please choose a paper first.");
+                $('#studentLists').focus();
+            }
+        });
+
+        $('#viewPaper').on('click', function () {
+            var val = $('#studentLists').val();
+            if (val.length > 0)
+                location.href = "${baseUrl}/user/viewPaper/" + val;
+            else {
+                alert("Please choose a paper first.");
+                $('#studentLists').focus();
+            }
         });
 
         $('#deleteList').on('click', function () {
             if (confirm('Are you sure you wish to delete this list? There is no recovering from this action!')) {
                 var val = $('#studentLists').val();
-                $.get("${baseUrl}/user/deletePaper/" + val, function (json) {
-                    if (json.success) {
-                        console.log('deleted', val);
-                        $('#studentLists option:selected').remove();
-                    } else if (json.detail)
-                        alert(json.detail);
-                });
+                if (val.length > 0)
+                    $.get("${baseUrl}/user/deletePaper/" + val, function (json) {
+                        if (json.success) {
+                            console.log('deleted', val);
+                            $('#studentLists option:selected').remove();
+                        } else if (json.detail)
+                            alert(json.detail);
+                    });
+                else {
+                    alert("Please choose a paper first.");
+                    $('#studentLists').focus();
+                }
             }
         });
 

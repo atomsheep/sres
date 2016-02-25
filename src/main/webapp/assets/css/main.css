@@ -30,6 +30,7 @@ h1 {
 
 .page-header {
     margin: 0 0 30px;
+    border-bottom: none;
 }
 
 .page-header a {
@@ -37,3 +38,62 @@ h1 {
 }
 
 /** end of Adon's changes */
+
+body {
+
+    background:#033141;
+    color: #fcfbf9;
+
+}
+
+
+
+.btn-primary{ background:#03a8ac; border:none; }
+
+.btn-primary:hover { background: #008F93; }
+
+
+
+.btn-success { background:#882b1a;border:none; }
+
+.btn-success:hover { background:#6F1201; }
+
+
+.btn-file {
+
+    position: relative;
+
+    overflow: hidden;
+
+}
+
+.btn-file input[type=file] {
+
+    position: absolute;
+
+    top: 0;
+
+    right: 0;
+
+    min-width: 100%;
+
+    min-height: 100%;
+
+    font-size: 100px;
+
+    text-align: right;
+
+    filter: alpha(opacity=0);
+
+    opacity: 0;
+
+    outline: none;
+
+    background: white;
+
+    cursor: inherit;
+
+    display: block;
+
+}
+

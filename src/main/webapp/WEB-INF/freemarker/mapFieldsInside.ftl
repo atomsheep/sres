@@ -8,7 +8,7 @@
     <input type="hidden" name="size" value="${record?size}"/>
 
 
-    <input type="checkbox" name="hasHeader"/> Has header in CSV file?
+    <input type="checkbox" name="hasHeader" checked="checked"/> Has header in CSV file?
 
     <table>
     <#list fields as f>
@@ -28,7 +28,7 @@
     <#list record as r>
         <tr>
             <td>
-                <input type="checkbox" name="extra${r_index?c}" <#if (r_index >= fields?size)> checked="checked"</#if>/>
+                <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= fields?size)> checked="checked"</#if>/>
             </td>
             <td>
                 <input type="text" name="key${r_index?c}" value="${r}"<#if (r_index < fields?size)>
@@ -52,6 +52,22 @@
 
 
 <script>
+
+    $(function(){
+        $('.checkField').on('change', function(){
+           var slf = $(this);
+            var name = slf.attr('name');
+            var num = name.substring(5, name.length);
+            if(slf.is(':checked')) {
+                $('[name=key' + num + ']').removeAttr('disabled');
+                $('[name=value' + num + ']').removeAttr('disabled');
+            } else {
+                $('[name=key' + num + ']').attr('disabled', 'disabled');
+                $('[name=value' + num + ']').attr('disabled', 'disabled');
+            }
+        });
+
+    });
 
 
 </script>

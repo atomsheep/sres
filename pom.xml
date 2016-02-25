@@ -16,7 +16,6 @@
 
     <properties>
         <spring.version>4.2.4.RELEASE</spring.version>
-        <hibernate.version>4.3.11.Final</hibernate.version>
         <jetty.version>9.2.14.v20151106</jetty.version>
         <slf4j.version>1.7.14</slf4j.version>
         <log4j.version>1.2.17</log4j.version>
@@ -121,27 +120,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-ehcache</artifactId>
-            <version>${hibernate.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>edtech</groupId>
             <artifactId>edtech-spring</artifactId>
             <version>${edtech-spring.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
         </dependency>
 
         <dependency>
@@ -153,14 +134,7 @@
         <dependency>
             <groupId>org.mongodb</groupId>
             <artifactId>mongodb-driver</artifactId>
-            <version>3.2.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.3-1103-jdbc4</version>
-            <scope>provided</scope>
+            <version>3.2.2</version>
         </dependency>
 
         <!--  JETTY DEPENDENCIES FOR TESTING  -->
@@ -193,6 +167,15 @@
                 <role>Java Programmer</role>
             </roles>
             <timezone>+12</timezone>
+        </developer>
+        <developer>
+            <id>danny</id>
+            <name>Danny Liu</name>
+            <email>danny.liu@sydney.edu.au</email>
+            <roles>
+                <role>Java Programmer</role>
+            </roles>
+            <timezone>+10</timezone>
         </developer>
         <developer>
             <id>richard</id>

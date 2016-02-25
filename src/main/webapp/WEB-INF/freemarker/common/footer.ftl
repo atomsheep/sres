@@ -17,7 +17,6 @@
 <!-- end of content -->
 
 <div id="footer">
-    <p class="copyright">&copy; Copyright ${.now?string("yyyy")} University of Otago</p>
 </div>
 
 </div>
