@@ -20,3 +20,5 @@ Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
  * Steve Leichtweis
 * University of Sydney
  * Danny Liu
+ * Abelardo Pardo
+ * Adam Bridgeman
