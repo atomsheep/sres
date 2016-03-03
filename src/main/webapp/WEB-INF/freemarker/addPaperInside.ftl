@@ -1,4 +1,6 @@
-<h1>Add student list</h1>
+<@showProgress 1 1/>
+
+<h1>Add new ${ICN}</h1>
 
 <div class="box">
 Fields marked with <span style="color:#F00;">*</span> are required
@@ -7,7 +9,7 @@ Fields marked with <span style="color:#F00;">*</span> are required
       onSubmit="$('#submitButton').attr('disabled', 'disabled').val('please wait...')">
 <table>
 <tr>
-    <td>Paper code</td>
+    <td>${ICN_C} code</td>
     <td>
         <input class='form-control' type="text" name="code" id="papercode" value="" size="8"
                style='display:inline-block;width:200px' required/>
@@ -17,7 +19,7 @@ Fields marked with <span style="color:#F00;">*</span> are required
     </td>
 </tr>
 <tr>
-    <td>Paper name</td>
+    <td>${ICN_C} name</td>
     <td>
         <input class='form-control' type="text" name="name" style='display:inline-block;width:200px'
                value="" size="40" required/>
@@ -52,55 +54,11 @@ Fields marked with <span style="color:#F00;">*</span> are required
 
 
 <tr>
-    <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton" value="add student list"/></td>
+    <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton" value="Save ${ICN} information"/></td>
 </tr>
 </table>
 </form>
 </div>
 
 
-<script>
 
-    $('#timetabling_class_list_file_number').on('change', function () {
-        $('div.input-group.timetable').hide().removeAttr('required');
-        for (i = 0; i <= $(this).val(); i++) {
-            $('div#input-group_tt_' + i).show().attr('required', 'required');
-        }
-    });
-    $('#timetabling_enrolment_list_file_number').on('change', function () {
-        $('div.input-group.enrolment').hide().removeAttr('required');
-        for (i = 0; i <= $(this).val(); i++) {
-            $('div#input-group_' + i).show().attr('required', 'required');
-        }
-    });
-    $(document).ready(function () {
-        $('#timetabling_enrolment_list_file_number').trigger('change');
-        $('#timetabling_class_list_file_number').trigger('change');
-    });
-</script>
-
-
-<script>
-    $(function() {
-
-        $('.btn-file :file').on('fileselect', function(event, numFiles, label) {
-
-            var input = $(this).parents('.input-group').find(':text'),
-                    log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-            if( input.length ) {
-                input.val(log);
-            } else {
-                if( log ) alert(log);
-            }
-
-        });
-
-        $(document).on('change', '.btn-file :file', function() {
-            var input = $(this),
-                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-            input.trigger('fileselect', [numFiles, label]);
-        });
-    });
-</script>

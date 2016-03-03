@@ -49,3 +49,26 @@ has session id in baseUrl
     ${content!?html?replace("\n", "<br/>")}
     </#if>
 </#macro>
+
+<#macro showProgress step totalSteps>
+<table style='font-size:32px'>
+    <tr>
+        <#list 1..totalSteps as i>
+            <td>
+                <#if i == step>
+            <span class="fa-stack fa-lg">
+            <i class="fa fa-circle fa-stack-2x" style='color:#9ecc4f'></i>
+            <i class="fa fa-stack-1x" style='color:#033141'>${i}</i>
+            </span>
+                <#else>
+                    <span class="fa-stack ">
+            <i class="fa fa-circle fa-stack-2x" style='color:#f2935d'></i>
+            <i class="fa fa-stack-1x" style='color:#033141'>${i}</i>
+            </span>
+                </#if>
+            </td>
+        </#list>
+
+    </tr>
+</table>
+</#macro>

@@ -1,3 +1,5 @@
+<@showProgress 3 3/>
+
 <h1>Map Fields</h1>
 
 <#assign record = list?first/>

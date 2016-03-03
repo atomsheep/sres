@@ -18,7 +18,7 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
- * name here.
+ * Utility functions.
  *
  * @author Richard Zeng (richard.zeng@otago.ac.nz)
  *         Date: 16/02/16
@@ -29,7 +29,7 @@ public class MongoUtil {
     private static final Logger log = LoggerFactory.getLogger(MongoUtil.class);
 
 
-    public static ObjectId insertOne(HttpServletRequest request, MongoDatabase db, String collection) {
+    public static ObjectId insertOne(MongoDatabase db, String collection, HttpServletRequest request) {
 
         ObjectId id = new ObjectId();
         ModelMap map = new ModelMap();
@@ -116,6 +116,24 @@ public class MongoUtil {
     }
 
     /**
+     * Get documents for given filters
+     *
+     * @param db         mongo database
+     * @param collection collection
+     * @param filters    filters
+     * @return document
+     */
+    public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
+        List<Document> documents = new ArrayList<Document>();
+        FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
+        for (Document document : iterable) {
+            documents.add(document);
+        }
+        return documents;
+    }
+
+
+    /**
      * Get document for given key and value
      *
      * @param db         mongo database
@@ -136,7 +154,7 @@ public class MongoUtil {
     }
 
     /**
-     * Get document for given object id
+     * Get document for given filters
      *
      * @param db         mongo database
      * @param collection collection
@@ -157,5 +175,7 @@ public class MongoUtil {
         }
         return doc;
     }
+
+
 
 }
