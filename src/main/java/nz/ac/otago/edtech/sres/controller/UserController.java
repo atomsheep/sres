@@ -4,7 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
 import nz.ac.otago.edtech.spring.util.OtherUtil;
@@ -69,16 +69,11 @@ public class UserController {
     // http://stackoverflow.com/questions/29722424/java-mongodb-bson-class-confusion
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
-
-
     private static final String[] USER_FIELDS = {"username", "givenNames", "surname", "preferredName", "email", "phone"};
+    DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
 
     @Autowired
     private UploadLocation uploadLocation;
-
-
-    DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH);
-
 
     @Autowired
     MongoClient mongoClient;
@@ -86,13 +81,12 @@ public class UserController {
     @Value("${mongodb.dbname}")
     private String dbName;
 
-
     private static final String COLLECTION_NAME_PAPERS = "papers";
     private static final String COLLECTION_NAME_USERS = "users";
     private static final String COLLECTION_NAME_COLUMNS = "columns";
     private static final String COLLECTION_NAME_USERDATA = "userdata";
 
-    MongoDatabase db = null;
+    private MongoDatabase db = null;
 
     @PostConstruct
     public void init() {
@@ -112,37 +106,18 @@ public class UserController {
             user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         }
         model.put("user", user);
-        if (user.get("papers") != null) {
-            List<Document> papers = new ArrayList<Document>();
-            @SuppressWarnings("unchecked")
-            List<Map> list = (List<Map>) user.get("papers");
-            for (Map m : list) {
-                if (m.get("roles") != null) {
-                    List ll = (List) m.get("roles");
-                    if (ll.contains("owner")) {
-                        ObjectId id = (ObjectId) m.get("paperref");
-                        Document paper = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, id);
-                        log.debug("paper = {}", paper);
-                        if (paper != null)
-                            papers.add(paper);
-
-                    }
-                }
-            }
-            model.put("list", papers);
-        }
+        List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
+        model.put("list", papers);
         //List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("pageName", "user");
         return Common.DEFAULT_VIEW_NAME;
     }
-
 
     @RequestMapping(value = "/addPaper", method = RequestMethod.GET)
     public String addPaper(ModelMap model) {
         model.put("pageName", "addPaper");
         return Common.DEFAULT_VIEW_NAME;
     }
-
 
     @RequestMapping(value = "/addPaper", method = RequestMethod.POST)
     public String addPaper(HttpServletRequest request) {
@@ -158,8 +133,8 @@ public class UserController {
         ObjectId id = new ObjectId();
         paper.put("_id", id);
         paper.put("owner", userName);
+        paper.put("status", "active");
         db.getCollection(COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
-
         Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         if (user != null) {
             // paper info
@@ -171,7 +146,6 @@ public class UserController {
             db.getCollection(COLLECTION_NAME_USERS).updateOne(new Document(USER_FIELDS[0], userName),
                     new Document("$addToSet", new Document("papers", pp)));
         }
-
         log.debug("id {}", id);
         return "redirect:/user/addStudentList/" + id.toString();
     }
@@ -224,7 +198,6 @@ public class UserController {
         model.put("pageName", "mapFields");
         return Common.DEFAULT_VIEW_NAME;
     }
-
 
     @RequestMapping(value = "/importUser", method = RequestMethod.POST)
     public String importUser(HttpServletRequest request,
@@ -310,8 +283,6 @@ public class UserController {
                                 new Document("$addToSet", new Document("papers.$.roles", "student"))
 
                         );
-
-
                     }
                 }
             } catch (IOException ioe) {
@@ -444,15 +415,16 @@ public class UserController {
 
 
     @RequestMapping(value = "/deletePaper/{id}", method = RequestMethod.GET)
-    public ResponseEntity<String> deletePaper(@PathVariable String id) {
+    public ResponseEntity<String> deletePaper(@PathVariable String id, HttpServletRequest request) {
         String action = "deletePaper";
         boolean success = false;
         String detail = null;
-
-        ObjectId oi = new ObjectId(id);
-
-        DeleteResult result = db.getCollection(COLLECTION_NAME_PAPERS).deleteOne(eq("_id", oi));
-        if (result.getDeletedCount() == 1)
+        ObjectId paperId = new ObjectId(id);
+        String userName = AuthUtil.getUserName(request);
+        UpdateResult result = db.getCollection(COLLECTION_NAME_PAPERS).updateOne(
+                and(eq("_id", paperId), eq("owner", userName)),
+                new Document("$set", new Document("status", "deleted")));
+        if (result.getModifiedCount() == 1)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);
     }
@@ -528,39 +500,39 @@ public class UserController {
 
         for (Object oo : array) {
             JSONObject obj = (JSONObject) oo;
-            if((obj.get("colref") !=null) && (obj.get("operator")!=null)){
-            String value = obj.get("value").toString();
-            Object o = value;
-            if (NumberUtils.isNumber(value))
-                o = NumberUtils.createNumber(value);
-            String operator = obj.get("operator").toString();
-            Bson valueFilter = new OperatorFilter<Object>(operator, "value", o);
-            String colref = obj.get("colref").toString();
-            Bson colFilter = eq("colref", new ObjectId(colref));
+            if ((obj.get("colref") != null) && (obj.get("operator") != null)) {
+                String value = obj.get("value").toString();
+                Object o = value;
+                if (NumberUtils.isNumber(value))
+                    o = NumberUtils.createNumber(value);
+                String operator = obj.get("operator").toString();
+                Bson valueFilter = new OperatorFilter<Object>(operator, "value", o);
+                String colref = obj.get("colref").toString();
+                Bson colFilter = eq("colref", new ObjectId(colref));
 
-            // FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERDATA).find(and(valueFilter, colFilter), {"userref":1});
+                // FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERDATA).find(and(valueFilter, colFilter), {"userref":1});
 
-            List<Document> userdata = MongoUtil.getDocuments(db, COLLECTION_NAME_USERDATA,
-                    colFilter,
-                    valueFilter
-            );
-            if (userdata.isEmpty()) {
-                set = new HashSet<ObjectId>();
-                break;
-            }
-            if (set.isEmpty()) {
-                for (Document doc : userdata)
-                    set.add((ObjectId) doc.get("userref"));
-            } else {
-                Set<ObjectId> tmp = new HashSet<ObjectId>();
-                for (Document doc : userdata)
-                    tmp.add((ObjectId) doc.get("userref"));
-                String join = obj.get("join").toString();
-                if (join.equals("and"))
-                    set.retainAll(tmp);
-                else
-                    set.addAll(tmp);
-            }
+                List<Document> userdata = MongoUtil.getDocuments(db, COLLECTION_NAME_USERDATA,
+                        colFilter,
+                        valueFilter
+                );
+                if (userdata.isEmpty()) {
+                    set = new HashSet<ObjectId>();
+                    break;
+                }
+                if (set.isEmpty()) {
+                    for (Document doc : userdata)
+                        set.add((ObjectId) doc.get("userref"));
+                } else {
+                    Set<ObjectId> tmp = new HashSet<ObjectId>();
+                    for (Document doc : userdata)
+                        tmp.add((ObjectId) doc.get("userref"));
+                    String join = obj.get("join").toString();
+                    if (join.equals("and"))
+                        set.retainAll(tmp);
+                    else
+                        set.addAll(tmp);
+                }
             }
         }
 
