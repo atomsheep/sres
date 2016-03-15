@@ -28,7 +28,7 @@
                 <input type="checkbox" name="extra${r_index?c}" <#if (r_index >= 1)> checked="checked"</#if>/>
             </td>
             <td>
-                name:<input type="text" name="name${r_index?c}" value="${r}"
+                name:<input type="text" name="name${r_index?c}" value="${r?html}"
                     <#if (r_index < 1)>disabled="disabled"</#if>/>
                 description: <input type="text" name="description${r_index?c}" value=""
                                     <#if (r_index < 1)>disabled="disabled"</#if>/>

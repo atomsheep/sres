@@ -10,14 +10,24 @@ import nz.ac.otago.edtech.spring.bean.UploadLocation;
 import nz.ac.otago.edtech.spring.util.OtherUtil;
 import nz.ac.otago.edtech.sres.util.MongoUtil;
 import nz.ac.otago.edtech.util.CommonUtil;
+import nz.ac.otago.edtech.util.JSONUtil;
 import nz.ac.otago.edtech.util.ServletUtil;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWriter;
 import org.bson.Document;
+import org.bson.codecs.Encoder;
+import org.bson.codecs.EncoderContext;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +49,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.mongodb.assertions.Assertions.notNull;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static java.util.Arrays.asList;
@@ -111,7 +122,10 @@ public class UserController {
                     if (ll.contains("owner")) {
                         ObjectId id = (ObjectId) m.get("paperref");
                         Document paper = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, id);
-                        papers.add(paper);
+                        log.debug("paper = {}", paper);
+                        if (paper != null)
+                            papers.add(paper);
+
                     }
                 }
             }
@@ -132,7 +146,7 @@ public class UserController {
 
     @RequestMapping(value = "/addPaper", method = RequestMethod.POST)
     public String addPaper(HttpServletRequest request) {
-
+        // get login username
         String userName = AuthUtil.getUserName(request);
         ModelMap paper = new ModelMap();
         Enumeration<String> parameterNames = request.getParameterNames();
@@ -144,7 +158,6 @@ public class UserController {
         ObjectId id = new ObjectId();
         paper.put("_id", id);
         paper.put("owner", userName);
-
         db.getCollection(COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
 
         Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
@@ -155,17 +168,6 @@ public class UserController {
             List<String> roles = new ArrayList<String>();
             roles.add("owner");
             pp.put("roles", roles);
-            /*
-            if (user.get("papers") == null) {
-                List<ModelMap> papers = new ArrayList<ModelMap>();
-                papers.add(pp);
-                user.put("papers", papers);
-            } else {
-                @SuppressWarnings("unchecked")
-                List<Map> papersDoc = (List<Map>) user.get("papers");
-                papersDoc.add(pp);
-                user.put("papers", papersDoc);
-            } */
             db.getCollection(COLLECTION_NAME_USERS).updateOne(new Document(USER_FIELDS[0], userName),
                     new Document("$addToSet", new Document("papers", pp)));
         }
@@ -197,12 +199,18 @@ public class UserController {
                 file.transferTo(upload);
                 List<String[]> list = new ArrayList<String[]>();
                 int index = 0;
-                BufferedReader in = new BufferedReader(new FileReader(upload));
-                for (String line; (line = in.readLine()) != null; ) {
-                    index++;
+
+                // read csv file without header
+                Reader in = new FileReader(upload);
+                Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(in);
+                // go through csv file
+                for (CSVRecord record : records) {
                     if (index > 3)
                         break;
-                    String[] columns = line.split(",");
+                    String[] columns = new String[record.size()];
+                    for (int i = 0; i < record.size(); i++) {
+                        columns[i] = record.get(i);
+                    }
                     list.add(columns);
                 }
                 model.put("list", list);
@@ -304,9 +312,8 @@ public class UserController {
                         );
 
 
-
                     }
-      }
+                }
             } catch (IOException ioe) {
                 log.error("IOException", ioe);
             }
@@ -413,7 +420,12 @@ public class UserController {
                                     ModelMap datum = new ModelMap();
                                     datum.put("colref", m.get("_id"));
                                     datum.put("userref", user.get("_id"));
-                                    datum.put("value", record.get((Integer) m.get("index")));
+                                    String value = record.get((Integer) m.get("index"));
+                                    if (NumberUtils.isNumber(value)) {
+                                        Number num = NumberUtils.createNumber(value);
+                                        datum.put("value", num);
+                                    } else
+                                        datum.put("value", record.get((Integer) m.get("index")));
                                     UpdateOptions uo = new UpdateOptions();
                                     uo.upsert(true);
                                     db.getCollection(COLLECTION_NAME_USERDATA).updateOne(and(eq("colref", m.get("_id")), eq("userref", user.get("_id"))),
@@ -451,7 +463,10 @@ public class UserController {
         model.put("paper", MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, paperId));
 
         List<Document> users = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERS).find(eq("papers.paperref", paperId));
+        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERS).find(
+                new Document("papers", new Document("$elemMatch", new Document("paperref", paperId)
+                        .append("roles", "student")))
+        );
         for (Document document : iterable)
             users.add(document);
         model.put("users", users);
@@ -488,14 +503,93 @@ public class UserController {
             result.put("data", data);
             results.add(result);
         }
+        model.put("id", id);
         model.put("results", results);
-
-
         model.put("columns", columns);
-
         model.put("pageName", "viewStudentList");
         return Common.DEFAULT_VIEW_NAME;
     }
+
+
+    @RequestMapping(value = "/filterStudentList", method = RequestMethod.POST)
+    public String filterStudentList(@RequestParam("id") String id,
+                                    @RequestParam("json") String json,
+                                    ModelMap model) {
+
+        ObjectId paperId = new ObjectId(id);
+        List<ModelMap> results = new ArrayList<ModelMap>();
+        List<Document> columns = MongoUtil.getDocuments(db, COLLECTION_NAME_COLUMNS, "paperref", paperId);
+
+        Set<ObjectId> set = new HashSet<ObjectId>();
+
+        log.debug("json = {}", json);
+
+        JSONArray array = JSONUtil.parseArray(json);
+
+        for (Object oo : array) {
+            JSONObject obj = (JSONObject) oo;
+            if((obj.get("colref") !=null) && (obj.get("operator")!=null)){
+            String value = obj.get("value").toString();
+            Object o = value;
+            if (NumberUtils.isNumber(value))
+                o = NumberUtils.createNumber(value);
+            String operator = obj.get("operator").toString();
+            Bson valueFilter = new OperatorFilter<Object>(operator, "value", o);
+            String colref = obj.get("colref").toString();
+            Bson colFilter = eq("colref", new ObjectId(colref));
+
+            // FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERDATA).find(and(valueFilter, colFilter), {"userref":1});
+
+            List<Document> userdata = MongoUtil.getDocuments(db, COLLECTION_NAME_USERDATA,
+                    colFilter,
+                    valueFilter
+            );
+            if (userdata.isEmpty()) {
+                set = new HashSet<ObjectId>();
+                break;
+            }
+            if (set.isEmpty()) {
+                for (Document doc : userdata)
+                    set.add((ObjectId) doc.get("userref"));
+            } else {
+                Set<ObjectId> tmp = new HashSet<ObjectId>();
+                for (Document doc : userdata)
+                    tmp.add((ObjectId) doc.get("userref"));
+                String join = obj.get("join").toString();
+                if (join.equals("and"))
+                    set.retainAll(tmp);
+                else
+                    set.addAll(tmp);
+            }
+            }
+        }
+
+
+        for (ObjectId oid : set) {
+            ModelMap result = new ModelMap();
+            Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, "_id", oid);
+            if (user != null) {
+                result.putAll(user);
+                List<ModelMap> data = new ArrayList<ModelMap>();
+                for (Document c : columns) {
+                    ModelMap datum = new ModelMap();
+                    Document userData = MongoUtil.getDocument(db, COLLECTION_NAME_USERDATA, eq("userref", oid), eq("colref", c.get("_id")));
+                    datum.put("column", c);
+                    datum.put("data", userData);
+                    data.add(datum);
+                }
+                result.put("data", data);
+                results.add(result);
+            }
+        }   //*/
+        model.put("id", id);
+        model.put("json", json);
+        model.put("results", results);
+        model.put("columns", columns);
+        model.put("pageName", "viewStudentList");
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
 
     @RequestMapping(value = "/viewColumnList/{id}", method = RequestMethod.GET)
     public String viewColumnList(@PathVariable String id, ModelMap model) {
@@ -556,4 +650,52 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+
+    private static final class OperatorFilter<TItem> implements Bson {
+        private final String operatorName;
+        private final String fieldName;
+        private final TItem value;
+
+        OperatorFilter(final String operatorName, final String fieldName, final TItem value) {
+            this.operatorName = notNull("operatorName", operatorName);
+            this.fieldName = notNull("fieldName", fieldName);
+            this.value = value;
+        }
+
+        @Override
+        public <TDocument> BsonDocument toBsonDocument(final Class<TDocument> documentClass, final CodecRegistry codecRegistry) {
+            BsonDocumentWriter writer = new BsonDocumentWriter(new BsonDocument());
+
+            writer.writeStartDocument();
+            writer.writeName(fieldName);
+            writer.writeStartDocument();
+            writer.writeName(operatorName);
+            BuildersHelper.encodeValue(writer, value, codecRegistry);
+            writer.writeEndDocument();
+            writer.writeEndDocument();
+
+            return writer.getDocument();
+        }
+    }
+
+
+}
+
+final class BuildersHelper {
+
+    @SuppressWarnings("unchecked")
+    static <TItem> void encodeValue(final BsonDocumentWriter writer, final TItem value, final CodecRegistry codecRegistry) {
+        if (value == null) {
+            writer.writeNull();
+        } else if (value instanceof Bson) {
+            ((Encoder) codecRegistry.get(BsonDocument.class)).encode(writer,
+                    ((Bson) value).toBsonDocument(BsonDocument.class, codecRegistry),
+                    EncoderContext.builder().build());
+        } else {
+            ((Encoder) codecRegistry.get(value.getClass())).encode(writer, value, EncoderContext.builder().build());
+        }
+    }
+
+    private BuildersHelper() {
+    }
 }
