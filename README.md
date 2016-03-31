@@ -14,11 +14,17 @@ Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
  * Adon Moskal
  * Richard Zeng
  * Jenny McDonald
-* University of Auckland
- * Claire Donald
- * Cathy Gunn
- * Steve Leichtweis
 * University of Sydney
  * Danny Liu
  * Abelardo Pardo
  * Adam Bridgeman
+
+## Greater project team
+
+* Including contributors as listed above
+* University of Otago
+ * Rob Wass
+* University of Auckland
+ * Claire Donald
+ * Cathy Gunn
+ * Steve Leichtweis
