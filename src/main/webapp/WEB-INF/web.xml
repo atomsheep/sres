@@ -20,7 +20,7 @@
 
     <context-param>
         <param-name>serverName</param-name>
-        <param-value>richard.otago.ac.nz</param-value>
+        <param-value>localhost:8080</param-value>
     </context-param>
 
     <filter>
