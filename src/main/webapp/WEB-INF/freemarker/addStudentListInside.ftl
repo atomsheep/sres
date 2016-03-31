@@ -5,87 +5,30 @@
 <div class="box">
     <form name="editStudentList" id="editStudentList" method="post"
           action="${baseUrl}/user/addStudentList" enctype="multipart/form-data"
-          onSubmit="$('#submitButton').attr('disabled', 'disabled').val('please wait...')">
+          onSubmit="">
 
         <input type="hidden" name="id" value="${id}"/>
         <table>
-
             <tr>
-                <td id="timetablingData">
-                    <div>
-                        <select style='width:300px' class='form-control' id="timetabling_enrolment_list_file_number"
-                                name="timetabling_enrolment_list_file_number">
-                            <option value="0">Do not upload any enrolment list files</option>
-                        <#list 1..5 as i>
-                            <option value="${i}" <#if i == 1>selected</#if>>Upload ${i} file<#if i != 1>s</#if></option>
-                        </#list>
-                        </select>
-                        <br/>
-                    <#list 1..5 as i>
-                        <div class="input-group enrolment" id='input-group_${i}'>
-                <span class="input-group-btn">
-                    <span class="btn btn-primary btn-file">
-                        Browse… <input type="file" name="files" id="timetabling_enrolment_list_file_${i}"/>
-                    </span>
-                </span>
-                            <input type="text" style='display:inline-block;width:200px' class="form-control" readonly/>
-                        </div>
-                    </#list>
+                <td>
+                    <div class="input-group enrolment" id='input-group'>
+                        <span class="input-group-btn">
+                            <span class="btn btn-primary btn-file">
+                                Browse … <input type="file" name="files"/>
+                            </span>
+                        </span>
+                        <input type="text" style="display:inline-block;width:200px" class="form-control" readonly/>
                     </div>
                     <br/>
-
-
+                </td>
+            </tr>
             <tr>
-                <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton"
-                                       value="add student list"/></td>
+                <td colspan="2">
+                    <input class="btn btn-default btn-primary" type="submit"
+                                       value="Add student list"/>
+                </td>
             </tr>
         </table>
     </form>
 </div>
 
-
-<script>
-
-    $('#timetabling_class_list_file_number').on('change', function () {
-        $('div.input-group.timetable').hide().removeAttr('required');
-        for (i = 0; i <= $(this).val(); i++) {
-            $('div#input-group_tt_' + i).show().attr('required', 'required');
-        }
-    });
-    $('#timetabling_enrolment_list_file_number').on('change', function () {
-        $('div.input-group.enrolment').hide().removeAttr('required');
-        for (i = 0; i <= $(this).val(); i++) {
-            $('div#input-group_' + i).show().attr('required', 'required');
-        }
-    });
-    $(document).ready(function () {
-        $('#timetabling_enrolment_list_file_number').trigger('change');
-        $('#timetabling_class_list_file_number').trigger('change');
-    });
-</script>
-
-
-<script>
-    $(function () {
-
-        $('.btn-file :file').on('fileselect', function (event, numFiles, label) {
-
-            var input = $(this).parents('.input-group').find(':text'),
-                    log = numFiles > 1 ? numFiles + ' files selected' : label;
-
-            if (input.length) {
-                input.val(log);
-            } else {
-                if (log) alert(log);
-            }
-
-        });
-
-        $(document).on('change', '.btn-file :file', function () {
-            var input = $(this),
-                    numFiles = input.get(0).files ? input.get(0).files.length : 1,
-                    label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
-            input.trigger('fileselect', [numFiles, label]);
-        });
-    });
-</script>

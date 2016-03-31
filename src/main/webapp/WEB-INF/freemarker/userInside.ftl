@@ -65,7 +65,7 @@ ${SRES_INTRO_TEXT}
     </table>
 </div>
 
-<script type='text/javascript'>
+<script type="text/javascript">
     $(function () {
 
         var $paperLists = $('#paperLists');

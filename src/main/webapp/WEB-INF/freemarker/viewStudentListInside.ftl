@@ -6,6 +6,11 @@
 </#if>
 </h1>
 
+
+<#list columns as c>
+    <input type="checkbox" value="${c._id}"/> ${c.name}
+</#list>
+
 <h2>Filters
 <#if json?has_content>
     <a href="${baseUrl}/user/viewStudentList/${id}">Back to all student list</a>
@@ -53,7 +58,7 @@
 </form>
 <#if results?has_content>
 ${results?size}
-<table border="1">
+<table border="1" id="studentList">
     <tr>
         <th>Username</th>
         <th>Given Names</th>
@@ -71,11 +76,10 @@ ${results?size}
             <td>${r.surname}</td>
             <td>${r.email!}</td>
             <#list r.data as d>
-                <td>
+                <td data-id="${d.data._id}">
                     <#if d.data?has_content>
-                 ${d.data.value}
-             </#if>
-
+                    ${d.data.value}
+                </#if>
                 </td>
             </#list>
         </tr>
@@ -83,12 +87,11 @@ ${results?size}
 
 
 </table>
-  <#else>
+<#else>
 No students found.
 </#if>
 
-
-<script>
+<script type="text/javascript">
 
     $(function () {
 
@@ -99,7 +102,7 @@ No students found.
         $('.operatorDiv').remove();
 
         $('span.newFilter').on('click', function () {
-           // var operatorDiv = $('<div/>').addClass('operatorDiv').html(operatorDivHtml).appendTo(filterList);
+            // var operatorDiv = $('<div/>').addClass('operatorDiv').html(operatorDivHtml).appendTo(filterList);
             var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
             $('span.removeFilter').show();
 
@@ -129,6 +132,55 @@ No students found.
             $('[name=json]').val(jsonString);
             $('[name=filterForm]').submit();
         });
+
+        $('#studentList td').on("dblclick", function () {
+            var slf = $(this);
+            var id = slf.data('id');
+            if (id) {
+                var oldValue = $.trim(slf.text());
+                var input = $('<input/>').attr('type', 'text').attr('value', oldValue);
+                slf.html(input);
+                input.focus();
+                input.select();
+                input.on('keydown', function (e) {
+                    if (e.keyCode == 13) {
+                        saveChanges(slf, input, oldValue);
+                    } else if (e.keyCode == 27)
+                        changeInputBackToText(slf, input, oldValue);
+                });
+                input.on('blur', function (e) {
+                   if(confirm('Do you want to save your changes?')) {
+                       saveChanges(slf, input, oldValue);
+                   }  else {
+                       changeInputBackToText(slf, input, oldValue);
+                   }
+                });
+            }
+        });
+
+        function saveChanges(td, input, oldValue) {
+            var id = td.data('id');
+            var value = $.trim(input.val());
+            if (value != oldValue) {
+                $.post('${baseUrl}/user/saveColumnValue',
+                        { id: id, value: value },
+                        function (json) {
+                            if (json.success) {
+                                changeInputBackToText(td, input, value);
+                            } else if (json.detail)
+                                alert(json.detail);
+                        });
+            } else
+                changeInputBackToText(td, input, value);
+
+
+        }
+
+        function changeInputBackToText(td, input, value) {
+            td.text(value);
+            input.remove();
+        }
+
     });
 
 </script>
