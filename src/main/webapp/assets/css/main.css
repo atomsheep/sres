@@ -101,3 +101,7 @@ body {
 input {
     color: black;
 }
+
+tr.fieldRow {
+    height: 30px;
+}

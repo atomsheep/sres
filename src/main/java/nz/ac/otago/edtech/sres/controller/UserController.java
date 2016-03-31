@@ -452,7 +452,6 @@ public class UserController {
         ObjectId paperId = new ObjectId(id);
         List<ModelMap> results = new ArrayList<ModelMap>();
 
-
         List<Document> columns = MongoUtil.getDocuments(db, COLLECTION_NAME_COLUMNS, "paperref", paperId);
 
         FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERS).find(
@@ -461,7 +460,6 @@ public class UserController {
         );
 
         for (Document u : iterable) {
-
             ModelMap result = new ModelMap();
             result.putAll(u);
             List<ModelMap> data = new ArrayList<ModelMap>();
@@ -591,6 +589,30 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    @RequestMapping(value = "/saveColumnValue", method = RequestMethod.POST)
+    public ResponseEntity<String> saveColumnValue(@RequestParam("id") String id,
+                                                  @RequestParam("value") String value) {
+        String action = "saveColumnValue";
+        boolean success = false;
+        String detail = null;
+
+        ModelMap datum = new ModelMap();
+        if (NumberUtils.isNumber(value)) {
+            Number num = NumberUtils.createNumber(value);
+            datum.put("value", num);
+        } else
+            datum.put("value", value.trim());
+
+        ObjectId userdataId = new ObjectId(id);
+        UpdateResult result = db.getCollection(COLLECTION_NAME_USERDATA).updateOne(
+                eq("_id", userdataId),
+                new Document("$set", new Document(datum)));
+        if (result.getModifiedCount() == 1)
+            success = true;
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
+
     @RequestMapping(value = "/insert", method = RequestMethod.GET)
     public String insert(ModelMap model) {
         try {
@@ -622,7 +644,7 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
-
+    // copy from com.mongodb.client.model.Filters
     private static final class OperatorFilter<TItem> implements Bson {
         private final String operatorName;
         private final String fieldName;
@@ -634,7 +656,6 @@ public class UserController {
             this.value = value;
         }
 
-        @Override
         public <TDocument> BsonDocument toBsonDocument(final Class<TDocument> documentClass, final CodecRegistry codecRegistry) {
             BsonDocumentWriter writer = new BsonDocumentWriter(new BsonDocument());
 
@@ -653,6 +674,7 @@ public class UserController {
 
 }
 
+// copy from com.mongodb.client.model.BuildersHelper
 final class BuildersHelper {
 
     @SuppressWarnings("unchecked")

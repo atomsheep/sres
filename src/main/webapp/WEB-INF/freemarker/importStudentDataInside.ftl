@@ -74,7 +74,7 @@
 </script>
 
 
-<script>
+<script type="text/javascript">
     $(function() {
 
         $('.btn-file :file').on('fileselect', function(event, numFiles, label) {

@@ -21,7 +21,7 @@ public class Start {
         connector.setIdleTimeout(1000 * 60 * 60);
         connector.setSoLingerTime(-1);
         connector.setHost("localhost");
-        connector.setPort(8022);
+        connector.setPort(8080);
         server.setConnectors(new Connector[]{connector});
 
         WebAppContext bb = new WebAppContext();
