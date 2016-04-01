@@ -1,4 +1,4 @@
-<@showProgress 1 1/>
+<@showProgress 1 3/>
 
 <h1>Add new ${ICN}</h1>
 

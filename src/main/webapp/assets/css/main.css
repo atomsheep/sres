@@ -96,3 +96,10 @@ body {
 input {
     color: black;
 }
+
+#paperlist td{
+    padding:10px 10px 10px 0;
+    border-top:1px solid #eee;
+    width:12%;
+    font-size:32px;
+}

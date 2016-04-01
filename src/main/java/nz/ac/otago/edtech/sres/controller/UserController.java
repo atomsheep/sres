@@ -1,6 +1,7 @@
 package nz.ac.otago.edtech.sres.controller;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
@@ -51,6 +52,7 @@ import java.util.*;
 
 import static com.mongodb.assertions.Assertions.notNull;
 import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.elemMatch;
 import static com.mongodb.client.model.Filters.eq;
 import static java.util.Arrays.asList;
 
@@ -106,8 +108,17 @@ public class UserController {
             user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         }
         model.put("user", user);
-        List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
-        model.put("list", papers);
+
+        List<Document> documents = new ArrayList<Document>();
+        AggregateIterable<Document> iterable = db.getCollection(COLLECTION_NAME_PAPERS).aggregate(asList(
+                new Document("$match",new Document("owner",userName).append("status","active")),
+                new Document("$lookup", new Document("from", COLLECTION_NAME_USERS).append("localField","_id").append("foreignField","papers.paperref").append("as","users"))));
+        for (Document document : iterable) {
+            documents.add(document);
+        }
+
+    //    List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
+        model.put("list", documents);
         //List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("pageName", "user");
         return Common.DEFAULT_VIEW_NAME;
