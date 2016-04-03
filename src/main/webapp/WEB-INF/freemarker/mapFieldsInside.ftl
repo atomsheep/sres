@@ -1,4 +1,4 @@
-<@showProgress 3 3/>
+<@showProgress 3 5/>
 
 <h1>Map Fields</h1>
 
@@ -14,11 +14,11 @@
 
     <table>
     <#list fields as f>
-        <tr>
+        <tr class="fieldRow">
             <td></td>
             <td>${f}</td>
             <td>
-                <select name="${f}">
+                <select name="${f}" class="form-control">
                     <option value="-1"></option>
                     <#list record as r>
                         <option value="${r_index}" <#if r_index == f_index>selected="selected"</#if>  > ${r}</option>
@@ -27,8 +27,15 @@
             </td>
         </tr>
     </#list>
+        <tr class="fieldRow">
+            <td>
+                <input type="checkbox" name="extra"/>
+            </td>
+            <td>select all</td>
+            <td></td>
+        </tr>
     <#list record as r>
-        <tr>
+        <tr class="fieldRow">
             <td>
                 <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= fields?size)> checked="checked"</#if>/>
             </td>
@@ -37,7 +44,7 @@
                        disabled="disabled"</#if>/>
             </td>
             <td>
-                <select name="value${r_index?c}" <#if (r_index < fields?size)> disabled="disabled"</#if>>
+                <select name="value${r_index?c}" class="form-control" <#if (r_index < fields?size)> disabled="disabled"</#if>>
                     <option value="-1"></option>
                     <#list record as rr>
                         <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
@@ -48,12 +55,12 @@
     </#list>
     </table>
 
-    <input type="submit" class="btn btn-default btn-primary" value="Go"/>
+    <input type="submit" class="btn btn-default btn-primary" value="Next"/>
 
 </form>
 
 
-<script>
+<script type="text/javascript">
 
     $(function(){
         $('.checkField').on('change', function(){
@@ -69,6 +76,18 @@
             }
         });
 
+        $('[name=extra]').on('change', function(){
+            var slf = $(this);
+            if(slf.is(':checked')) {
+                $('.checkField').prop('checked', true);
+                $('.checkField').change();
+            } else {
+                $('.checkField').prop('checked', false);
+                $('.checkField').change();
+            }
+        });
+
     });
+
 
 </script>

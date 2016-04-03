@@ -173,7 +173,7 @@ public class UserController {
             ModelMap model) {
         // when no file uploaded, go to view paper page
         if (file.getSize() == 0)
-            return "redirect:/user/viewPaper/" + id;
+            return "redirect:/user/viewStudentList/" + id;
 
         String filename = CommonUtil.getUniqueFilename(uploadLocation.getUploadPath(), file.getOriginalFilename());
         File upload = new File(uploadLocation.getUploadDir(), filename);
@@ -298,7 +298,7 @@ public class UserController {
                 log.error("IOException", ioe);
             }
         }
-        return "redirect:/user/viewPaper/" + id;
+        return "redirect:/user/importStudentData/" + id;
     }
 
     @RequestMapping(value = "/importStudentData/{id}", method = RequestMethod.GET)
@@ -314,6 +314,11 @@ public class UserController {
             @RequestParam("files") MultipartFile file,
             @RequestParam("id") String id,
             ModelMap model) {
+
+        // when no file uploaded, go to view paper page
+        if (file.getSize() == 0)
+            return "redirect:/user/viewStudentList/" + id;
+
         File upload = new File(uploadLocation.getUploadDir(), file.getOriginalFilename());
         if (StringUtils.isNotBlank(upload.getPath())) {
             try {
@@ -419,7 +424,7 @@ public class UserController {
             }
 
         }
-        return "redirect:/user/viewPaper/" + id;
+        return "redirect:/user/viewStudentList/" + id;
     }
 
 
@@ -459,6 +464,9 @@ public class UserController {
     @RequestMapping(value = "/viewStudentList/{id}", method = RequestMethod.GET)
     public String viewStudentList(@PathVariable String id, ModelMap model) {
         ObjectId paperId = new ObjectId(id);
+
+        model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
+
         List<ModelMap> results = new ArrayList<ModelMap>();
 
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
@@ -496,6 +504,8 @@ public class UserController {
                                     ModelMap model) {
 
         ObjectId paperId = new ObjectId(id);
+        model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
+
         List<ModelMap> results = new ArrayList<ModelMap>();
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
 

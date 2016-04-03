@@ -1,3 +1,5 @@
+<@showProgress 5 5/>
+
 <h1>Map Data Fields</h1>
 
 <#assign record = list?first/>
@@ -14,7 +16,7 @@
             <td></td>
             <td>username</td>
             <td>
-                <select name="username">
+                <select name="username"  class="form-control">
                     <option value="-1"></option>
                     <#list record as r>
                         <option value="${r_index}" <#if r_index == 0>selected="selected"</#if>  > ${r}</option>
@@ -35,7 +37,7 @@
 
             </td>
             <td>
-                <select name="value${r_index?c}" <#if (r_index < 1)>disabled="disabled"</#if>>
+                <select name="value${r_index?c}" class="form-control" <#if (r_index < 1)>disabled="disabled"</#if>>
                     <option value="-1"></option>
                     <#list record as rr>
                         <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>

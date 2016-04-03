@@ -97,6 +97,10 @@ input {
     color: black;
 }
 
+tr.fieldRow {
+    height: 30px;
+}
+
 #paperlist td{
     padding:10px 10px 10px 0;
     border-top:1px solid #eee;
