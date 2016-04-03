@@ -14,7 +14,7 @@
             <td></td>
             <td>username</td>
             <td>
-                <select name="username">
+                <select name="username" class='form-control'>
                     <option value="-1"></option>
                     <#list record as r>
                         <option value="${r_index}" <#if r_index == 0>selected="selected"</#if>  > ${r}</option>
