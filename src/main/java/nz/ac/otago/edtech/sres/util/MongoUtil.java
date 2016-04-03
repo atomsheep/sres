@@ -26,6 +26,12 @@ import static com.mongodb.client.model.Filters.eq;
  */
 public class MongoUtil {
 
+    public static final String COLLECTION_NAME_PAPERS = "papers";
+    public static final String COLLECTION_NAME_USERS = "users";
+    public static final String COLLECTION_NAME_COLUMNS = "columns";
+    public static final String COLLECTION_NAME_USERDATA = "userdata";
+    public static final String COLLECTION_NAME_TOKENS = "tokens";
+
     private static final Logger log = LoggerFactory.getLogger(MongoUtil.class);
 
 
@@ -175,7 +181,5 @@ public class MongoUtil {
         }
         return doc;
     }
-
-
 
 }

@@ -81,10 +81,6 @@ public class UserController {
     @Value("${mongodb.dbname}")
     private String dbName;
 
-    private static final String COLLECTION_NAME_PAPERS = "papers";
-    private static final String COLLECTION_NAME_USERS = "users";
-    private static final String COLLECTION_NAME_COLUMNS = "columns";
-    private static final String COLLECTION_NAME_USERDATA = "userdata";
 
     private MongoDatabase db = null;
 
@@ -97,16 +93,16 @@ public class UserController {
     public String home(HttpServletRequest request, ModelMap model) {
 
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
+        Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         if (user == null) {
             ModelMap userMap = new ModelMap();
             userMap.put(USER_FIELDS[0], userName);
             // TODO: load user information here
-            db.getCollection(COLLECTION_NAME_USERS).insertOne(new Document(userMap));
-            user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
+            db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
+            user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         }
         model.put("user", user);
-        List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
+        List<Document> papers = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
         model.put("list", papers);
         //List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("pageName", "user");
@@ -134,8 +130,8 @@ public class UserController {
         paper.put("_id", id);
         paper.put("owner", userName);
         paper.put("status", "active");
-        db.getCollection(COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
-        Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
+        Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, USER_FIELDS[0], userName);
         if (user != null) {
             // paper info
             ModelMap pp = new ModelMap();
@@ -143,7 +139,7 @@ public class UserController {
             List<String> roles = new ArrayList<String>();
             roles.add("owner");
             pp.put("roles", roles);
-            db.getCollection(COLLECTION_NAME_USERS).updateOne(new Document(USER_FIELDS[0], userName),
+            db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(new Document(USER_FIELDS[0], userName),
                     new Document("$addToSet", new Document("papers", pp)));
         }
         log.debug("id {}", id);
@@ -261,21 +257,21 @@ public class UserController {
                     if (!userInfo.isEmpty())
                         pp.put("userInfo", userInfo);
 
-                    List<Document> list = MongoUtil.getDocuments(db, COLLECTION_NAME_USERS, eq(USER_FIELDS[0], userMap.get(USER_FIELDS[0])), eq("papers.paperref", paperId));
+                    List<Document> list = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERS, eq(USER_FIELDS[0], userMap.get(USER_FIELDS[0])), eq("papers.paperref", paperId));
                     if (list.isEmpty()) {
                         UpdateOptions uo = new UpdateOptions().upsert(true);
-                        db.getCollection(COLLECTION_NAME_USERS).updateOne(
+                        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
                                 new Document(USER_FIELDS[0], userMap.get(USER_FIELDS[0])),
                                 new Document("$set", new Document(userMap))
                                         .append("$addToSet", new Document("papers", pp)),
                                 uo
                         );
                     } else {
-                        db.getCollection(COLLECTION_NAME_USERS).updateOne(
+                        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
                                 new Document(USER_FIELDS[0], userMap.get(USER_FIELDS[0])),
                                 new Document("$set", new Document(userMap))
                         );
-                        db.getCollection(COLLECTION_NAME_USERS).updateOne(
+                        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
                                 new Document(USER_FIELDS[0], userMap.get(USER_FIELDS[0]))
                                         .append("papers",
                                                 new Document("$elemMatch",
@@ -359,9 +355,9 @@ public class UserController {
                         UpdateOptions uo = new UpdateOptions();
                         uo.upsert(true);
                         // update column if exists, create a new one if does not exist
-                        db.getCollection(COLLECTION_NAME_COLUMNS).updateOne(and(eq("name", name), eq("paperref", paperId)),
+                        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS).updateOne(and(eq("name", name), eq("paperref", paperId)),
                                 new Document("$set", new Document(map)), uo);
-                        Document doc = MongoUtil.getDocument(db, COLLECTION_NAME_COLUMNS, eq("name", name), eq("paperref", paperId));
+                        Document doc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, eq("name", name), eq("paperref", paperId));
                         if (doc != null)
                             map.put("_id", doc.get("_id"));
                     }
@@ -385,7 +381,7 @@ public class UserController {
                         // go through csv file
                         for (CSVRecord record : records) {
                             String un = record.get(unIndex);
-                            Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, eq("papers.paperref", paperId), eq(USER_FIELDS[0], un));
+                            Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("papers.paperref", paperId), eq(USER_FIELDS[0], un));
                             if (user != null)
                                 for (ModelMap m : columnFields) {
                                     ModelMap datum = new ModelMap();
@@ -399,7 +395,7 @@ public class UserController {
                                         datum.put("value", record.get((Integer) m.get("index")));
                                     UpdateOptions uo = new UpdateOptions();
                                     uo.upsert(true);
-                                    db.getCollection(COLLECTION_NAME_USERDATA).updateOne(and(eq("colref", m.get("_id")), eq("userref", user.get("_id"))),
+                                    db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(and(eq("colref", m.get("_id")), eq("userref", user.get("_id"))),
                                             new Document("$set", new Document(datum)), uo);
                                 }
                         }
@@ -421,7 +417,7 @@ public class UserController {
         String detail = null;
         ObjectId paperId = new ObjectId(id);
         String userName = AuthUtil.getUserName(request);
-        UpdateResult result = db.getCollection(COLLECTION_NAME_PAPERS).updateOne(
+        UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
                 and(eq("_id", paperId), eq("owner", userName)),
                 new Document("$set", new Document("status", "deleted")));
         if (result.getModifiedCount() == 1)
@@ -432,10 +428,10 @@ public class UserController {
     @RequestMapping(value = "/viewPaper/{id}", method = RequestMethod.GET)
     public String viewPaper(@PathVariable String id, ModelMap model) {
         ObjectId paperId = new ObjectId(id);
-        model.put("paper", MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, paperId));
+        model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
 
         List<Document> users = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERS).find(
+        FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).find(
                 new Document("papers", new Document("$elemMatch", new Document("paperref", paperId)
                         .append("roles", "student")))
         );
@@ -452,9 +448,9 @@ public class UserController {
         ObjectId paperId = new ObjectId(id);
         List<ModelMap> results = new ArrayList<ModelMap>();
 
-        List<Document> columns = MongoUtil.getDocuments(db, COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
 
-        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERS).find(
+        FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).find(
                 new Document("papers", new Document("$elemMatch", new Document("paperref", paperId)
                         .append("roles", "student")))
         );
@@ -465,7 +461,7 @@ public class UserController {
             List<ModelMap> data = new ArrayList<ModelMap>();
             for (Document c : columns) {
                 ModelMap datum = new ModelMap();
-                Document userData = MongoUtil.getDocument(db, COLLECTION_NAME_USERDATA, eq("userref", u.get("_id")), eq("colref", c.get("_id")));
+                Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", u.get("_id")), eq("colref", c.get("_id")));
                 datum.put("column", c);
                 datum.put("data", userData);
                 data.add(datum);
@@ -488,7 +484,7 @@ public class UserController {
 
         ObjectId paperId = new ObjectId(id);
         List<ModelMap> results = new ArrayList<ModelMap>();
-        List<Document> columns = MongoUtil.getDocuments(db, COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
 
         Set<ObjectId> set = new HashSet<ObjectId>();
 
@@ -510,7 +506,7 @@ public class UserController {
 
                 // FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_USERDATA).find(and(valueFilter, colFilter), {"userref":1});
 
-                List<Document> userdata = MongoUtil.getDocuments(db, COLLECTION_NAME_USERDATA,
+                List<Document> userdata = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERDATA,
                         colFilter,
                         valueFilter
                 );
@@ -537,13 +533,13 @@ public class UserController {
 
         for (ObjectId oid : set) {
             ModelMap result = new ModelMap();
-            Document user = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, "_id", oid);
+            Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, "_id", oid);
             if (user != null) {
                 result.putAll(user);
                 List<ModelMap> data = new ArrayList<ModelMap>();
                 for (Document c : columns) {
                     ModelMap datum = new ModelMap();
-                    Document userData = MongoUtil.getDocument(db, COLLECTION_NAME_USERDATA, eq("userref", oid), eq("colref", c.get("_id")));
+                    Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", oid), eq("colref", c.get("_id")));
                     datum.put("column", c);
                     datum.put("data", userData);
                     data.add(datum);
@@ -564,10 +560,10 @@ public class UserController {
     @RequestMapping(value = "/viewColumnList/{id}", method = RequestMethod.GET)
     public String viewColumnList(@PathVariable String id, ModelMap model) {
         ObjectId paperId = new ObjectId(id);
-        Document paper = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, paperId);
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
         model.put("paper", paper);
 
-        List<Document> columns = MongoUtil.getDocuments(db, COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         log.debug("columns {}", columns);
         model.put("columns", columns);
 
@@ -579,7 +575,7 @@ public class UserController {
     public String mongo(ModelMap model) {
         List<Document> documents = new ArrayList<Document>();
         ObjectId id = new ObjectId("56c29ee5628be38bcea305bf");
-        FindIterable<Document> iterable = db.getCollection(COLLECTION_NAME_PAPERS).find(eq("_id", id));
+        FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).find(eq("_id", id));
         for (Document document : iterable) {
             log.debug("document {}", document);
             documents.add(document);
@@ -604,7 +600,7 @@ public class UserController {
             datum.put("value", value.trim());
 
         ObjectId userdataId = new ObjectId(id);
-        UpdateResult result = db.getCollection(COLLECTION_NAME_USERDATA).updateOne(
+        UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
                 eq("_id", userdataId),
                 new Document("$set", new Document(datum)));
         if (result.getModifiedCount() == 1)
