@@ -4,7 +4,7 @@
     }
 </style>
 
-<h1>SRES</h1>
+<h1 style='font-family:Impact, sans-serif'>SRES</h1>
 
 <div>
 ${SRES_INTRO_TEXT}
@@ -12,32 +12,56 @@ ${SRES_INTRO_TEXT}
 
 <div class="box" id="div_student_lists">
     <h3>${ICN_C} list</h3>
-    <table class="borderless">
-        <tr>
-            <td>List administrator actions:</td>
-            <td>
+
+        List administrator actions:
                 <a class='btn btn-default btn-success' id="addList" href="${baseUrl}/user/addPaper">
                     Add a new ${ICN}</a>
-            </td>
+    <table id='paperlist' class="borderless" width='100%' style='margin-top:20px;'>
+    <tr>
+        <th width='12%'>${ICN} code</th>
+        <th width='12%'>${ICN} name</th>
+        <th width='12%' style='text-align:center'>${ICN} year</th>
+        <th width='12%' style='text-align:center'>${ICN} semester</th>
+        <th width='12%' style='text-align:center'>Number of students</th>
+        <th width='12%'></th>
+        <th width='12%'></th>
+        <th width='12%'></th>
         </tr>
-        <tr>
-            <td>
-                <label for="studentLists">Available ${ICN}s:</label>
+    <#if list?has_content>
+        <#list list as l>
+            <tr class='paperRow_${l._id}'>
+                <td style='border-top:1px solid #eee'>
+            ${l.code!}
             </td>
-            <td>
-                <select class='form-control' id="paperLists">
-                    <option value='0'></option>
-                <#if list?has_content>
-                    <#list list as ti>
-                        <option value="${ti._id}">
-                        ${ti.code!} ${ti.name!} ${ti.year!} ${ti.semester!}
-                        </option>
+                <td style='font-size:16px;font-style:italic;font-weight:bold'>${l.name!}</td>
+                <td style='text-align:center'>${l.year!}</td>
+                <td style='text-align:center'>${l.semester!}</td>
+                <td style='text-align:center'>
+                    <#assign studentCount = 0 />
+                    <#list l.users as u>
+                        <#list u.papers as p>
+                            <#if p.paperref == l._id>
+                                <#if p.roles?seq_contains("student")>
+                                    <#assign studentCount = studentCount + 1 />
+                                </#if>
+                            </#if>
+                        </#list>
                     </#list>
-                </#if>
-                </select>
-            </td>
-            <td>
-        </tr>
+                    ${studentCount}
+                </td>
+                <td style='text-align:center'>
+                    <a href="${baseUrl}/user/viewStudentList/${l._id}" id="viewList" class="btn btn-default btn-primary">View student list</a>
+                </td>
+                <td style='text-align:center'>
+                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewPaper" class="btn btn-default btn-primary">View ${ICN} information</a>
+                </td>
+                <td style='text-align:center'>
+                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger">Delete ${ICN}</button>
+                </td>
+            </tr>
+        </#list>
+    </#if>
+       <#--
         <tr class='listOptions' style='display:none'>
             <td>List actions:</td>
             <td>
@@ -62,64 +86,25 @@ ${SRES_INTRO_TEXT}
                 <button id="deleteList" class="btn btn-default btn-danger">Delete selected ${ICN}</button>
             </td>
         </tr>
+        -->
     </table>
 </div>
 
 <script type="text/javascript">
     $(function () {
 
-        var $paperLists = $('#paperLists');
-
-        $paperLists.on('change', function () {
-            console.log('change');
-            if ($('option:selected', $paperLists).val() != 0)   {
-                $('tr.listOptions').show();
-                $('#deleteList').removeAttr("disabled");
-            } else {
-                $('tr.listOptions').hide();
-                $('#deleteList').attr("disabled", "disabled");
-            }
-        });
-
-        $('#viewList').on('click', function () {
-            var val = $paperLists.val();
-            if (val.length > 0)
-                location.href = "${baseUrl}/user/viewStudentList/" + val;
-            else {
-                alert("Please choose a paper first.");
-                $paperLists.focus();
-            }
-        });
-
-        $('#viewPaper').on('click', function () {
-            var val = $paperLists.val();
-            if (val.length > 0)
-                location.href = "${baseUrl}/user/viewPaper/" + val;
-            else {
-                alert("Please choose a paper first.");
-                $paperLists.focus();
-            }
-        });
-
-        $('#deleteList').on('click', function () {
+        $('.deleteList').on('click', function () {
+            var self = $(this);
+            var id = self.data("id");
             if (confirm('Are you sure you wish to delete this ${ICN}? There is no recovering from this action!')) {
-                var val = $paperLists.val();
-                if (val.length > 0)
-                    $.get("${baseUrl}/user/deletePaper/" + val, function (json) {
+                    $.get("${baseUrl}/user/deletePaper/" + id, function (json) {
                         if (json.success) {
-                            console.log('deleted', val);
-                            $('option:selected', $paperLists).remove();
+                            var $paperRow = $('.paperRow_'+id);
+                            $paperRow.fadeOut(300);
                         } else if (json.detail)
                             alert(json.detail);
                     });
-                else {
-                    alert("Please choose a paper first.");
-                    $paperLists.focus();
-                }
             }
         });
-
-        $paperLists.change();
-
     });
 </script>

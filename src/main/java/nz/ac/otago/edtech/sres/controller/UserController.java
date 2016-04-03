@@ -1,6 +1,7 @@
 package nz.ac.otago.edtech.sres.controller;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
@@ -51,6 +52,7 @@ import java.util.*;
 
 import static com.mongodb.assertions.Assertions.notNull;
 import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.elemMatch;
 import static com.mongodb.client.model.Filters.eq;
 import static java.util.Arrays.asList;
 
@@ -104,6 +106,17 @@ public class UserController {
         model.put("user", user);
         List<Document> papers = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
         model.put("list", papers);
+
+        List<Document> documents = new ArrayList<Document>();
+        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).aggregate(asList(
+                new Document("$match",new Document("owner",userName).append("status","active")),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERS).append("localField","_id").append("foreignField","papers.paperref").append("as","users"))));
+        for (Document document : iterable) {
+            documents.add(document);
+        }
+
+    //    List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
+        model.put("list", documents);
         //List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("pageName", "user");
         return Common.DEFAULT_VIEW_NAME;
@@ -606,38 +619,6 @@ public class UserController {
         if (result.getModifiedCount() == 1)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);
-    }
-
-
-    @RequestMapping(value = "/insert", method = RequestMethod.GET)
-    public String insert(ModelMap model) {
-        try {
-            db.getCollection("restaurants").insertOne(
-                    new Document("address",
-                            new Document()
-                                    .append("street", "2 Avenue")
-                                    .append("zipcode", "10075")
-                                    .append("building", "1480")
-                                    .append("coord", asList(-73.9557413, 40.7720266)))
-                            .append("borough", "Manhattan")
-                            .append("cuisine", "Italian")
-                            .append("grades", asList(
-                                    new Document()
-                                            .append("date", format.parse("2014-10-01T00:00:00Z"))
-                                            .append("grade", "A")
-                                            .append("score", "32"),
-                                    new Document()
-                                            .append("date", format.parse("2014-01-16T00:00:00Z"))
-                                            .append("grade", "B")
-                                            .append("score", "28")))
-                            .append("name", "Vella")
-                            .append("restaurant_id", "4795458"));
-
-        } catch (ParseException pe) {
-            log.error("ParseException", pe);
-        }
-        model.put("pageName", "user");
-        return Common.DEFAULT_VIEW_NAME;
     }
 
     // copy from com.mongodb.client.model.Filters
