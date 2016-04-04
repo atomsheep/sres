@@ -10,6 +10,9 @@
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/bootstrap-3.3.6-dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/font-awesome-4.5.0/css/font-awesome.min.css"/>
     <link rel="stylesheet" type="text/css" media="all" href="${baseUrl}/assets/css/main.css"/>
+
+    <link href='https://fonts.googleapis.com/css?family=Roboto:400,300,500,700' rel='stylesheet' type='text/css'>
+
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery-1.12.0.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/javascript.js"></script>
