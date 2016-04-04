@@ -14,6 +14,11 @@ a:active {
 h1 {
     font-size: 36px;
     padding-bottom: 15px;
+    font-weight:700;
+}
+
+h2, h3{
+    font-weight:400;
 }
 
 /**  in bootstrap.css
@@ -36,60 +41,45 @@ h1 {
 
 body {
 
-    background:#033141;
+    background:#021E27;
     color: #fcfbf9;
-
+    font-family:Roboto, sans-serif;
 }
 
 
+.btn-primary{ background:#0886AF; border:none; }
+.btn-primary:hover { background: #066888; }
 
-.btn-primary{ background:#03a8ac; border:none; }
+.btn-success { background:#11af08;border:none; }
+.btn-success:hover { background:#0d8806; }
 
-.btn-primary:hover { background: #008F93; }
+.btn-purple { background:#AF08AF;border:none;color:white }
+.btn-purple:hover { background:#880688; }
 
+.btn-danger { background: #AF0808;border:none }
+.btn-danger:hover { background: #880606;border:none }
 
-
-.btn-success { background:#882b1a;border:none; }
-
-.btn-success:hover { background:#6F1201; }
 
 
 .btn-file {
-
     position: relative;
-
     overflow: hidden;
-
 }
 
 .btn-file input[type=file] {
-
     position: absolute;
-
     top: 0;
-
     right: 0;
-
     min-width: 100%;
-
     min-height: 100%;
-
     font-size: 100px;
-
     text-align: right;
-
     filter: alpha(opacity=0);
-
     opacity: 0;
-
     outline: none;
-
     background: white;
-
     cursor: inherit;
-
     display: block;
-
 }
 
 
@@ -97,9 +87,29 @@ input {
     color: black;
 }
 
-#paperlist td{
-    padding:10px 10px 10px 0;
-    border-top:1px solid #eee;
-    width:12%;
-    font-size:32px;
+tr.fieldRow {
+    height: 30px;
 }
+
+#paperList td{
+    font-size:32px;
+    font-weight: 300;
+}
+
+#paperList th, #paperList td, #studentList th, #studentList td{
+    padding:7px 10px;
+    text-align: center;
+    border-left:1px solid #066888;
+    border-right:1px solid #066888;
+}
+
+#paperList th, #studentList th { vertical-align: bottom;font-weight:500;font-style:italic;border:1px solid #043B4E;border-bottom-width: 10px;background:#066888 }
+
+#paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td { background: #043B4E }
+
+.filterDiv { padding:10px 0 0 }
+.operatorDiv { padding:0 10px 10px }
+
+
+input[type=checkbox]:checked + label { font-weight: 500 }
+label { font-weight:300}

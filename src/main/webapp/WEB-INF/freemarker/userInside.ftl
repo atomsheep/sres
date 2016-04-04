@@ -1,10 +1,4 @@
-<style>
-    td {
-        padding: 10px 10px 0 0;
-    }
-</style>
-
-<h1 style='font-family:Impact, sans-serif'>SRES</h1>
+<h1>SRES</h1>
 
 <div>
 ${SRES_INTRO_TEXT}
@@ -14,26 +8,25 @@ ${SRES_INTRO_TEXT}
     <h3>${ICN_C} list</h3>
 
         List administrator actions:
-                <a class='btn btn-default btn-success' id="addList" href="${baseUrl}/user/addPaper">
+                <a class='btn btn-default btn-primary' id="addList" href="${baseUrl}/user/addPaper" style='margin-left:10px'>
                     Add a new ${ICN}</a>
-    <table id='paperlist' class="borderless" width='100%' style='margin-top:20px;'>
+    <table id='paperList' class="borderless" width='100%' style='margin-top:20px;'>
     <tr>
-        <th width='12%'>${ICN} code</th>
-        <th width='12%'>${ICN} name</th>
-        <th width='12%' style='text-align:center'>${ICN} year</th>
-        <th width='12%' style='text-align:center'>${ICN} semester</th>
-        <th width='12%' style='text-align:center'>Number of students</th>
-        <th width='12%'></th>
-        <th width='12%'></th>
-        <th width='12%'></th>
+        <th width='12%' style='text-align:left;background:#066888;border-left:none'>${ICN_C} code</th>
+        <th width='12%' style='text-align:left;background:#066888;'>${ICN_C} name</th>
+        <th width='12%' style='text-align:center;background:#066888'>${ICN_C} year</th>
+        <th width='12%' style='text-align:center;background:#066888'>${ICN_C} semester</th>
+        <th width='12%' style='text-align:center;background:#066888'>Number of students</th>
+        <th width='12%' style='text-align:center;background:#066888'></th>
+        <th width='12%' style='text-align:center;background:#066888;border-right:none'></th>
         </tr>
     <#if list?has_content>
         <#list list as l>
             <tr class='paperRow_${l._id}'>
-                <td style='border-top:1px solid #eee'>
+                <td style='text-align:left;border-left:none'>
             ${l.code!}
             </td>
-                <td style='font-size:16px;font-style:italic;font-weight:bold'>${l.name!}</td>
+                <td style='text-align:left;font-size:16px;font-style:italic;font-weight:bold'>${l.name!}</td>
                 <td style='text-align:center'>${l.year!}</td>
                 <td style='text-align:center'>${l.semester!}</td>
                 <td style='text-align:center'>
@@ -50,13 +43,10 @@ ${SRES_INTRO_TEXT}
                     ${studentCount}
                 </td>
                 <td style='text-align:center'>
-                    <a href="${baseUrl}/user/viewStudentList/${l._id}" id="viewList" class="btn btn-default btn-primary">View student list</a>
+                    <a href="${baseUrl}/user/viewStudentList/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View student list</a>
                 </td>
-                <td style='text-align:center'>
-                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewPaper" class="btn btn-default btn-primary">View ${ICN} information</a>
-                </td>
-                <td style='text-align:center'>
-                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger">Delete ${ICN}</button>
+                <td style='text-align:center;border-right:none'>
+                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="width:100%;display:block">Delete ${ICN}</button>
                 </td>
             </tr>
         </#list>

@@ -156,7 +156,7 @@
 
     <td style='vertical-align:top;padding-left:50px'>
 
-        <div style='font-size:150px;font-family:Impact, sans-serif'>
+        <div style='font-size:150px;font-weight: 700'>
 
             <div style='float:left;color:${colours[0]}'>S</div>
 
@@ -184,7 +184,7 @@
 
         </div>
 
-        <a href='${baseUrl}/user' class='btn btn-default btn-success' style='margin-bottom:20px'>Log in to SRES</a><br/>
+        <a href='${baseUrl}/user' class='btn btn-default btn-primary' style='margin-bottom:20px'>Log in to SRES</a><br/>
 
     </td>
 

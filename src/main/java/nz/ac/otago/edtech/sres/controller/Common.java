@@ -35,7 +35,10 @@ public class Common implements ServletContextAware {
     public static final String DEFAULT_VIEW_NAME = "main";
     // date format string
     public static final String DATE_FORMAT = "dd/MM/yyyy HH:mm";
+
     private static final Logger log = LoggerFactory.getLogger(Common.class);
+
+
     ServletContext servletContext;
 
     public void setServletContext(ServletContext servletContext) {
