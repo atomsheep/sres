@@ -1,8 +1,9 @@
 <#assign arrayOfColours = [
-["#072736","#0C415A","#105C7E","#1576A2","#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1"],
-["#36072F","#5A0C4E","#7E106E","#A2158D","#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC"],
-["#073626","#0C5A40","#107E5A","#15A273","#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2"],
-["#361B07","#5A2E0C","#7E4010","#A25215","#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93"]
+["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
+["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
+["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
+["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
+["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
 <div style='right:33%;float:left;position:absolute;top:0;bottom:0;left:0;overflow-y:scroll'>
@@ -94,7 +95,7 @@
             <th style='text-align:left;background:#066888'>Surname</th>
             <th style='text-align:left;background:#066888'>Email</th>
             <#list columns as c>
-                <th class="${c._id}" style='background:${arrayOfColours[c_index][4]};border-bottom-color: ${arrayOfColours[c_index][1]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                <th class="${c._id}" style='background:${arrayOfColours[c_index][0]};border-bottom-color: ${arrayOfColours[c_index][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
             </#list>
         </tr>
 
@@ -105,12 +106,16 @@
                 <td style='text-align:left'>${r.surname}</td>
                 <td style='text-align:left'>${r.email!}</td>
                 <#list r.data as d>
+                    <#if d.data?has_content>
                     <td data-id="${d.data._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
                         data-value="<#if d.data?has_content>${d.data.value}</#if>">
                         <#if d.data?has_content>
                     ${d.data.value}
                 </#if>
                     </td>
+                    <#else>
+                    <td></td>
+                    </#if>
                 </#list>
             </tr>
         </#list>
@@ -261,10 +266,11 @@
         console.log('column.data', column.data);
 
         var arrayOfColours = [
-            ["#072736","#0C415A","#105C7E","#1576A2","#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1"],
-            ["#36072F","#5A0C4E","#7E106E","#A2158D","#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC"],
-            ["#073626","#0C5A40","#107E5A","#15A273","#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2"],
-            ["#361B07","#5A2E0C","#7E4010","#A25215","#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93"]
+            ["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
+            ["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
+            ["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
+            ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
+            ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
         ];
 
         var arrayOfArray = [['Task', 'sdd']];
@@ -281,7 +287,7 @@
                     pieSliceTextStyle: {
                         color: 'transparent'
                     },
-                    colors:arrayOfColours[${c_index}],
+                    colors:arrayOfColours[${c_index}%arrayOfColours.length],
                     chartArea: {left:20,right:20,width:(sideWidth-60)}
                 };
 
