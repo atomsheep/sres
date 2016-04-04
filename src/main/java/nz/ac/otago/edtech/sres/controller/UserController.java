@@ -46,13 +46,11 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.mongodb.assertions.Assertions.notNull;
 import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.elemMatch;
 import static com.mongodb.client.model.Filters.eq;
 import static java.util.Arrays.asList;
 
@@ -109,13 +107,13 @@ public class UserController {
 
         List<Document> documents = new ArrayList<Document>();
         AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).aggregate(asList(
-                new Document("$match",new Document("owner",userName).append("status","active")),
-                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERS).append("localField","_id").append("foreignField","papers.paperref").append("as","users"))));
+                new Document("$match", new Document("owner", userName).append("status", "active")),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERS).append("localField", "_id").append("foreignField", "papers.paperref").append("as", "users"))));
         for (Document document : iterable) {
             documents.add(document);
         }
 
-    //    List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
+        //    List<Document> papers = MongoUtil.getDocuments(db, COLLECTION_NAME_PAPERS, eq("owner", userName), eq("status", "active"));
         model.put("list", documents);
         //List<Document> documents = MongoUtil.getAllDocuments(db, COLLECTION_NAME_PAPERS);
         model.put("pageName", "user");
@@ -175,8 +173,9 @@ public class UserController {
         if (file.getSize() == 0)
             return "redirect:/user/viewStudentList/" + id;
 
-        String filename = CommonUtil.getUniqueFilename(uploadLocation.getUploadPath(), file.getOriginalFilename());
-        File upload = new File(uploadLocation.getUploadDir(), filename);
+        File uploadDir = uploadLocation.getUploadDir();
+        String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
+        File upload = new File(uploadDir, filename);
         if (StringUtils.isNotBlank(upload.getPath())) {
             try {
                 file.transferTo(upload);
@@ -319,7 +318,9 @@ public class UserController {
         if (file.getSize() == 0)
             return "redirect:/user/viewStudentList/" + id;
 
-        File upload = new File(uploadLocation.getUploadDir(), file.getOriginalFilename());
+        File uploadDir = uploadLocation.getUploadDir();
+        String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
+        File upload = new File(uploadDir, filename);
         if (StringUtils.isNotBlank(upload.getPath())) {
             try {
                 file.transferTo(upload);
