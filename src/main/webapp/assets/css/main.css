@@ -104,12 +104,18 @@ tr.fieldRow {
 }
 
 #paperList th, #studentList th { vertical-align: bottom;font-weight:500;font-style:italic;border:1px solid #043B4E;border-bottom-width: 10px;background:#066888 }
-
 #paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td { background: #043B4E }
 
+#studentList td:hover{
+    background:#066888 !important;cursor:pointer;
+}
+
 .filterDiv { padding:10px 0 0 }
-.operatorDiv { padding:0 10px 10px }
+.operatorDiv { padding:0 0 10px }
 
 
 input[type=checkbox]:checked + label { font-weight: 500 }
-label { font-weight:300}
+label { font-weight:300; cursor:pointer }
+
+.menuButton { padding: 20px;text-align: center;display:block;width: 100%;border-bottom:1px solid #066888 }
+.menuButton:hover { background:#0786B0;color:white }

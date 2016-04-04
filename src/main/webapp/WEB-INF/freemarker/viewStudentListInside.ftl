@@ -7,26 +7,21 @@
 ] />
 
 <div style='right:33%;float:left;position:absolute;top:0;bottom:0;left:0;overflow-y:scroll'>
-    <h1 style='margin:0;padding:20px'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
-
+    <h1 style='margin:0;padding:20px;float:left'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
 <#if paper?has_content>
-<div class='paper_buttons' style='margin-left:20px'>
-    <a href="${baseUrl}/user/" class="btn btn-default btn-primary">Back to ${ICN} list</a>
-    <a href="${baseUrl}/user/${paper._id}" class="btn btn-default btn-primary">Change ${ICN} information</a>
-    <a href="${baseUrl}/user/addStudentList/${paper._id}" class="btn btn-default btn-primary">Import Student List</a>
-    <a href="${baseUrl}/user/importStudentData/${paper._id}" class="btn btn-default btn-primary">Import Student Data</a>
-    <a href="${baseUrl}/user/viewColumnList/${paper._id}" class="btn btn-default btn-primary">View Column List</a>
+<div style='position:relative'>
+    <div id='paperMenu' style='float:right;margin:20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
+
+<div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:60px;right:20px;background:white'>
+    <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
+    <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Change ${ICN} information</a>
+    <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
+    <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
+    <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>View column list</a>
+</div>
 </div>
 </#if>
-
-    <h3 style='margin:0;padding:20px'>
-    <#if json?has_content>
-        Search results (${results?size})
-            <a href="${baseUrl}/user/viewStudentList/${id}">Back to all student list</a>
-    <#else>
-        Students: ${results?size}
-    </#if>
-    </h3>
+    <div style='clear:both'></div>
 
 <div style='margin:0 20px 20px;border:1px solid #066888;padding:20px;background:#043B4E'>
     <h3 style='margin:0 0 10px'>Columns</h3>
@@ -47,11 +42,11 @@
     <h3 id='filterTitle' style='cursor:pointer;margin:0;padding:10px 20px;background:#AF08AF'>Filters <div style='float:right;padding:5px;font-style:italic;font-size:14px'>(click to expand)</div></h3>
     <div style="clear:both"></div>
 
-    <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='display:none;padding:20px'>
+    <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='background:#130113;display:none;padding:20px'>
         <input type="hidden" name="id" value="${id}"/>
         <input type="hidden" name="json" value=""/>
 
-        <span class="btn btn-default btn-success newFilter" style="margin-bottom:10px">New filter</span>
+        <span class="btn btn-default btn-primary newFilter" style="margin-bottom:10px">Add filter</span>
 
         <div id="filterList">
             <div class="filterDiv">
@@ -78,14 +73,23 @@
 
                 <input type="text" name="value" class="form-control" style="width: 250px"/>
 
-                <span class="fa fa-times removeFilter" style='margin-left:10px'></span>
+                <span class="fa fa-times removeFilter" style='margin-left:10px;cursor:pointer'></span>
             </div>
         </div>
 
-        <button class="btn btn-default btn-purple submit" style='margin-top:20px'>Filter</button>
+        <button class="btn btn-default btn-purple submit" style='margin-top:20px'>Filter results</button>
 
     </form>
 </div>
+
+    <h3 style='margin:0;padding:0 20px 20px'>
+    <#if json?has_content>
+        Search results (${results?size})
+        <a href="${baseUrl}/user/viewStudentList/${id}">Back to all student list</a>
+    <#else>
+        Students: ${results?size}
+    </#if>
+    </h3>
 <#if results?has_content>
 <div style='padding: 0 20px '>
     <table id="studentList" width=100%>
@@ -304,6 +308,21 @@
                 $('#filterForm').hide();
         });
 
+        $('html').on('click', function() {
+            if($('.paper_buttons').is(":visible"))
+                $('.paper_buttons').hide();
+        });
+
+        $('#paperMenu').on('click', function(event){
+            if($('.paper_buttons').is(':hidden'))
+                $('.paper_buttons').show();
+            else
+                $('.paper_buttons').hide();
+            event.stopPropagation();
+        });
+
+
     });
+
 
 </script>
