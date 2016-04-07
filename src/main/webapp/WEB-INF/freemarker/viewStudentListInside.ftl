@@ -99,7 +99,7 @@
             <th style='text-align:left;background:#066888'>Surname</th>
             <th style='text-align:left;background:#066888'>Email</th>
             <#list columns as c>
-                <th class="${c._id}" style='background:${arrayOfColours[c_index][0]};border-bottom-color: ${arrayOfColours[c_index][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                <th class="${c._id}" style='background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
             </#list>
         </tr>
 
@@ -111,7 +111,7 @@
                 <td style='text-align:left'>${r.email!}</td>
                 <#list r.data as d>
                     <#if d.data?has_content>
-                    <td data-id="${d.data._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
+                    <td data-id="${d.data._id}" class="${d.column._id} columnData user_${r.username}" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
                         data-value="<#if d.data?has_content>${d.data.value}</#if>">
                         <#if d.data?has_content>
                     ${d.data.value}
@@ -136,9 +136,8 @@
     <h1 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h1>
 
 <#list columns as c>
-    <div id="${c._id}" class="${c._id} chart" style="width: 400px; height: 300px;"></div>
+    <div id="${c._id}" class="${c._id} chart pieChart" style="width: 400px; height: 300px;"></div>
 </#list>
-
 
 </div>
 
@@ -153,12 +152,10 @@
 
         var filterList = $('#filterList');
         var filterDivHtml = $('.filterDiv').html();
-        //var operatorDivHtml =   $('.operatorDiv').html();
         $('span.removeFilter').remove();
         $('.operatorDiv').remove();
 
         $('span.newFilter').on('click', function () {
-            // var operatorDiv = $('<div/>').addClass('operatorDiv').html(operatorDivHtml).appendTo(filterList);
             var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
             $('span.removeFilter').show();
 
@@ -189,7 +186,7 @@
             $('[name=filterForm]').submit();
         });
 
-        $('#studentList td').on("dblclick", function () {
+        $('td','#studentList').on("dblclick", function () {
             var slf = $(this);
             var id = slf.data('id');
             if (id) {
@@ -213,7 +210,7 @@
                 });
             }
         });
-
+        var columns = [];
 
         $('input.columnCheckbox').on('change', function () {
             var slf = $(this);
@@ -240,8 +237,6 @@
                         });
             } else
                 changeInputBackToText(td, input, value);
-
-
         }
 
         function changeInputBackToText(td, input, value) {
@@ -254,73 +249,76 @@
         function drawCharts() {
 
         <#list columns as c>
-        var column = {};
-        column.name = "${c.name?js_string}";
-        column.id = "${c._id}";
-        column.data = {};
-        $('td.' + column.id).each(function (i, e) {
-            var value = $(e).data('value');
-            if(value == "")
-                value = "[blank]";
-            if (!column.data[value])
-                column.data[value] = 1;
-            else
-                column.data[value] += 1;
-        });
-        console.log('column.data', column.data);
+            var column = {};
+            column.name = "${c.name?js_string}";
+            column.id = "${c._id}";
+            column.data = {};
+            $('td.' + column.id).each(function (i, e) {
+                var value = $(e).data('value');
+                if(value == "")
+                    value = "[blank]";
+                if (!column.data[value])
+                    column.data[value] = 1;
+                else
+                    column.data[value] += 1;
+            });
+            columns.push(column);
+            console.log('column.data', column.data);
 
-        var arrayOfColours = [
-            ["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
-            ["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
-            ["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
-            ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
-            ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
-        ];
+            var arrayOfColours = [
+                ["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
+                ["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
+                ["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
+                ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
+                ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
+            ];
 
-        var arrayOfArray = [['Task', 'sdd']];
+            var arrayOfArray = [['Task', 'sdd']];
             $.each(column.data, function(i, e){
                   arrayOfArray.push([i, e]);
             }) ;
 
-                var data = google.visualization.arrayToDataTable(arrayOfArray);
+        console.log(arrayOfArray);
 
-                var options = {
-                    title: column.name,
-                    backgroundColor: 'transparent',
-                    legend: {textStyle: {color: '#000'}, position: "labeled"},
-                    pieSliceTextStyle: {
-                        color: 'transparent'
-                    },
-                    colors:arrayOfColours[${c_index}%arrayOfColours.length],
-                    chartArea: {left:20,right:20,width:(sideWidth-60)}
-                };
+            var data = google.visualization.arrayToDataTable(arrayOfArray);
 
-                var chart = new google.visualization.PieChart(document.getElementById(column.id));
+            var options = {
+                title: column.name,
+                backgroundColor: 'transparent',
+                legend: {textStyle: {color: '#000'}, position: "labeled"},
+                pieSliceTextStyle: {
+                    color: 'transparent'
+                },
+                colors:arrayOfColours[${c_index}%arrayOfColours.length],
+                chartArea: {left:20,right:20,width:(sideWidth-60)}
+            };
 
-                chart.draw(data, options);
-    </#list>
+            var chart = new google.visualization.PieChart(document.getElementById(column.id));
+            chart.draw(data, options);
+        </#list>
         }
 
+        var $filterForm = $('#filterForm');
         $('#filterTitle').on('click', function(){
-            if($('#filterForm').is(':hidden'))
-                $('#filterForm').show();
+            if($filterForm.is(':hidden'))
+                $filterForm.show();
             else
-                $('#filterForm').hide();
+                $filterForm.hide();
         });
 
+        var $paperButtons = $('.paper_buttons');
         $('html').on('click', function() {
-            if($('.paper_buttons').is(":visible"))
-                $('.paper_buttons').hide();
+            if($paperButtons.is(":visible"))
+                $paperButtons.hide();
         });
 
         $('#paperMenu').on('click', function(event){
-            if($('.paper_buttons').is(':hidden'))
-                $('.paper_buttons').show();
+            if($paperButtons.is(':hidden'))
+                $paperButtons.show();
             else
-                $('.paper_buttons').hide();
+                $paperButtons.hide();
             event.stopPropagation();
         });
-
 
     });
 

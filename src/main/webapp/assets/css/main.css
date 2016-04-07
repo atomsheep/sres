@@ -115,7 +115,10 @@ tr.fieldRow {
 
 
 input[type=checkbox]:checked + label { font-weight: 500 }
-label { font-weight:300; cursor:pointer }
+label { font-weight:300; cursor:pointer;display:inline; }
 
 .menuButton { padding: 20px;text-align: center;display:block;width: 100%;border-bottom:1px solid #066888 }
 .menuButton:hover { background:#0786B0;color:white }
+
+#pieButton, #scatterButton{ float:left;margin:0 20px;font-size:20px;border-radius:0 }
+#pieButton.currentlySelected, #scatterButton.currentlySelected { background:white;outline:1px solid #0886AF;color:#0886AF }
