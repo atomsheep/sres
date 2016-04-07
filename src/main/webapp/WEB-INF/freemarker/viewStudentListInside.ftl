@@ -111,8 +111,8 @@
             <th style='text-align:left;background:#066888'>Surname</th>
             <th style='text-align:left;background:#066888'>Email</th>
             <#list columns as c>
-            <th class="${c._id}"
-                    style='background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                <th class="${c._id}" style='background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+
             </#list>
         </tr>
 
@@ -153,9 +153,8 @@
     <h1 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h1>
 
 <#list columns as c>
-    <div id="${c._id}" class="${c._id} chart" style="width: 400px; height: 300px;"></div>
+    <div id="${c._id}" class="${c._id} chart pieChart" style="width: 400px; height: 300px;"></div>
 </#list>
-
 
 </div>
 
@@ -176,7 +175,6 @@ $(function () {
     $('span.newFilter').on('click', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         $('span.removeFilter').show();
-
     });
 
 <#if json?has_content>
@@ -256,7 +254,6 @@ $(function () {
             });
         }
     });
-
 
     $('input.columnCheckbox').on('change', function () {
         var slf = $(this);
@@ -368,21 +365,21 @@ $(function () {
         return false;
     });
 
-        $('html').on('click', function() {
-            if($('.paper_buttons').is(":visible"))
-                $('.paper_buttons').hide();
-        });
-
-        $('#paperMenu').on('click', function(event){
-            if($('.paper_buttons').is(':hidden'))
-                $('.paper_buttons').show();
-            else
-                $('.paper_buttons').hide();
-            event.stopPropagation();
-        });
-
-
+    var $paperButtons = $('.paper_buttons');
+    $('html').on('click', function () {
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
     });
+
+    $('#paperMenu').on('click', function (event) {
+        if ($paperButtons.is(':hidden'))
+            $paperButtons.show();
+        else
+            $paperButtons.hide();
+        event.stopPropagation();
+    });
+
+});
 
 
 </script>
