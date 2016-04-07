@@ -1,37 +1,39 @@
 <#assign arrayOfColours = [
-["#072736","#0C415A","#105C7E","#1576A2","#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1"],
-["#36072F","#5A0C4E","#7E106E","#A2158D","#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC"],
-["#073626","#0C5A40","#107E5A","#15A273","#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2"],
-["#361B07","#5A2E0C","#7E4010","#A25215","#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93"]
+["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
+["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
+["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
+["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
+["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
 <div style='right:33%;float:left;position:absolute;top:0;bottom:0;left:0;overflow-y:scroll'>
-    <h1 style='margin:0;padding:20px'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
-
+    <h1 style='margin:0;padding:20px;float:left'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
 <#if paper?has_content>
-    <div class='paper_buttons' style='margin-left:20px'>
-        <a href="${baseUrl}/user/" class="btn btn-default btn-primary">Back to ${ICN} list</a>
-        <a href="${baseUrl}/user/${paper._id}" class="btn btn-default btn-primary">Change ${ICN} information</a>
-        <a href="${baseUrl}/user/addStudentList/${paper._id}" class="btn btn-default btn-primary">Import Student
-            List</a>
-        <a href="${baseUrl}/user/importStudentData/${paper._id}" class="btn btn-default btn-primary">Import Student
-            Data</a>
-        <a href="${baseUrl}/user/viewColumnList/${paper._id}" class="btn btn-default btn-primary">View Column List</a>
-    </div>
-</#if>
+<div style='position:relative'>
+    <div id='paperMenu' style='float:right;margin:20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
 
-    <div style='margin: 20px;border:1px solid #066888;padding:20px;background:#043B4E'>
-        <h3 style='margin:0 0 10px'>Columns</h3>
-        <table width=100% cellspacing=0 cellpadding=0>
-        <#list columns?chunk(2) as cc>
-            <tr>
-                <#list cc as c>
-                    <td style='padding:5px'>
-                        <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked"
-                               class="columnCheckbox"/> <label for='check_${c._id}'>${c.name}</label>
-                    </td>
-                </#list>
-            </tr>
+<div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:60px;right:20px;background:white'>
+    <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
+    <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Change ${ICN} information</a>
+    <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
+    <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
+    <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>View column list</a>
+</div>
+</div>
+</#if>
+    <div style='clear:both'></div>
+
+<div style='margin:0 20px 20px;border:1px solid #066888;padding:20px;background:#043B4E'>
+    <h3 style='margin:0 0 10px'>Columns</h3>
+    <table width=100% cellspacing=0 cellpadding=0>
+<#list columns?chunk(2) as cc>
+    <tr>
+        <#list cc as c>
+            <td style='padding:5px'>
+                <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox"/> <label for='check_${c._id}'>${c.name}</label>
+            </td>
+        </#list>
+    </tr>
         </#list>
         </table>
     </div>
@@ -43,7 +45,7 @@
         <div style="clear:both"></div>
 
         <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm"
-              class="form-inline" style='display:none;padding:20px'>
+              class="form-inline" style='background:#130113;display:none;padding:20px'>
             <input type="hidden" name="id" value="${id}"/>
             <input type="hidden" name="json" value=""/>
 
@@ -78,7 +80,7 @@
                 </div>
             </div>
 
-            <button class="btn btn-default btn-purple submit" style='margin-top:20px'>Filter</button>
+            <button class="btn btn-default btn-purple submit" style='margin-top:20px'>Filter results</button>
 
         </form>
     </div>
@@ -95,6 +97,7 @@
         </#if>
     </h3>
 
+
 <#if results?has_content>
 <div style='padding: 0 20px '>
 <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
@@ -108,8 +111,8 @@
             <th style='text-align:left;background:#066888'>Surname</th>
             <th style='text-align:left;background:#066888'>Email</th>
             <#list columns as c>
-                <th class="${c._id}"
-                    style='background:${arrayOfColours[c_index%arrayOfColours?size][4]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][1]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+            <th class="${c._id}"
+                    style='background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
             </#list>
         </tr>
 
@@ -122,13 +125,16 @@
                 <td style='text-align:left'>${r.surname}</td>
                 <td style='text-align:left'>${r.email!}</td>
                 <#list r.data as d>
-                    <td data-id="${d.data._id}" class="${d.column._id} columnData"
-                        style='text-align:center;<#if !d_has_next>border-right:none</#if>'
+                    <#if d.data?has_content>
+                    <td data-id="${d.data._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
                         data-value="<#if d.data?has_content>${d.data.value}</#if>">
                         <#if d.data?has_content>
                     ${d.data.value}
+                        </td>
                 </#if>
-                    </td>
+                    <#else>
+                    <td></td>
+                    </#if>
                 </#list>
             </tr>
         </#list>
@@ -289,11 +295,13 @@ $(function () {
     }
 
     var arrayOfColours = [
-        ["#072736", "#0C415A", "#105C7E", "#1576A2", "#1A90C7", "#26A7E3", "#4AB6E8", "#6FC4EC", "#93D3F1"],
-        ["#36072F", "#5A0C4E", "#7E106E", "#A2158D", "#C71AAD", "#E326C7", "#E84AD0", "#F193E3", "#F6B7EC"],
-        ["#073626", "#0C5A40", "#107E5A", "#15A273", "#1AC78D", "#26E3A4", "#4AE8B3", "#6FECC2", "#93F1D2"],
-        ["#361B07", "#5A2E0C", "#7E4010", "#A25215", "#C7651A", "#E37826", "#E88F4A", "#ECA56F", "#F1BC93"]
+        ["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
+        ["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
+        ["#1AC78D","#26E3A4","#4AE8B3","#6FECC2","#93F1D2", "#073626","#0C5A40","#107E5A","#15A273"],
+        ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
+        ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
     ];
+
 
     google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
 
@@ -314,7 +322,6 @@ $(function () {
                 column.data[value] += 1;
         });
         console.log('column.data', column.data);
-
 
         var arrayOfArray = [
             ['Task', 'sdd']
@@ -363,6 +370,21 @@ $(function () {
         return false;
     });
 
-});
+        $('html').on('click', function() {
+            if($('.paper_buttons').is(":visible"))
+                $('.paper_buttons').hide();
+        });
+
+        $('#paperMenu').on('click', function(event){
+            if($('.paper_buttons').is(':hidden'))
+                $('.paper_buttons').show();
+            else
+                $('.paper_buttons').hide();
+            event.stopPropagation();
+        });
+
+
+    });
+
 
 </script>
