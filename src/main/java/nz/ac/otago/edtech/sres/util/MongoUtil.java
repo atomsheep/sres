@@ -2,6 +2,9 @@ package nz.ac.otago.edtech.sres.util;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.UpdateResult;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -11,6 +14,7 @@ import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -31,6 +35,10 @@ public class MongoUtil {
     public static final String COLLECTION_NAME_COLUMNS = "columns";
     public static final String COLLECTION_NAME_USERDATA = "userdata";
     public static final String COLLECTION_NAME_TOKENS = "tokens";
+
+    public static final String USERNAME = "username";
+    public static final String[] USER_FIELDS = {USERNAME, "givenNames", "surname", "preferredName", "email", "phone"};
+
 
     private static final Logger log = LoggerFactory.getLogger(MongoUtil.class);
 
@@ -180,6 +188,62 @@ public class MongoUtil {
                 log.warn("There is more than one document with filters");
         }
         return doc;
+    }
+
+    public static boolean authenticate(MongoDatabase db, String username, String password) {
+        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
+            String sha256 = DigestUtils.sha256Hex(password);
+            Document userDoc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
+            if (userDoc == null) {
+                // if no user in db, create a new one with given username and password
+                // TODO: this part should be deleted in production server, it's for easy testing only
+                createNewUser(db, username, password);
+                return true;
+            } else if (userDoc.get("password") == null) {
+                // if no password in db, add password to db for given username
+                // TODO: this part should be deleted in production server, it's for easy testing only
+                updatePassword(db, username, password);
+                return true;
+            }
+
+            // TODO: use and only use this on production server
+            if ((userDoc != null) && (userDoc.get("password") != null))
+                return sha256.equals(userDoc.get("password"));
+        }
+        return false;
+    }
+
+    /**
+     * Create a new user with given username and password
+     *
+     * @param db       mongo database
+     * @param username username
+     * @param password password
+     */
+    public static void createNewUser(MongoDatabase db, String username, String password) {
+        String sha256 = DigestUtils.sha256Hex(password);
+        ModelMap userMap = new ModelMap();
+        userMap.put(MongoUtil.USERNAME, username);
+        userMap.put("password", sha256);
+        userMap.put("created", new Date());
+        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
+    }
+
+    /**
+     * Update existing user's password to given password
+     *
+     * @param db       mongo database
+     * @param username username
+     * @param password new password
+     * @return true if successful, otherwise false
+     */
+    public static boolean updatePassword(MongoDatabase db, String username, String password) {
+        String sha256 = DigestUtils.sha256Hex(password);
+        UpdateResult updateResult = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq(MongoUtil.USERNAME, username),
+                new Document("$set", new Document("password", sha256)));
+        if (updateResult.getModifiedCount() == 1)
+            return true;
+        return false;
     }
 
 }
