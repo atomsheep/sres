@@ -54,12 +54,12 @@ public class ApiController {
     public ResponseEntity<Map> login(@RequestParam("username") String username,
                                      @RequestParam("password") String password,
                                      HttpServletRequest request) {
-        Map map = new ModelMap();
+        ModelMap map = new ModelMap();
 
         String ipAddress = AuthUtil.getIpAddress(request);
         log.debug("ip address = {}", ipAddress);
         // check username and password here
-        if (authenticate(username, password)) {
+        if (MongoUtil.authenticate(db, username, password)) {
             ObjectId id = new ObjectId();
             map.put("_id", id);
             map.put("username", username);
@@ -80,11 +80,6 @@ public class ApiController {
     public ResponseEntity<Map> logout(@RequestParam("token") String token) {
         Map map = new ModelMap();
         return new ResponseEntity<Map>(map, HttpStatus.OK);
-    }
-
-
-    private static boolean authenticate(String username, String password) {
-        return ("admin".equals(username) && "admin".equals(password));
     }
 
 
