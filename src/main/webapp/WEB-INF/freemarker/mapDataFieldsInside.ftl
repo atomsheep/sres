@@ -4,7 +4,7 @@
 
 <#assign record = list?first/>
 
-<form action="${baseUrl}/user/importGrade" method="post">
+<form action="${baseUrl}/user/importUserData" method="post">
     <input type="hidden" name="id" value="${id}"/>
     <input type="hidden" name="filename" value="${filename}"/>
     <input type="hidden" name="size" value="${record?size}"/>

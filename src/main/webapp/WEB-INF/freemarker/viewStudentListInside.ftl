@@ -125,11 +125,11 @@
                 <td style='text-align:left'>${r.surname}</td>
                 <td style='text-align:left'>${r.email!}</td>
                 <#list r.data as d>
-                    <#if d.data?has_content>
-                    <td data-id="${d.data._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
-                        data-value="<#if d.data?has_content>${d.data.value}</#if>">
-                        <#if d.data?has_content>
-                    ${d.data.value}
+                    <#if d.userData?has_content>
+                    <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
+                        data-value="<#if d.userData?has_content>${d.userData.data[d.userData.data?size-1].value}</#if>">
+                        <#if d.userData?has_content>
+                    ${d.userData.data[d.userData.data?size-1].value}
                         </td>
                 </#if>
                     <#else>
@@ -138,8 +138,6 @@
                 </#list>
             </tr>
         </#list>
-
-
     </table>
 </form>
 <#else>
@@ -232,7 +230,7 @@ $(function () {
         $('[name=filterForm]').submit();
     });
 
-    $('#studentList td').on("dblclick", function () {
+    $('td', '#studentList').on("dblclick", function () {
         var slf = $(this);
         var id = slf.data('id');
         if (id) {
