@@ -6,7 +6,7 @@
 </div>
 
 <form action="${baseUrl}/login" method="post">
-    <input name="from" type="hidden" value="${fromUrl}"/>
+    <input name="from" type="hidden" value="${fromUrl!}"/>
 
     <div class="form-group">
         <label for="username">Username</label>

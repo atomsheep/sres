@@ -69,8 +69,28 @@ public class MongoUtil {
     public static List<Document> getAllDocuments(MongoDatabase db, String collection) {
         List<Document> documents = new ArrayList<Document>();
         FindIterable<Document> iterable = db.getCollection(collection).find();
-        for (Document document : iterable)
+        for (Document document : iterable) {
+            document.put("id", document.get("_id").toString());
             documents.add(document);
+        }
+        return documents;
+    }
+
+    /**
+     * Get documents for given filters
+     *
+     * @param db         mongo database
+     * @param collection collection
+     * @param filters    filters
+     * @return document
+     */
+    public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
+        List<Document> documents = new ArrayList<Document>();
+        FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
+        for (Document document : iterable) {
+            document.put("id", document.get("_id").toString());
+            documents.add(document);
+        }
         return documents;
     }
 
@@ -97,12 +117,7 @@ public class MongoUtil {
      */
     public static Document getDocument(MongoDatabase db, String collection, ObjectId oId) {
         Document doc = null;
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(eq("_id", oId));
-        for (Document document : iterable) {
-            log.debug("document {} for {}", document, oId);
-            documents.add(document);
-        }
+        List<Document> documents = getDocuments(db, collection, eq("_id", oId));
         if (!documents.isEmpty()) {
             doc = documents.get(0);
             if (documents.size() > 1)
@@ -121,30 +136,9 @@ public class MongoUtil {
      * @return document
      */
     public static List<Document> getDocuments(MongoDatabase db, String collection, String key, Object value) {
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(eq(key, value));
-        for (Document document : iterable) {
-            documents.add(document);
-        }
-        return documents;
+       return getDocuments(db, collection, eq(key,value));
     }
 
-    /**
-     * Get documents for given filters
-     *
-     * @param db         mongo database
-     * @param collection collection
-     * @param filters    filters
-     * @return document
-     */
-    public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
-        for (Document document : iterable) {
-            documents.add(document);
-        }
-        return documents;
-    }
 
 
     /**

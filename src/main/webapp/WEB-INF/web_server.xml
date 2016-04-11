@@ -20,7 +20,7 @@
 
     <context-param>
         <param-name>serverName</param-name>
-        <param-value>hedc.otago.ac.nz</param-value>
+        <param-value>edtech.otago.ac.nz</param-value>
     </context-param>
 
     <filter>
@@ -41,11 +41,15 @@
         </init-param>
         <init-param>
             <param-name>nz.ac.otago.edtech.auth.filter.usingEmbeddedAuthentication</param-name>
-            <param-value>false</param-value>
+            <param-value>true</param-value>
+        </init-param>
+        <init-param>
+            <param-name>nz.ac.otago.edtech.auth.filter.embeddedLoginUrl</param-name>
+            <param-value>/login</param-value>
         </init-param>
         <init-param>
             <param-name>nz.ac.otago.edtech.auth.filter.usingCAS</param-name>
-            <param-value>true</param-value>
+            <param-value>false</param-value>
         </init-param>
         <init-param>
             <param-name>nz.ac.otago.edtech.auth.filter.communicationUrl</param-name>
@@ -63,16 +67,6 @@
             <param-name>nz.ac.otago.edtech.auth.filter.administrators</param-name>
             <param-value>mosad06p,motbe48p,zenyi45p</param-value>
         </init-param>
-    </filter>
-
-    <filter>
-        <filter-name>CAS Validation Filter</filter-name>
-        <filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
-    </filter>
-
-    <filter>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <filter-class>nz.ac.otago.edtech.auth.filter.HttpServletRequestWrapperFilter</filter-class>
     </filter>
 
     <filter>
@@ -111,16 +105,6 @@
     <filter-mapping>
         <filter-name>AuthenticationFilter</filter-name>
         <url-pattern>/admin/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS Validation Filter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <filter-mapping>
-        <filter-name>CAS HttpServletRequest Wrapper Filter</filter-name>
-        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
