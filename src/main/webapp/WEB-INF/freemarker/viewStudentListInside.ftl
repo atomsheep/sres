@@ -127,9 +127,9 @@
                 <#list r.data as d>
                     <#if d.userData?has_content>
                     <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
-                        data-value="<#if d.userData?has_content>${d.userData.data[d.userData.data?size-1].value}</#if>">
+                        data-value="<#if d.userData?has_content>${d.userData.data[0].value}</#if>">
                         <#if d.userData?has_content>
-                    ${d.userData.data[d.userData.data?size-1].value}
+                    ${d.userData.data[0].value}
                         </td>
                 </#if>
                     <#else>

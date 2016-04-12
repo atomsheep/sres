@@ -86,6 +86,113 @@ public class ApiController {
         }
     }
 
+    @RequestMapping(value = "/papers", method = RequestMethod.GET)
+    public ResponseEntity<List<Document>> papers(@RequestParam("token") String token) {
+        List<Document> papers = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            String username = (String) doc.get("username");
+            papers = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_PAPERS, eq("owner", username), eq("status", "active"));
+            return new ResponseEntity<List<Document>>(papers, HttpStatus.OK);
+        } else
+            return new ResponseEntity<List<Document>>(papers, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/paper/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Document> paper(@PathVariable String id,
+                                          @RequestParam("token") String token) {
+        Document paper = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
+            return new ResponseEntity<Document>(paper, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(paper, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/columns/{id}", method = RequestMethod.GET)
+    public ResponseEntity<List<Document>> columns(@PathVariable String id,
+                                                  @RequestParam("token") String token) {
+        List<Document> columns = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            ObjectId paperref = new ObjectId(id);
+            columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperref);
+            return new ResponseEntity<List<Document>>(columns, HttpStatus.OK);
+        } else
+            return new ResponseEntity<List<Document>>(columns, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/column/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Document> column(@PathVariable String id,
+                                           @RequestParam("token") String token) {
+        Document column = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+            return new ResponseEntity<Document>(column, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(column, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/userdata", method = RequestMethod.GET)
+    public ResponseEntity<Document> userdata(@RequestParam("token") String token,
+                                             @RequestParam("columnid") String columnId,
+                                             @RequestParam("userid") String userId) {
+        Document userdata = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            ObjectId colref = new ObjectId(columnId);
+            ObjectId userref = new ObjectId(userId);
+            userdata = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("colref", colref), eq("userref", userref));
+            return new ResponseEntity<Document>(userdata, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(userdata, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
+    public ResponseEntity<Document> user(@PathVariable String id,
+                                         @RequestParam("token") String token) {
+        Document user = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+            return new ResponseEntity<Document>(user, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(user, HttpStatus.UNAUTHORIZED);
+    }
+
+
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
+    public ResponseEntity<Map> logout(@RequestParam("token") String token) {
+        Map map = new ModelMap();
+        db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).deleteOne(eq("token", token));
+        return new ResponseEntity<Map>(map, HttpStatus.OK);
+    }
+
+
+    /**
+     * validate token
+     *
+     * @param token given token
+     * @return username if token is valid, otherwise returns null
+     */
+    private Document validateToken(String token) {
+        Document doc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_TOKENS, "token", token);
+        if (doc != null) {
+            Date lastModifed = (Date) doc.get("lastModified");
+            Date now = new Date();
+            log.debug("lastModified = {}, now = {}", lastModifed, now);
+            if (DateUtils.addMinutes(lastModifed, TIMEOUT_MINUTES).before(now)) {
+                // delete expired token
+                db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).deleteOne(eq("token", token));
+                doc = null;
+            }
+        }
+        return doc;
+    }
+
+
 
     @RequestMapping(value = "/loginJson", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity<Map> loginJson(@RequestBody Map<String, String> user,
@@ -119,57 +226,4 @@ public class ApiController {
             return new ResponseEntity<Map>(map, HttpStatus.UNAUTHORIZED);
         }
     }
-
-    @RequestMapping(value = "/papers", method = RequestMethod.GET)
-    public ResponseEntity<List<Document>> papers(@RequestParam("token") String token) {
-        List<Document> papers = null;
-        Document doc = validateToken(token);
-        if (doc != null) {
-            String username = (String) doc.get("username");
-            papers = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_PAPERS, eq("owner", username), eq("status", "active"));
-            return new ResponseEntity<List<Document>>(papers, HttpStatus.OK);
-        } else
-            return new ResponseEntity<List<Document>>(papers, HttpStatus.UNAUTHORIZED);
-    }
-
-    @RequestMapping(value = "/paper/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Document> paper(@PathVariable String id,
-                                          @RequestParam("token") String token) {
-        Document paper = null;
-        Document doc = validateToken(token);
-        if (doc != null) {
-            paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
-            return new ResponseEntity<Document>(paper, HttpStatus.OK);
-        } else
-            return new ResponseEntity<Document>(paper, HttpStatus.UNAUTHORIZED);
-    }
-
-    @RequestMapping(value = "/logout", method = RequestMethod.GET)
-    public ResponseEntity<Map> logout(@RequestParam("token") String token) {
-        Map map = new ModelMap();
-        return new ResponseEntity<Map>(map, HttpStatus.OK);
-    }
-
-
-    /**
-     * validate token
-     *
-     * @param token given token
-     * @return username if token is valid, otherwise returns null
-     */
-    private Document validateToken(String token) {
-        Document doc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_TOKENS, "token", token);
-        if (doc != null) {
-            Date lastModifed = (Date) doc.get("lastModified");
-            Date now = new Date();
-            log.debug("lastModified = {}, now = {}", lastModifed, now);
-            if (DateUtils.addMinutes(lastModifed, TIMEOUT_MINUTES).before(now)) {
-                // delete expired token
-                db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).deleteOne(eq("token", token));
-                doc = null;
-            }
-        }
-        return doc;
-    }
-
 }

@@ -12,26 +12,34 @@
     <input type="checkbox" name="hasHeader" checked="checked"/> Has header in CSV file?
 
     <table>
-        <tr>
+        <tr class="fieldRow">
             <td></td>
             <td>username</td>
             <td>
-                <select name="username"  class="form-control">
+                <select name="username" class="form-control">
                     <option value="-1"></option>
-                    <#list record as r>
-                        <option value="${r_index}" <#if r_index == 0>selected="selected"</#if>  > ${r}</option>
-                    </#list>
+                <#list record as r>
+                    <option value="${r_index}" <#if r_index == 0>selected="selected"</#if>  > ${r}</option>
+                </#list>
                 </select>
             </td>
         </tr>
-    <#list record as r>
-        <tr>
+        <tr class="fieldRow">
             <td>
-                <input type="checkbox" name="extra${r_index?c}" <#if (r_index >= 1)> checked="checked"</#if>/>
+                <input type="checkbox" name="extra"/>
+            </td>
+            <td>select all</td>
+            <td></td>
+        </tr>
+    <#list record as r>
+        <tr class="fieldRow">
+            <td>
+                <input type="checkbox" name="extra${r_index?c}" class="checkField"
+                    <#if (r_index >= 1)> checked="checked"</#if>/>
             </td>
             <td>
                 name:<input type="text" name="name${r_index?c}" value="${r?html}"
-                    <#if (r_index < 1)>disabled="disabled"</#if>/>
+                            <#if (r_index < 1)>disabled="disabled"</#if>/>
                 description: <input type="text" name="description${r_index?c}" value=""
                                     <#if (r_index < 1)>disabled="disabled"</#if>/>
 
@@ -52,7 +60,31 @@
 
 </form>
 
-<script>
+<script type="text/javascript">
 
+    $(function () {
+
+        $('.checkField').on('change', function () {
+            var slf = $(this);
+            var name = slf.attr('name');
+            var num = name.substring(5, name.length);
+            if (slf.is(':checked')) {
+                $('[name=key' + num + ']').removeAttr('disabled');
+                $('[name=value' + num + ']').removeAttr('disabled');
+            } else {
+                $('[name=key' + num + ']').attr('disabled', 'disabled');
+                $('[name=value' + num + ']').attr('disabled', 'disabled');
+            }
+        });
+
+        $('[name=extra]').on('change', function () {
+            var slf = $(this);
+            if (slf.is(':checked'))
+                $('.checkField').prop('checked', true);
+            else
+                $('.checkField').prop('checked', false);
+            $('.checkField').change();
+        });
+    });
 
 </script>

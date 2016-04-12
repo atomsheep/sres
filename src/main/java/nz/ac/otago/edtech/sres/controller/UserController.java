@@ -572,7 +572,7 @@ public class UserController {
                 if (NumberUtils.isNumber(value))
                     o = NumberUtils.createNumber(value);
                 String operator = obj.get("operator").toString();
-                Bson valueFilter = new OperatorFilter<Object>(operator, "value", o);
+                Bson valueFilter = new OperatorFilter<Object>(operator, "data.0.value", o);
                 String colref = obj.get("colref").toString();
                 Bson colFilter = eq("colref", new ObjectId(colref));
 
@@ -608,7 +608,7 @@ public class UserController {
                     ModelMap datum = new ModelMap();
                     Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", oid), eq("colref", c.get("_id")));
                     datum.put("column", c);
-                    datum.put("data", userData);
+                    datum.put("userData", userData);
                     data.add(datum);
                 }
                 result.put("data", data);
@@ -671,11 +671,16 @@ public class UserController {
             datum.put("value", value);
         datum.put("timestamp", new Date());
         datum.put("updatedBy", user.get("_id"));
+        List<ModelMap> list = new ArrayList<ModelMap>();
+        list.add(datum);
 
         ObjectId userDataId = new ObjectId(id);
+        //UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
+        //        eq("_id", userDataId),
+        //        new Document("$addToSet", new Document("data", datum)));
         UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
                 eq("_id", userDataId),
-                new Document("$addToSet", new Document("data", datum)));
+                new Document("$push", new Document("data", new Document( new Document("$each", list).append("$position", 0 )) )));
         if (result.getModifiedCount() == 1)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);
