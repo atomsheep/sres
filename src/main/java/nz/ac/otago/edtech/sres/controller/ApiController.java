@@ -1,6 +1,7 @@
 package nz.ac.otago.edtech.sres.controller;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.sres.util.MongoUtil;
@@ -20,9 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -137,8 +136,8 @@ public class ApiController {
 
     @RequestMapping(value = "/userdata", method = RequestMethod.GET)
     public ResponseEntity<Document> userdata(@RequestParam("token") String token,
-                                             @RequestParam("columnid") String columnId,
-                                             @RequestParam("userid") String userId) {
+                                             @RequestParam("userid") String userId,
+                                             @RequestParam("columnid") String columnId) {
         Document userdata = null;
         Document doc = validateToken(token);
         if (doc != null) {
@@ -150,22 +149,87 @@ public class ApiController {
             return new ResponseEntity<Document>(userdata, HttpStatus.UNAUTHORIZED);
     }
 
+    @RequestMapping(value = "/userdata", method = RequestMethod.PUT)
+    public ResponseEntity<List<Map>> userdata(@RequestParam("token") String token,
+                                              @RequestParam("userid") String[] userId,
+                                              @RequestParam("columnid") String columnId,
+                                              @RequestParam("data") String data) {
+        List<Map> userdataList = new ArrayList<Map>();
+        Document doc = validateToken(token);
+        if (doc != null) {
+            String username = (String) doc.get("username");
+            Document user = MongoUtil.getUser(db, username);
+            ObjectId colref = new ObjectId(columnId);
+            for (String uid : userId) {
+                ObjectId userref = new ObjectId(uid);
+                Map map = MongoUtil.saveUserData(db, data, colref, userref, user);
+                userdataList.add(map);
+            }
+            return new ResponseEntity<List<Map>>(userdataList, HttpStatus.OK);
+        } else
+            return new ResponseEntity<List<Map>>(userdataList, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/users/{term}", method = RequestMethod.GET)
+    public ResponseEntity<List<Document>> users(@PathVariable String term,
+                                                @RequestParam("token") String token) {
+        List<Document> users = new ArrayList<Document>();
+        Document doc = validateToken(token);
+        if (doc != null) {
+            Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
+            Set<Document> set = new HashSet<Document>();
+            String[] fields = {"username", "givenNames", "surname", "email"};
+            for (String field : fields) {
+                FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                        .find(new Document(field, regex));
+                for (Document document : iterable) {
+                    document.put("id", document.get("_id").toString());
+                    set.add(document);
+                }
+            }
+            users.addAll(set);
+            return new ResponseEntity<List<Document>>(users, HttpStatus.OK);
+        } else
+            return new ResponseEntity<List<Document>>(users, HttpStatus.UNAUTHORIZED);
+    }
+
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
     public ResponseEntity<Document> user(@PathVariable String id,
                                          @RequestParam("token") String token) {
         Document user = null;
         Document doc = validateToken(token);
         if (doc != null) {
-            user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+            user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, id);
             return new ResponseEntity<Document>(user, HttpStatus.OK);
         } else
             return new ResponseEntity<Document>(user, HttpStatus.UNAUTHORIZED);
     }
 
+    @RequestMapping(value = "/user/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<Document> user(@PathVariable String id,
+                                         @RequestParam("token") String token,
+                                         @RequestParam("data") Document user) {
+        Document oldUser = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            ObjectId uId = new ObjectId(id);
+            oldUser = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, uId);
+            if (oldUser != null) {
+                for (String key : user.keySet())
+                    oldUser.put(key, user.get(key));
+                db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq("_id", uId),
+                        new Document("$set", oldUser));
+            }
+            return new ResponseEntity<Document>(oldUser, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(oldUser, HttpStatus.UNAUTHORIZED);
+    }
+
 
     @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public ResponseEntity<Map> logout(@RequestParam("token") String token) {
-        Map map = new ModelMap();
+        ModelMap map = new ModelMap();
+        map.put("success", true);
         db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).deleteOne(eq("token", token));
         return new ResponseEntity<Map>(map, HttpStatus.OK);
     }
@@ -191,7 +255,6 @@ public class ApiController {
         }
         return doc;
     }
-
 
 
     @RequestMapping(value = "/loginJson", method = RequestMethod.POST, consumes = "application/json")

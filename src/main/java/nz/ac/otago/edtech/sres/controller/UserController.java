@@ -399,25 +399,10 @@ public class UserController {
                             Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("papers.paperref", paperId), eq(MongoUtil.USERNAME, un));
                             if (uu != null)
                                 for (ModelMap m : columnFields) {
-                                    ModelMap userdata = new ModelMap();
-                                    userdata.put("colref", m.get("_id"));
-                                    userdata.put("userref", uu.get("_id"));
-
-                                    ModelMap datum = new ModelMap();
+                                   ObjectId colref = (ObjectId)m.get("_id");
+                                    ObjectId userref = (ObjectId)uu.get("_id");
                                     String value = record.get((Integer) m.get("index")).trim();
-                                    if (NumberUtils.isNumber(value)) {
-                                        Number num = NumberUtils.createNumber(value);
-                                        datum.put("value", num);
-                                    } else
-                                        datum.put("value", value);
-                                    datum.put("timestamp", new Date());
-                                    datum.put("updateBy", user.get("_id"));
-                                    List<ModelMap> data = new ArrayList<ModelMap>();
-                                    data.add(datum);
-                                    userdata.put("data", data);
-                                    UpdateOptions uo = new UpdateOptions().upsert(true);
-                                    db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(and(eq("colref", m.get("_id")), eq("userref", uu.get("_id"))),
-                                            new Document("$set", new Document(userdata)), uo);
+                                    MongoUtil.saveUserData(db, value, colref, userref, user);
                                 }
                         }
                     } catch (IOException ioe) {
@@ -675,9 +660,6 @@ public class UserController {
         list.add(datum);
 
         ObjectId userDataId = new ObjectId(id);
-        //UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
-        //        eq("_id", userDataId),
-        //        new Document("$addToSet", new Document("data", datum)));
         UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
                 eq("_id", userDataId),
                 new Document("$push", new Document("data", new Document( new Document("$each", list).append("$position", 0 )) )));
