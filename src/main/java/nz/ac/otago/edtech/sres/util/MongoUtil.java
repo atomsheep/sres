@@ -185,6 +185,10 @@ public class MongoUtil {
         return MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
     }
 
+    public static Document getUser(MongoDatabase db, ObjectId id) {
+        return MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, "_id", id);
+    }
+
     public static boolean authenticate(MongoDatabase db, String username, String password) {
         if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
             String sha256 = DigestUtils.sha256Hex(password);
@@ -249,7 +253,7 @@ public class MongoUtil {
      * @param colref  colref
      * @param userref userref
      * @param who     who
-     * @return userdata as map
+     * @return user data as map
      */
     public static Map saveUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
         Map map;
@@ -288,13 +292,21 @@ public class MongoUtil {
      * @param value value
      * @param id    user data id(in string) to update
      * @param who   who
-     * @return userdata as map
+     * @return user data as map
      */
     public static Map updateUserData(MongoDatabase db, String value, String id, Document who) {
         ObjectId userDataId = new ObjectId(id);
         return updateUserData(db, value, userDataId, who);
     }
 
+    public static String replaceEmailTemplate(String message, ModelMap map) {
+        String result = message;
+        for(String key: map.keySet()) {
+            // replace here
+        }
+        return result;
+
+    }
 
     /**
      * Update existing user data
@@ -303,7 +315,7 @@ public class MongoUtil {
      * @param value      value
      * @param userDataId user data id to update
      * @param who        who
-     * @return userdata as map
+     * @return user data as map
      */
     private static Map updateUserData(MongoDatabase db, String value, ObjectId userDataId, Document who) {
         Map map = null;

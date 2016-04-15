@@ -240,6 +240,7 @@ $(function () {
             input.on('keydown', function (e) {
                 if (e.keyCode == 13) {
                     saveChanges(slf, input, oldValue);
+                    return false;
                 } else if (e.keyCode == 27)
                     changeInputBackToText(slf, input, oldValue);
             });
