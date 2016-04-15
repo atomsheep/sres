@@ -57,13 +57,13 @@ has session id in baseUrl
             <td>
                 <#if i == step>
             <span class="fa-stack fa-lg">
-            <i class="fa fa-circle fa-stack-2x" style='color:#9ecc4f'></i>
-            <i class="fa fa-stack-1x" style='color:#033141'>${i}</i>
+            <i class="fa fa-circle fa-stack-2x" style='color:white'></i>
+            <i class="fa fa-stack-1x" style='font-family:Roboto, sans-serif;color:#033141'>${i}</i>
             </span>
                 <#else>
                     <span class="fa-stack ">
-            <i class="fa fa-circle fa-stack-2x" style='color:#f2935d'></i>
-            <i class="fa fa-stack-1x" style='color:#033141'>${i}</i>
+            <i class="fa fa-circle fa-stack-2x" style='color:#0886AF'></i>
+            <i class="fa fa-stack-1x" style='font-family:Roboto, sans-serif;color:#033141'>${i}</i>
             </span>
                 </#if>
             </td>

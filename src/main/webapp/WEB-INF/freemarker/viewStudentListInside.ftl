@@ -6,19 +6,20 @@
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
-<div style='right:33%;float:left;position:absolute;top:0;bottom:0;left:0;overflow-y:scroll'>
-    <h1 style='margin:0;padding:20px;float:left'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
+<div style='right:33%;float:left;position:absolute;top:51px;bottom:0;left:0;overflow-y:scroll'>
+    <span style='float:left;margin:20px'><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > View paper</span>
+    <h1 style='clear:left;margin:0;padding:0 20px 20px;float:left'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
 <#if paper?has_content>
 <div style='position:relative'>
-    <div id='paperMenu' style='float:right;margin:20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
+    <div id='paperMenu' style='float:right;margin:0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
 
-<div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:60px;right:20px;background:white'>
-    <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-    <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Change ${ICN} information</a>
-    <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
-    <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
-    <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>View column list</a>
-</div>
+    <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:20px;background:white'>
+        <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
+        <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} details</a>
+        <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
+        <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
+        <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
+    </div>
 </div>
 </#if>
     <div style='clear:both'></div>
@@ -93,7 +94,7 @@
         Students: ${results?size}
     </#if>
         <#if results?has_content>
-        <a href="#" class="btn btn-default btn-primary emailStudents">Email selected students</a>
+        <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>
         </#if>
     </h3>
 
@@ -107,7 +108,7 @@
             <th style='text-align:left;background:#066888;border-left:none'><input type="checkbox" name="usernameAll"/>
             </th>
             <th style='text-align:left;background:#066888;'>Username</th>
-            <th style='text-align:left;background:#066888'>Given Names</th>
+            <th style='text-align:left;background:#066888'>Given names</th>
             <th style='text-align:left;background:#066888'>Surname</th>
             <th style='text-align:left;background:#066888'>Email</th>
             <#list columns as c>
@@ -118,8 +119,7 @@
 
         <#list results as r>
             <tr>
-                <td style='text-align:left;border-left:none'><input type="checkbox" value="${r.username}"
-                                                                    name="usernames"/></td>
+                <td style='text-align:left;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
                 <td style='text-align:left'>${r.username}</td>
                 <td style='text-align:left'>${r.givenNames}</td>
                 <td style='text-align:left'>${r.surname}</td>
@@ -150,8 +150,7 @@
 </div>
 
 </div>
-<div id="sidePanel"
-     style="width:33%;float:right;background:white;position:fixed;top:0;right:0;bottom:0;overflow-y:scroll;overflow-x:hidden">
+<div id="sidePanel" style="width:33%;float:right;background:white;position:fixed;top:51px;right:0;bottom:0;overflow-y:scroll;overflow-x:hidden">
     <h1 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h1>
 
 <#list columns as c>

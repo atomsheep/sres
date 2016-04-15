@@ -28,6 +28,10 @@ h2, h3{
   border-bottom: 1px solid #eeeeee;
 }  */
 
+
+.container-fluid{ padding:0 20px }
+
+
 .page-header {
     margin: 0 0 30px;
     border-bottom: none;
@@ -37,7 +41,6 @@ h2, h3{
     display: inline-block;
 }
 
-/** end of Adon's changes */
 
 body {
 
@@ -45,6 +48,15 @@ body {
     color: #fcfbf9;
     font-family:Roboto, sans-serif;
 }
+
+
+/** datepicker specific css **/
+.day, .datepicker-switch, .prev, .next, .dow{ color:black; }
+
+
+/** tags specific css **/
+.bootstrap-tagsinput { min-width:300px }
+
 
 
 .btn-primary{ background:#0886AF; border:none; }
@@ -122,3 +134,5 @@ label { font-weight:300; cursor:pointer;display:inline; }
 
 #pieButton, #scatterButton{ float:left;margin:0 20px;font-size:20px;border-radius:0 }
 #pieButton.currentlySelected, #scatterButton.currentlySelected { background:white;outline:1px solid #0886AF;color:#0886AF }
+
+a { color: #0886AF }
