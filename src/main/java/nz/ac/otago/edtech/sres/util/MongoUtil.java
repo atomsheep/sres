@@ -3,6 +3,7 @@ package nz.ac.otago.edtech.sres.util;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
+import nz.ac.otago.edtech.auth.util.AuthUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -40,6 +41,14 @@ public class MongoUtil {
 
     private static final Logger log = LoggerFactory.getLogger(MongoUtil.class);
 
+
+    public static void putCommonIntoModel(MongoDatabase db, HttpServletRequest request, ModelMap model) {
+        if (model.get("user") == null) {
+            String userName = AuthUtil.getUserName(request);
+            Document user = MongoUtil.getUser(db, userName);
+            model.put("user", user);
+        }
+    }
 
     public static ObjectId insertOne(MongoDatabase db, String collection, HttpServletRequest request) {
 
@@ -301,7 +310,7 @@ public class MongoUtil {
 
     public static String replaceEmailTemplate(String message, ModelMap map) {
         String result = message;
-        for(String key: map.keySet()) {
+        for (String key : map.keySet()) {
             // replace here
         }
         return result;

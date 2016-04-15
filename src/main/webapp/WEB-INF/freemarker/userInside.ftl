@@ -39,7 +39,7 @@ ${SRES_INTRO_TEXT}
                     ${studentCount}
                 </td>
                 <td style='text-align:center'>
-                    <a href="${baseUrl}/user/viewStudentList/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>
+                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>
                 </td>
                 <td style='text-align:center'>
                     <a href="${baseUrl}/user/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper details</a>

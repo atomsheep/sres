@@ -109,12 +109,14 @@ public class UserController {
 
         model.put("list", documents);
         model.put("pageName", "user");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
     @RequestMapping(value = "/addPaper", method = RequestMethod.GET)
-    public String addPaper(ModelMap model) {
+    public String addPaper(HttpServletRequest request, ModelMap model) {
         model.put("pageName", "addPaper");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -153,13 +155,15 @@ public class UserController {
     public String addColumn(@PathVariable String id, HttpServletRequest request, ModelMap model) {
         model.put("id", id);
         model.put("pageName", "addColumn");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
     @RequestMapping(value = "/addStudentList/{id}", method = RequestMethod.GET)
-    public String editStudentList(@PathVariable String id, ModelMap model) {
+    public String editStudentList(@PathVariable String id, HttpServletRequest request, ModelMap model) {
         model.put("id", id);
         model.put("pageName", "addStudentList");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -167,10 +171,11 @@ public class UserController {
     public String editStudentList(
             @RequestParam("files") MultipartFile file,
             @RequestParam("id") String id,
+            HttpServletRequest request,
             ModelMap model) {
         // when no file uploaded, go to view paper page
         if (file.getSize() == 0)
-            return "redirect:/user/viewStudentList/" + id;
+            return "redirect:/user/viewPaper/" + id;
 
         File uploadDir = uploadLocation.getUploadDir();
         String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
@@ -203,6 +208,7 @@ public class UserController {
         }
         model.put("fields", MongoUtil.USER_FIELDS);
         model.put("pageName", "mapFields");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -300,9 +306,12 @@ public class UserController {
     }
 
     @RequestMapping(value = "/importStudentData/{id}", method = RequestMethod.GET)
-    public String importStudentData(@PathVariable String id, ModelMap model) {
+    public String importStudentData(@PathVariable String id,
+                                    HttpServletRequest request,
+                                    ModelMap model) {
         model.put("id", id);
         model.put("pageName", "importStudentData");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -311,11 +320,12 @@ public class UserController {
     public String importStudentData(
             @RequestParam("files") MultipartFile file,
             @RequestParam("id") String id,
+            HttpServletRequest request,
             ModelMap model) {
 
         // when no file uploaded, go to view paper page
         if (file.getSize() == 0)
-            return "redirect:/user/viewStudentList/" + id;
+            return "redirect:/user/viewPaper/" + id;
 
         File uploadDir = uploadLocation.getUploadDir();
         String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
@@ -342,6 +352,7 @@ public class UserController {
         }
         model.put("fields", MongoUtil.USER_FIELDS);
         model.put("pageName", "mapDataFields");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -417,7 +428,7 @@ public class UserController {
                 }
             }
         }
-        return "redirect:/user/viewStudentList/" + id;
+        return "redirect:/user/viewPaper/" + id;
     }
 
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
@@ -441,6 +452,7 @@ public class UserController {
         log.debug("usernames = {}", (Object[]) usernames);
         model.put("users", users);
         model.put("pageName", "emailStudents");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -470,6 +482,7 @@ public class UserController {
         log.debug("usernames = {}", (Object[]) usernames);
         model.put("users", users);
         model.put("pageName", "emailStudents");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -489,25 +502,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/viewPaper/{id}", method = RequestMethod.GET)
-    public String viewPaper(@PathVariable String id, ModelMap model) {
-        ObjectId paperId = new ObjectId(id);
-        model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
-
-        List<Document> users = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).find(
-                new Document("papers", new Document("$elemMatch", new Document("paperref", paperId)
-                        .append("roles", "student")))
-        );
-        for (Document document : iterable)
-            users.add(document);
-        model.put("users", users);
-
-        model.put("pageName", "viewPaper");
-        return Common.DEFAULT_VIEW_NAME;
-    }
-
-    @RequestMapping(value = "/viewStudentList/{id}", method = RequestMethod.GET)
-    public String viewStudentList(@PathVariable String id, ModelMap model) {
+    public String viewPaper(@PathVariable String id,
+                            HttpServletRequest request,
+                            ModelMap model) {
         ObjectId paperId = new ObjectId(id);
 
         model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
@@ -538,7 +535,8 @@ public class UserController {
         model.put("id", id);
         model.put("results", results);
         model.put("columns", columns);
-        model.put("pageName", "viewStudentList");
+        model.put("pageName", "viewPaper");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
@@ -546,6 +544,7 @@ public class UserController {
     @RequestMapping(value = "/filterStudentList", method = RequestMethod.POST)
     public String filterStudentList(@RequestParam("id") String id,
                                     @RequestParam("json") String json,
+                                    HttpServletRequest request,
                                     ModelMap model) {
 
         ObjectId paperId = new ObjectId(id);
@@ -614,13 +613,16 @@ public class UserController {
         model.put("json", json);
         model.put("results", results);
         model.put("columns", columns);
-        model.put("pageName", "viewStudentList");
+        model.put("pageName", "viewPaper");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
 
     @RequestMapping(value = "/viewColumnList/{id}", method = RequestMethod.GET)
-    public String viewColumnList(@PathVariable String id, ModelMap model) {
+    public String viewColumnList(@PathVariable String id,
+                                 HttpServletRequest request,
+                                 ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
         model.put("paper", paper);
@@ -630,20 +632,7 @@ public class UserController {
         model.put("columns", columns);
 
         model.put("pageName", "viewColumnList");
-        return Common.DEFAULT_VIEW_NAME;
-    }
-
-    @RequestMapping(value = "/mongo", method = RequestMethod.GET)
-    public String mongo(ModelMap model) {
-        List<Document> documents = new ArrayList<Document>();
-        ObjectId id = new ObjectId("56c29ee5628be38bcea305bf");
-        FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).find(eq("_id", id));
-        for (Document document : iterable) {
-            log.debug("document {}", document);
-            documents.add(document);
-        }
-        model.put("list", documents);
-        model.put("pageName", "user");
+        MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 

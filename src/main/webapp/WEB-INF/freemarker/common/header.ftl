@@ -6,8 +6,9 @@
             <img height="40px" src="/sres/assets/img/logo1.svg" style="float: left;margin-top: 5px;margin-left:3px">
             <span style="font-size: 36px;float: left;margin-left: 5px;font-weight:bold;color:white">SRES</span>
         </a>
-        <span style='position: absolute;bottom: 5px;right: 60px;font-style: italic;'>Welcome Adon</span>
-
+        <#if user?has_content>
+        <span style='position: absolute;bottom: 5px;right: 60px;font-style: italic;'>Welcome ${user.username!}</span>
+        </#if>
         <div style='position:relative'>
             <div id='topMenu' style='float:right;margin:4px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-cog'></span></div>
 

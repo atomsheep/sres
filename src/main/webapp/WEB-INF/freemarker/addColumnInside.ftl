@@ -4,8 +4,7 @@
 
 <div class="box">
 <form name="editStudentList" id="editStudentList" method="post"
-      action="${baseUrl}/user/addPaper"
-      onSubmit="$('#submitButton').attr('disabled', 'disabled').val('please wait...')">
+      action="${baseUrl}/user/addColumn">
 <table>
 <tr>
     <td style='padding:0 5px 5px 0'>Column name</td>
@@ -71,6 +70,7 @@
     $('#addKeyValue').on('click', function(){
         var newRow = "<tr><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='tags' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input class='form-control' type='text' name='tags' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
         $('#addNewColumnAttribute').before(newRow);
+        return false;
     });
 
 </script>
