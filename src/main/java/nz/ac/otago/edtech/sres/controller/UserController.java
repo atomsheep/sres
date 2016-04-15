@@ -149,6 +149,13 @@ public class UserController {
         return "redirect:/user/addStudentList/" + id.toString();
     }
 
+    @RequestMapping(value = "/addColumn/{id}", method = RequestMethod.GET)
+    public String addColumn(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+        model.put("id", id);
+        model.put("pageName", "addColumn");
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
     @RequestMapping(value = "/addStudentList/{id}", method = RequestMethod.GET)
     public String editStudentList(@PathVariable String id, ModelMap model) {
         model.put("id", id);

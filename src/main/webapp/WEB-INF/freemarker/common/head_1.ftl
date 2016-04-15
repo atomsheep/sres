@@ -16,7 +16,13 @@
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery-1.12.2.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/javascript.js"></script>
-<script>
+
+    <script type="text/javascript" src="${baseUrl}/assets/bootstrap-datepicker-1.5.1-dist/js/bootstrap-datepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/bootstrap-datepicker-1.5.1-dist/css/bootstrap-datepicker.css"/>
+    <script type="text/javascript" src="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css"/>
+
+    <script>
   /*
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
