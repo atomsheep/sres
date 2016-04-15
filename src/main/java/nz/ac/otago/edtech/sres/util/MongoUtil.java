@@ -5,6 +5,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
@@ -13,10 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -69,8 +67,28 @@ public class MongoUtil {
     public static List<Document> getAllDocuments(MongoDatabase db, String collection) {
         List<Document> documents = new ArrayList<Document>();
         FindIterable<Document> iterable = db.getCollection(collection).find();
-        for (Document document : iterable)
+        for (Document document : iterable) {
+            document.put("id", document.get("_id").toString());
             documents.add(document);
+        }
+        return documents;
+    }
+
+    /**
+     * Get documents for given filters
+     *
+     * @param db         mongo database
+     * @param collection collection
+     * @param filters    filters
+     * @return document
+     */
+    public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
+        List<Document> documents = new ArrayList<Document>();
+        FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
+        for (Document document : iterable) {
+            document.put("id", document.get("_id").toString());
+            documents.add(document);
+        }
         return documents;
     }
 
@@ -97,12 +115,7 @@ public class MongoUtil {
      */
     public static Document getDocument(MongoDatabase db, String collection, ObjectId oId) {
         Document doc = null;
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(eq("_id", oId));
-        for (Document document : iterable) {
-            log.debug("document {} for {}", document, oId);
-            documents.add(document);
-        }
+        List<Document> documents = getDocuments(db, collection, eq("_id", oId));
         if (!documents.isEmpty()) {
             doc = documents.get(0);
             if (documents.size() > 1)
@@ -121,29 +134,7 @@ public class MongoUtil {
      * @return document
      */
     public static List<Document> getDocuments(MongoDatabase db, String collection, String key, Object value) {
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(eq(key, value));
-        for (Document document : iterable) {
-            documents.add(document);
-        }
-        return documents;
-    }
-
-    /**
-     * Get documents for given filters
-     *
-     * @param db         mongo database
-     * @param collection collection
-     * @param filters    filters
-     * @return document
-     */
-    public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
-        List<Document> documents = new ArrayList<Document>();
-        FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
-        for (Document document : iterable) {
-            documents.add(document);
-        }
-        return documents;
+        return getDocuments(db, collection, eq(key, value));
     }
 
 
@@ -188,6 +179,10 @@ public class MongoUtil {
                 log.warn("There is more than one document with filters");
         }
         return doc;
+    }
+
+    public static Document getUser(MongoDatabase db, String username) {
+        return MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
     }
 
     public static boolean authenticate(MongoDatabase db, String username, String password) {
@@ -244,6 +239,92 @@ public class MongoUtil {
         if (updateResult.getModifiedCount() == 1)
             return true;
         return false;
+    }
+
+    /**
+     * save user data for given colref and userref, if data does not exist, insert a new one, otherwise, update.
+     *
+     * @param db      mongo database
+     * @param value   value
+     * @param colref  colref
+     * @param userref userref
+     * @param who     who
+     * @return userdata as map
+     */
+    public static Map saveUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
+        Map map;
+        Document oldUserData = getDocument(db, COLLECTION_NAME_USERDATA, eq("colref", colref), eq("userref", userref));
+        if (oldUserData == null) {
+            ObjectId oid = new ObjectId();
+            ModelMap userdata = new ModelMap();
+            userdata.put("_id", oid);
+            userdata.put("colref", colref);
+            userdata.put("userref", userref);
+
+            ModelMap datum = new ModelMap();
+            if (NumberUtils.isNumber(value)) {
+                Number num = NumberUtils.createNumber(value);
+                datum.put("value", num);
+            } else
+                datum.put("value", value);
+            datum.put("timestamp", new Date());
+            datum.put("updateBy", who.get("_id"));
+            List<ModelMap> data = new ArrayList<ModelMap>();
+            data.add(datum);
+            userdata.put("data", data);
+            db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).insertOne(new Document(userdata));
+            map = userdata;
+        } else {
+            ObjectId userDataId = (ObjectId) oldUserData.get("_id");
+            map = updateUserData(db, value, userDataId, who);
+        }
+        return map;
+    }
+
+    /**
+     * Update existing user data
+     *
+     * @param db    mongo database
+     * @param value value
+     * @param id    user data id(in string) to update
+     * @param who   who
+     * @return userdata as map
+     */
+    public static Map updateUserData(MongoDatabase db, String value, String id, Document who) {
+        ObjectId userDataId = new ObjectId(id);
+        return updateUserData(db, value, userDataId, who);
+    }
+
+
+    /**
+     * Update existing user data
+     *
+     * @param db         mongo database
+     * @param value      value
+     * @param userDataId user data id to update
+     * @param who        who
+     * @return userdata as map
+     */
+    private static Map updateUserData(MongoDatabase db, String value, ObjectId userDataId, Document who) {
+        Map map = null;
+        ModelMap datum = new ModelMap();
+        value = value.trim();
+        if (NumberUtils.isNumber(value)) {
+            Number num = NumberUtils.createNumber(value);
+            datum.put("value", num);
+        } else
+            datum.put("value", value);
+        datum.put("timestamp", new Date());
+        datum.put("updatedBy", who.get("_id"));
+        List<ModelMap> list = new ArrayList<ModelMap>();
+        list.add(datum);
+
+        UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
+                eq("_id", userDataId),
+                new Document("$push", new Document("data", new Document(new Document("$each", list).append("$position", 0)))));
+        if (result.getModifiedCount() == 1)
+            map = MongoUtil.getDocument(db, COLLECTION_NAME_USERDATA, userDataId);
+        return map;
     }
 
 }

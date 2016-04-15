@@ -347,12 +347,14 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
-    @RequestMapping(value = "/importGrade", method = RequestMethod.POST)
-    public String importGrade(HttpServletRequest request,
+    @RequestMapping(value = "/importUserData", method = RequestMethod.POST)
+    public String importUserData(HttpServletRequest request,
                               @RequestParam("id") String id,
                               @RequestParam("size") int size,
                               @RequestParam("filename") String filename) {
 
+        String userName = AuthUtil.getUserName(request);
+        Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, userName);
         boolean hasHeader = false;
         if (request.getParameter("hasHeader") != null)
             hasHeader = true;
@@ -371,7 +373,6 @@ public class UserController {
                         map.put("description", description);
                         map.put("index", value);
                         map.put("paperref", paperId);
-                        columnFields.add(map);
                         UpdateOptions uo = new UpdateOptions();
                         uo.upsert(true);
                         // update column if exists, create a new one if does not exist
@@ -380,6 +381,7 @@ public class UserController {
                         Document doc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, eq("name", name), eq("paperref", paperId));
                         if (doc != null)
                             map.put("_id", doc.get("_id"));
+                        columnFields.add(map);
                     }
                 }
             }
@@ -401,22 +403,13 @@ public class UserController {
                         // go through csv file
                         for (CSVRecord record : records) {
                             String un = record.get(unIndex);
-                            Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("papers.paperref", paperId), eq(MongoUtil.USERNAME, un));
-                            if (user != null)
+                            Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("papers.paperref", paperId), eq(MongoUtil.USERNAME, un));
+                            if (uu != null)
                                 for (ModelMap m : columnFields) {
-                                    ModelMap datum = new ModelMap();
-                                    datum.put("colref", m.get("_id"));
-                                    datum.put("userref", user.get("_id"));
+                                   ObjectId colref = (ObjectId)m.get("_id");
+                                    ObjectId userref = (ObjectId)uu.get("_id");
                                     String value = record.get((Integer) m.get("index")).trim();
-                                    if (NumberUtils.isNumber(value)) {
-                                        Number num = NumberUtils.createNumber(value);
-                                        datum.put("value", num);
-                                    } else
-                                        datum.put("value", record.get((Integer) m.get("index")));
-                                    UpdateOptions uo = new UpdateOptions();
-                                    uo.upsert(true);
-                                    db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(and(eq("colref", m.get("_id")), eq("userref", user.get("_id"))),
-                                            new Document("$set", new Document(datum)), uo);
+                                    MongoUtil.saveUserData(db, value, colref, userref, user);
                                 }
                         }
                     } catch (IOException ioe) {
@@ -532,7 +525,7 @@ public class UserController {
                 ModelMap datum = new ModelMap();
                 Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", u.get("_id")), eq("colref", c.get("_id")));
                 datum.put("column", c);
-                datum.put("data", userData);
+                datum.put("userData", userData);
                 data.add(datum);
             }
             result.put("data", data);
@@ -571,7 +564,7 @@ public class UserController {
                 if (NumberUtils.isNumber(value))
                     o = NumberUtils.createNumber(value);
                 String operator = obj.get("operator").toString();
-                Bson valueFilter = new OperatorFilter<Object>(operator, "value", o);
+                Bson valueFilter = new OperatorFilter<Object>(operator, "data.0.value", o);
                 String colref = obj.get("colref").toString();
                 Bson colFilter = eq("colref", new ObjectId(colref));
 
@@ -607,7 +600,7 @@ public class UserController {
                     ModelMap datum = new ModelMap();
                     Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", oid), eq("colref", c.get("_id")));
                     datum.put("column", c);
-                    datum.put("data", userData);
+                    datum.put("userData", userData);
                     data.add(datum);
                 }
                 result.put("data", data);
@@ -653,22 +646,30 @@ public class UserController {
 
     @RequestMapping(value = "/saveColumnValue", method = RequestMethod.POST)
     public ResponseEntity<String> saveColumnValue(@RequestParam("id") String id,
-                                                  @RequestParam("value") String value) {
+                                                  @RequestParam("value") String value,
+                                                  HttpServletRequest request) {
         String action = "saveColumnValue";
+        String userName = AuthUtil.getUserName(request);
+        Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, userName);
         boolean success = false;
         String detail = null;
 
         ModelMap datum = new ModelMap();
+        value = value.trim();
         if (NumberUtils.isNumber(value)) {
             Number num = NumberUtils.createNumber(value);
             datum.put("value", num);
         } else
-            datum.put("value", value.trim());
+            datum.put("value", value);
+        datum.put("timestamp", new Date());
+        datum.put("updatedBy", user.get("_id"));
+        List<ModelMap> list = new ArrayList<ModelMap>();
+        list.add(datum);
 
-        ObjectId userdataId = new ObjectId(id);
+        ObjectId userDataId = new ObjectId(id);
         UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
-                eq("_id", userdataId),
-                new Document("$set", new Document(datum)));
+                eq("_id", userDataId),
+                new Document("$push", new Document("data", new Document( new Document("$each", list).append("$position", 0 )) )));
         if (result.getModifiedCount() == 1)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);

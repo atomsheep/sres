@@ -125,11 +125,11 @@
                 <td style='text-align:left'>${r.surname}</td>
                 <td style='text-align:left'>${r.email!}</td>
                 <#list r.data as d>
-                    <#if d.data?has_content>
-                    <td data-id="${d.data._id}" class="${d.column._id} columnData user_${r.username}" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
-                        data-value="<#if d.data?has_content>${d.data.value}</#if>">
-                        <#if d.data?has_content>
-                    ${d.data.value}
+                    <#if d.userData?has_content>
+                    <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
+                        data-value="<#if d.userData?has_content>${d.userData.data[0].value}</#if>">
+                        <#if d.userData?has_content>
+                    ${d.userData.data[0].value}
                         </td>
                 </#if>
                     <#else>
@@ -138,8 +138,6 @@
                 </#list>
             </tr>
         </#list>
-
-
     </table>
 </form>
 <#else>
@@ -168,15 +166,14 @@ $(function () {
     var sideWidth = $('#sidePanel').width();
     $('.chart').css('width', sideWidth + 'px');
 
-        var filterList = $('#filterList');
-        var filterDivHtml = $('.filterDiv').html();
-        $('span.removeFilter').remove();
-        $('.operatorDiv').remove();
+    var filterList = $('#filterList');
+    var filterDivHtml = $('.filterDiv').html();
+    $('span.removeFilter').remove();
+    $('.operatorDiv').remove();
 
-        $('span.newFilter').on('click', function () {
-            var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
-            $('span.removeFilter').show();
-
+    $('span.newFilter').on('click', function () {
+        var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
+        $('span.removeFilter').show();
     });
 
 <#if json?has_content>
@@ -212,7 +209,6 @@ $(function () {
         $(this).parent().remove();
     });
 
-
     $('button.submit').on('click', function () {
         var id = $('[name=id]').val();
         var array = [];
@@ -231,7 +227,7 @@ $(function () {
         $('[name=filterForm]').submit();
     });
 
-    $('td','#studentList').on("dblclick", function () {
+    $('td', '#studentList').on("dblclick", function () {
         var slf = $(this);
         var id = slf.data('id');
         if (id) {
@@ -268,7 +264,6 @@ $(function () {
         }
 
     });
-
 
     function saveChanges(td, input, oldValue) {
         var id = td.data('id');
@@ -369,21 +364,21 @@ $(function () {
         return false;
     });
 
-        var $paperButtons = $('.paper_buttons');
-        $('html').on('click', function() {
-            if($paperButtons.is(":visible"))
-                $paperButtons.hide();
-        });
-
-        $('#paperMenu').on('click', function(event){
-            if($paperButtons.is(':hidden'))
-                $paperButtons.show();
-            else
-                $paperButtons.hide();
-            event.stopPropagation();
-        });
-
+    var $paperButtons = $('.paper_buttons');
+    $('html').on('click', function () {
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
     });
+
+    $('#paperMenu').on('click', function (event) {
+        if ($paperButtons.is(':hidden'))
+            $paperButtons.show();
+        else
+            $paperButtons.hide();
+        event.stopPropagation();
+    });
+
+});
 
 
 </script>

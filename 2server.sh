@@ -2,7 +2,7 @@
 
 TIME_NOW="`date +%Y-%m-%d-%H-%M-%S`"
 APP_NAME=sres
-SERVER_NAME=umbu.otago.ac.nz
+SERVER_NAME=karimu.otago.ac.nz
 BACKUP_DIR=/home/richard/updates/$APP_NAME/$TIME_NOW
 
 if [[ -z "$1" || "$1" != "deploy" ]]; then
