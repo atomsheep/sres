@@ -1,4 +1,4 @@
-<span><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > <a style='text-decoration: underline' href="${baseUrl}/user/viewStudentList/${id}">View paper</a> > Edit columns</span>
+<span><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > <a style='text-decoration: underline' href="${baseUrl}/user/viewPaper/${id}">View paper</a> > Edit columns</span>
 
 <h1>Edit columns</h1>
 

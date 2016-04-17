@@ -1,4 +1,4 @@
-<span><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > <a style='text-decoration: underline' href="${baseUrl}/user/viewStudentList/${id}">View paper</a> > <a style='text-decoration: underline' href='${baseUrl}/user/viewColumnList/${id}'>Edit columns</a> > Add new column</span>
+<span><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > <a style='text-decoration: underline' href="${baseUrl}/user/viewPaper/${id}">View paper</a> > <a style='text-decoration: underline' href='${baseUrl}/user/viewColumnList/${id}'>Edit columns</a> > Add new column</span>
 
 <h1>Add new column</h1>
 
@@ -57,7 +57,7 @@
 
 
 <tr>
-    <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton" value="Next" style='margin-top:20px'/></td>
+    <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton" value="Save" style='margin-top:20px'/></td>
 </tr>
 </table>
 </form>

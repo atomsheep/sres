@@ -152,15 +152,41 @@ public class UserController {
     }
 
     @RequestMapping(value = "/addColumn/{id}", method = RequestMethod.GET)
-    public String addColumn(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+    public String addColumn(@PathVariable String id,
+                            HttpServletRequest request,
+                            ModelMap model) {
         model.put("id", id);
         model.put("pageName", "addColumn");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    @RequestMapping(value = "/editColumn/{id}", method = RequestMethod.GET)
+    public String editColumn(@PathVariable String id,
+                            HttpServletRequest request,
+                            ModelMap model) {
+        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+        model.put("column", column);
+        model.put("pageName", "addColumn");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
+    @RequestMapping(value = "/saveColumn/{id}", method = RequestMethod.GET)
+    public String saveColumn(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+        model.put("column", column);
+        model.put("pageName", "addColumn");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
     @RequestMapping(value = "/addStudentList/{id}", method = RequestMethod.GET)
-    public String editStudentList(@PathVariable String id, HttpServletRequest request, ModelMap model) {
+    public String editStudentList(@PathVariable String id,
+                                  HttpServletRequest request,
+                                  ModelMap model) {
         model.put("id", id);
         model.put("pageName", "addStudentList");
         MongoUtil.putCommonIntoModel(db, request, model);
@@ -168,11 +194,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/addStudentList", method = RequestMethod.POST)
-    public String editStudentList(
-            @RequestParam("files") MultipartFile file,
-            @RequestParam("id") String id,
-            HttpServletRequest request,
-            ModelMap model) {
+    public String editStudentList(@RequestParam("files") MultipartFile file,
+                                  @RequestParam("id") String id,
+                                  HttpServletRequest request,
+                                  ModelMap model) {
         // when no file uploaded, go to view paper page
         if (file.getSize() == 0)
             return "redirect:/user/viewPaper/" + id;
