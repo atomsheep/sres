@@ -1,4 +1,4 @@
-<div>
+<div style='border:1px solid #0d8806;padding:20px'>
 ${SRES_INTRO_TEXT}
 </div>
 
@@ -14,6 +14,7 @@ ${SRES_INTRO_TEXT}
         <th width='12%' style='text-align:center;background:#066888'>${ICN_C} year</th>
         <th width='12%' style='text-align:center;background:#066888'>${ICN_C} semester</th>
         <th width='12%' style='text-align:center;background:#066888'>Number of students</th>
+        <th width='12%' style='text-align:center;background:#066888'></th>
         <th width='12%' style='text-align:center;background:#066888'></th>
         <th width='12%' style='text-align:center;background:#066888'></th>
         <th width='12%' style='text-align:center;background:#066888;border-right:none'></th>
@@ -43,6 +44,9 @@ ${SRES_INTRO_TEXT}
                 </td>
                 <td style='text-align:center'>
                     <a href="${baseUrl}/user/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper details</a>
+                </td>
+                <td style='text-align:center'>
+                    <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary" style="width:100%;display:block">Edit columns</a>
                 </td>
                 <td style='text-align:center;border-right:none'>
                     <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="width:100%;display:block">Delete ${ICN}</button>

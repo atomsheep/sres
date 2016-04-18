@@ -4,28 +4,15 @@
 <h1>Import student data</h1>
 
 <div class="box">
-    Fields marked with <span style="color:#F00;">*</span> are required
     <form name="editStudentList" id="editStudentList" method="post"
-          action="${baseUrl}/user/importStudentData" enctype="multipart/form-data"
-          onSubmit="$('#submitButton').attr('disabled', 'disabled').val('please wait...')">
+          action="${baseUrl}/user/importStudentData" enctype="multipart/form-data">
 
         <input type="hidden" name="id" value="${id}"/>
         <table>
 
             <tr>
-                <td style="vertical-align:top;">
-                    Populate student data from
-                </td>
                 <td id="timetablingData">
                     <div>
-                        <span style="color:#F00;">*</span>
-                        <strong>"Enrolment list" (tab-separated text file[s]) from timetabling unit</strong>
-                        <i class='fa fa-question-circle' style="width:16px;"
-                           data-qtip-content="File contains student enrolment information (identifiers, degree, address, etc). Expected column headers:SID,GivenNames,FamilyName,Email,DegreeAlias,Gender,PermAddressPostcode,PermAddressCountry,SemAddressPostcode,SemAddressCountry"></i>
-                        Download file(s) <a href="https://web.timetable.usyd.edu.au/uosEnrolmentIndex.jsp"
-                                            target="_blank">here</a>, then load it/them here:
-                        <br/>
-
                         <div class="input-group enrolment" id='input-group'>
                 <span class="input-group-btn">
                     <span class="btn btn-primary btn-file">
@@ -39,8 +26,7 @@
 
 
             <tr>
-                <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton"
-                                       value="import student data"/></td>
+                <td colspan="2"><input class='btn btn-default btn-primary' type="submit" id="submitButton" value="import student data"/></td>
             </tr>
         </table>
     </form>

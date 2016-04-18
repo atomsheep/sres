@@ -16,9 +16,16 @@
     <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:20px;background:white'>
         <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
         <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} details</a>
+        <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
         <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
         <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
-        <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
+    </div>
+
+    <div id='layoutButton' style='float:right;margin:0 0 0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
+
+    <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
+        <div class='menuButton'><div class='layout1 layout'></div> <div style='float:left;margin-left:5px'>Layout 1</div><div style='clear:both'></div></div>
+        <div class='menuButton'><div class='layout2 layout'></div> <div style='float:left;margin-left:5px'>Layout 2</div><div style='clear:both'></div></div>
     </div>
 </div>
 </#if>
@@ -366,15 +373,30 @@ $(function () {
     });
 
     var $paperButtons = $('.paper_buttons');
+    var $layoutButtons = $('.layout_buttons');
     $('html').on('click', function () {
         if ($paperButtons.is(":visible"))
             $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
     });
 
     $('#paperMenu').on('click', function (event) {
         if ($paperButtons.is(':hidden'))
             $paperButtons.show();
         else
+            $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
+        event.stopPropagation();
+    });
+
+    $('#layoutButton').on('click', function (event) {
+        if ($layoutButtons.is(':hidden'))
+            $layoutButtons.show();
+        else
+            $layoutButtons.hide();
+        if ($paperButtons.is(":visible"))
             $paperButtons.hide();
         event.stopPropagation();
     });

@@ -10,10 +10,13 @@
         <span style='position: absolute;bottom: 5px;right: 60px;font-style: italic;'>Welcome ${user.username!}</span>
         </#if>
         <div style='position:relative'>
-            <div id='topMenu' style='float:right;margin:4px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-cog'></span></div>
+            <div id='topMenu' style='float:right;margin:4.5px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-cog'></span></div>
 
             <div class='top_buttons' style='margin-left:20px;display:none;position:absolute;top:44px;right:4px;background:white'>
-                <a href="${baseUrl}/user/" class='menuButton'>Go to ${ICN} list</a>
+                <a href="${baseUrl}/user/" class='menuButton'>Go home (${ICN} list)</a>
+                <a href="${baseUrl}/user/" class='menuButton'>Edit user profile</a>
+                <a href="${baseUrl}/user/" class='menuButton'>Get help using SRES</a>
+                <a href="${baseUrl}/user/" class='menuButton'>Log out of SRES</a>
             </div>
         </div>
 

@@ -19,7 +19,6 @@
             <td style='text-align:left;border-left:none'><input type="checkbox" name="columns"/></td>
             <td style='text-align:left'>${c.name}</td>
             <td style='text-align:left'>${c.description}</td>
-            <td style='text-align:left;border-right:none'></td>
         </tr>
         </#list>
     </table>

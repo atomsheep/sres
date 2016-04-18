@@ -31,18 +31,21 @@
             <td>select all</td>
             <td></td>
         </tr>
+        <tr>
+            <td></td>
+            <th>Column name</th>
+            <th>Column description</th>
+        </tr>
     <#list record as r>
         <tr class="fieldRow">
             <td>
-                <input type="checkbox" name="extra${r_index?c}" class="checkField"
-                    <#if (r_index >= 1)> checked="checked"</#if>/>
+                <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= 1)> checked="checked"</#if>/>
             </td>
             <td>
-                name:<input type="text" name="name${r_index?c}" value="${r?html}"
-                            <#if (r_index < 1)>disabled="disabled"</#if>/>
-                description: <input type="text" name="description${r_index?c}" value=""
-                                    <#if (r_index < 1)>disabled="disabled"</#if>/>
-
+                <input type="text" name="name${r_index?c}" class='form-control' value="${r?html}" <#if (r_index < 1)>disabled="disabled"</#if>/>
+                </td>
+            <td>
+                <input type="text" name="description${r_index?c}" value="" class='form-control' <#if (r_index < 1)>disabled="disabled"</#if>/>
             </td>
             <td>
                 <select name="value${r_index?c}" class="form-control" <#if (r_index < 1)>disabled="disabled"</#if>>
