@@ -88,6 +88,24 @@ public class MongoUtil {
      *
      * @param db         mongo database
      * @param collection collection
+     * @param filter     filter
+     * @return document
+     */
+    public static List<Document> findDocuments(MongoDatabase db, String collection, Bson filter) {
+        List<Document> documents = new ArrayList<Document>();
+        FindIterable<Document> iterable = db.getCollection(collection).find(filter);
+        for (Document document : iterable) {
+            document.put("id", document.get("_id").toString());
+            documents.add(document);
+        }
+        return documents;
+    }
+
+    /**
+     * Get documents for given filters
+     *
+     * @param db         mongo database
+     * @param collection collection
      * @param filters    filters
      * @return document
      */
@@ -124,7 +142,7 @@ public class MongoUtil {
      */
     public static Document getDocument(MongoDatabase db, String collection, ObjectId oId) {
         Document doc = null;
-        List<Document> documents = getDocuments(db, collection, eq("_id", oId));
+        List<Document> documents = findDocuments(db, collection, eq("_id", oId));
         if (!documents.isEmpty()) {
             doc = documents.get(0);
             if (documents.size() > 1)
@@ -143,7 +161,7 @@ public class MongoUtil {
      * @return document
      */
     public static List<Document> getDocuments(MongoDatabase db, String collection, String key, Object value) {
-        return getDocuments(db, collection, eq(key, value));
+        return findDocuments(db, collection, eq(key, value));
     }
 
 
@@ -295,6 +313,78 @@ public class MongoUtil {
     }
 
     /**
+     * change object id to string format, use this when outputting json object
+     *
+     * @param doc document object
+     */
+    public static void changeObjectId2String(Document doc) {
+        changeObjectId2String(doc, "_id");
+    }
+
+    /**
+     * change object id to string format, use this when outputting json object
+     *
+     * @param doc   document object
+     * @param field Object id field, by default it's _id
+     */
+    public static void changeObjectId2String(Document doc, String field) {
+        if ((doc != null) && (doc.get(field) != null)) {
+            ObjectId oid = (ObjectId) doc.get(field);
+            doc.put(field, oid.toString());
+        }
+    }
+
+    public static void changeUserObjectId2String(Document user) {
+        if (user != null) {
+            changeObjectId2String(user);
+            // remove password from output
+            user.remove("password");
+            if (user.get("papers") != null) {
+                @SuppressWarnings("unchecked")
+                List<Document> papersDoc = (List<Document>) user.get("papers");
+                for (Document paper : papersDoc)
+                    MongoUtil.changeObjectId2String(paper, "paperref");
+            }
+        }
+    }
+
+    /**
+     * get all papers given user has access to
+     *
+     * @param db  mongo database
+     * @param who who
+     * @return list of paper objects
+     */
+    public static List<Document> getPapers(MongoDatabase db, String who) {
+        List<Document> papers = new ArrayList<Document>();
+        Document userDoc = MongoUtil.getDocument(db, COLLECTION_NAME_USERS, USERNAME, who);
+        @SuppressWarnings("unchecked")
+        List<Document> papersDoc = (List<Document>) userDoc.get("papers");
+        for (Document paper : papersDoc) {
+            ObjectId pid = (ObjectId) paper.get("paperref");
+            @SuppressWarnings("unchecked")
+            List<String> roles = (List<String>) paper.get("roles");
+            log.debug("roles = {}", roles);
+            // roles who can see this paper: owner, tutor, ...
+            if (roles.contains("owner") || roles.contains("tutor")) {
+                Document pp = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, eq("_id", pid), eq("status", "active"));
+                if (pp != null)
+                    papers.add(pp);
+            }
+        }
+        return papers;
+    }
+
+    public static String replaceEmailTemplate(String message, ModelMap map) {
+        String result = message;
+        for (String key : map.keySet()) {
+            // replace here
+        }
+        return result;
+
+    }
+
+    /**
      * Update existing user data
      *
      * @param db    mongo database
@@ -306,15 +396,6 @@ public class MongoUtil {
     public static Map updateUserData(MongoDatabase db, String value, String id, Document who) {
         ObjectId userDataId = new ObjectId(id);
         return updateUserData(db, value, userDataId, who);
-    }
-
-    public static String replaceEmailTemplate(String message, ModelMap map) {
-        String result = message;
-        for (String key : map.keySet()) {
-            // replace here
-        }
-        return result;
-
     }
 
     /**

@@ -163,8 +163,8 @@ public class UserController {
 
     @RequestMapping(value = "/editColumn/{id}", method = RequestMethod.GET)
     public String editColumn(@PathVariable String id,
-                            HttpServletRequest request,
-                            ModelMap model) {
+                             HttpServletRequest request,
+                             ModelMap model) {
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
         model.put("column", column);
         model.put("pageName", "addColumn");
@@ -523,6 +523,10 @@ public class UserController {
                 new Document("$set", new Document("status", "deleted")));
         if (result.getModifiedCount() == 1)
             success = true;
+        // remove this paper from user's papers array
+        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq(MongoUtil.USERNAME, userName),
+                new Document("$pull", new Document("papers", new Document("paperref", paperId)))
+        );
         return OtherUtil.outputJSON(action, success, detail);
     }
 
