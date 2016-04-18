@@ -96,7 +96,7 @@
     <h3 style='margin:0;padding:0 20px 20px'>
     <#if json?has_content>
         Search results (${results?size})
-        <a href="${baseUrl}/user/viewStudentList/${id}" class="btn btn-default btn-primary">Back to all student list</a>
+        <a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>
     <#else>
         Students: ${results?size}
     </#if>
