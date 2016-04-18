@@ -1,5 +1,6 @@
 body { margin:0;font-family:"Roboto", sans-serif; }
 
 .mainHeading { background:#0886AF;padding:50px; }
-.mainTitle { text-align:center;font-size:100px;color:white;margin:0; }
+.mainTitle { font-size:100px; }
+.mainTitle, .subTitle { text-align:center;color:white;margin:0; }
 
