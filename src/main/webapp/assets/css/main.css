@@ -29,7 +29,7 @@ h2, h3{
 }  */
 
 
-.container-fluid{ padding:0 20px }
+.container-fluid{ padding:0 }
 
 
 .page-header {
@@ -49,6 +49,7 @@ body {
     font-family:Roboto, sans-serif;
 }
 
+h4 { font-weight:300 }
 
 /** datepicker specific css **/
 .day, .datepicker-switch, .prev, .next, .dow{ color:black; }
@@ -122,9 +123,11 @@ tr.fieldRow {
     background:#066888 !important;cursor:pointer;
 }
 
-.filterDiv { padding:10px 0 0 }
+.filterDiv { padding:0 }
 .operatorDiv { padding:0 0 10px }
 
+.sres_panel { background:#021E27;border:1px solid #066888 }
+.sres_panel h4 { cursor:move }
 
 input[type=checkbox]:checked + label { font-weight: 500 }
 label { font-weight:300; cursor:pointer;display:inline; }
@@ -136,6 +139,11 @@ label { font-weight:300; cursor:pointer;display:inline; }
 #pieButton.currentlySelected, #scatterButton.currentlySelected { background:white;outline:1px solid #0886AF;color:#0886AF }
 
 a { color: #0886AF }
+
+.topPanel { top:51px; }
+.midPanel { top:51px; }
+.bottomPanel { bottom:0 }
+.topPanel, .midPanel, .bottomPanel { position:absolute;left:0;overflow:hidden;margin:20px; }
 
 .layout { float:left;width:20px;height:20px;margin-top:-1px }
 .layout1{ background-image: url(../img/layout1_blue.svg);border:none }
