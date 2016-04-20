@@ -20,6 +20,7 @@
             </th>
             <th style='text-align:left;background:#066888;'>Column name</th>
             <th style='text-align:left;background:#066888'>Description</th>
+            <th></th>
         </tr>
         <#list columns as c>
             <tr>
