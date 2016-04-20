@@ -515,8 +515,10 @@ public class UserController {
             for (Document u : iterable)
                 users.add(u);
         }
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         log.debug("id = {}", id);
         log.debug("usernames = {}", (Object[]) usernames);
+        model.put("columns",columns);
         model.put("users", users);
         model.put("pageName", "emailStudents");
         MongoUtil.putCommonIntoModel(db, request, model);

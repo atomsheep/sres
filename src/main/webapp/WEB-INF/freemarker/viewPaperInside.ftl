@@ -5,68 +5,83 @@
 ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
+<div id='topBar' style='position:absolute;top:50px;left:0;right:0;background:#0886AF'>
+    <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'><a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> > View paper (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})</span>
+    <#if paper?has_content>
+        <div style='position:relative'>
+            <div id='paperMenu' style='float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
 
-<div style='right:33%;float:left;position:absolute;top:51px;bottom:0;left:0;overflow-y:scroll'>
-    <span style='float:left;margin:20px'><a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> > View paper</span>
-    <h1 style='clear:left;margin:0;padding:0 20px 20px;float:left'>${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!}</h1>
-<#if paper?has_content>
-<div style='position:relative'>
-    <div id='paperMenu' style='float:right;margin:0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
+            <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
+                <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
+                <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} details</a>
+                <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
+                <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
+                <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
+            </div>
 
-    <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:20px;background:white'>
-        <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-        <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} details</a>
-        <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
-        <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
-        <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
-    </div>
+            <#--<div id='layoutButton' style='float:right;margin:0 0 0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>-->
+
+            <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
+                <div class='menuButton'><div class='layout1 layout'></div> <div style='float:left;margin-left:5px'>Layout 1</div><div style='clear:both'></div></div>
+                <div class='menuButton'><div class='layout2 layout'></div> <div style='float:left;margin-left:5px'>Layout 2</div><div style='clear:both'></div></div>
+            </div>
+        </div>
+    </#if>
 </div>
-</#if>
-    <div style='clear:both'></div>
 
-<div style='margin:0 20px 20px;border:1px solid #066888;padding:20px;background:#043B4E'>
-    <h3 style='margin:0 0 10px'>Columns</h3>
+<div class='topPanel sres_panel'>
+
+<div style='margin:0;'>
+    <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='fa fa-times' style='float:right'></span></h4>
+    <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
     <table width=100% cellspacing=0 cellpadding=0>
-<#list columns?chunk(2) as cc>
+<#list columns?chunk(1) as cc>
     <tr>
         <#list cc as c>
-            <td style='padding:5px'>
+            <td style='padding:10px 10px 0'>
                 <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox"/> <label for='check_${c._id}'>${c.name}</label>
             </td>
+            <td>${c.description!}</td>
+            <td>${c.tags!}</td>
         </#list>
     </tr>
         </#list>
         </table>
     </div>
+</div>
+</div>
+<div class='midPanel sres_panel'>
 
-    <div style='margin:20px;border:1px solid #AF08AF'>
-        <h3 id='filterTitle' style='cursor:pointer;margin:0;padding:10px 20px;background:#AF08AF'>Filters
-            <div style='float:right;padding:5px;font-style:italic;font-size:14px'>(click to expand)</div>
-        </h3>
+    <div style='margin:0;'>
+        <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times' style='float:right'></span></h4>
+        <div id='topBar' style='position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px'>
+            <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px'><span class='fa fa-plus'></span> New filter</span>
+            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px'>Filter results</button>
+        </div>
         <div style="clear:both"></div>
 
         <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm"
-              class="form-inline" style='background:#130113;display:none;padding:20px'>
+              class="form-inline" style='padding:40px 0 10px'>
             <input type="hidden" name="id" value="${id}"/>
             <input type="hidden" name="json" value=""/>
 
-            <span class="btn btn-default btn-success newFilter" style="margin-bottom:10px">New filter</span>
 
             <div id="filterList">
                 <div class="filterDiv">
-                    <div class="operatorDiv">
-                        <select name="join" class="form-control">
+                    <div class="operatorDiv" style='float:left'>
+                        <select name="join" class="form-control" style='border-radius:0'>
                             <option value="and">and</option>
                             <option value="or">or</option>
                         </select>
                     </div>
-                    <select name="colref" class="form-control">
+                    <div style='clear:both'></div>
+                    <select name="colref" class="form-control" style='float:left;border-radius:0'>
                     <#list columns as c>
                         <option value="${c._id}">${c.name}</option>
                     </#list>
                     </select>
 
-                    <select name="operator" class="form-control">
+                    <select name="operator" class="form-control" style='float:left;border-radius:0'>
                         <option value="$eq">equal to</option>
                         <option value="$lt">less than</option>
                         <option value="$lte">less than or equal to</option>
@@ -75,38 +90,37 @@
                         <option value="$ne">not equal to</option>
                     </select>
 
-                    <input type="text" name="value" class="form-control" style="width: 250px"/>
+                    <input type="text" name="value" class="form-control" style="width: 250px;float:left;border-radius:0"/>
 
                     <span class="fa fa-times removeFilter" style='margin-left:10px'></span>
                 </div>
             </div>
-
-            <button class="btn btn-default btn-purple submit" style='margin-top:20px'>Filter results</button>
-
         </form>
     </div>
+</div>
+<div class='bottomPanel sres_panel'>
 
-    <h3 style='margin:0;padding:0 20px 20px'>
+    <h4 style='margin:0;padding:10px;background:#043B4E'>
     <#if json?has_content>
         Search results (${results?size})
-        <a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>
+        <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
     <#else>
         Students: ${results?size}
     </#if>
         <#if results?has_content>
-        <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>
+       <#-- <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>-->
         </#if>
-    </h3>
+        <span class='fa fa-times' style='float:right'></span>
+    </h4>
 
 
 <#if results?has_content>
-<div style='padding: 0 20px '>
+<div style='position:absolute;top:40px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
 <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
     <input name="id" type="hidden" value="${id}" />
     <table id="studentList" width=100%>
         <tr>
-            <th style='text-align:left;background:#066888;border-left:none'><input type="checkbox" name="usernameAll"/>
-            </th>
+            <th style='text-align:center;background:#066888;border-left:none'><input type="checkbox" name="usernameAll"/></th>
             <th style='text-align:left;background:#066888;'>Username</th>
             <th style='text-align:left;background:#066888'>Given names</th>
             <th style='text-align:left;background:#066888'>Surname</th>
@@ -119,7 +133,7 @@
 
         <#list results as r>
             <tr>
-                <td style='text-align:left;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
+                <td style='text-align:center;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
                 <td style='text-align:left'>${r.username}</td>
                 <td style='text-align:left'>${r.givenNames}</td>
                 <td style='text-align:left'>${r.surname}</td>
@@ -148,11 +162,23 @@
 </div>
 
 </div>
-<div id="sidePanel" style="width:33%;float:right;background:white;position:fixed;top:51px;right:0;bottom:0;overflow-y:scroll;overflow-x:hidden">
-    <h1 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h1>
 
-<#list columns as c>
-    <div id="${c._id}" class="${c._id} chart pieChart" style="width: 400px; height: 300px;"></div>
+<div id="sidePanel1" class='sres_panel' style="margin:20px;border:1px solid #066888;width:33%;position:fixed;top:51px;right:0;overflow:hidden">
+<#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
+    <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times' style='float:right'></span></h4>
+    <div style='font-size:24px;padding:10px;font-weight:300;'>
+    ${ICN_C} code: ${paper.code!}<br/>
+    ${ICN_C} name: ${paper.name!}<br/>
+    Year : ${paper.year!}<br/>
+    Semester: ${paper.semester!}
+    </div>
+</div>
+
+<div id="sidePanel2" class='sres_panel' style="margin:20px;border:1px solid #066888;width:33%;background:white;position:fixed;top:51px;right:0;overflow:hidden">
+    <#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
+        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times' style='float:right'></span></h4>
+    <#list columns as c>
+    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto;width: 400px; height: 300px;"></div>
 </#list>
 
 </div>
@@ -163,8 +189,43 @@
 
 $(function () {
 
-    var sideWidth = $('#sidePanel').width();
-    $('.chart').css('width', sideWidth + 'px');
+    $.fn.shortText = function(str,length){
+        var item = $(this);
+        var toset = str;
+        if(str.length > length)
+            toset = str.substring(0,length) +'...';
+        item.text(toset).attr('title',str);
+    };
+
+    $('th').each(function(){
+        var self = $(this);
+        if(self.find("input").length == 0){
+            var text = self.text();
+            self.shortText(text,20);
+        }
+    });
+
+    var third = 1/3;
+    var screenwidth = $(document).width() - 60;
+
+    var firstPanelStart = 50 + $('#topBar').height();
+    var screenheight = $(document).height() - firstPanelStart - 80;
+    var secondPanelStart = firstPanelStart + (screenheight *.25) + 20;
+    var thirdPanelStart = secondPanelStart + (screenheight *.25) + 20;
+
+    var $sidePanel1 = $('#sidePanel1');
+    var $sidePanel2 = $('#sidePanel2');
+
+    $sidePanel1.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
+    $sidePanel2.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
+
+    $('.topPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
+    $('.midPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
+    $('.bottomPanel').css("width",(screenwidth*third*3+20)+"px").css("height",(screenheight *.5)+"px").css('top',thirdPanelStart+"px");
+
+    var sideWidth = $sidePanel1.width();
+    var sideHeight = $sidePanel1.height() -40;
+    $('.chart').css('margin-top','10px').css('width', sideWidth + 'px').css("height",sideHeight + "px");
 
     var filterList = $('#filterList');
     var filterDivHtml = $('.filterDiv').html();
@@ -175,6 +236,46 @@ $(function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         $('span.removeFilter').show();
     });
+
+
+
+    $('.sres_panel').draggable({ handle: "h4",
+        helper:function(event){
+            var div = "<div class='sres_panel' style='width:" + (screenwidth*third)+"px;height:" + (screenheight *.25)+"px'></div>";
+            return div;
+        }, containment: "document",
+        start: function(e, ui){
+            $(e.target).css('opacity',.5);
+            console.log(e);
+        },
+        stop : function(e, ui){
+            $(e.target).css('opacity',1);
+        }
+    }).droppable({
+        tolerance : "intersect",
+        over : function(ui,e){
+            var firstCSS = $(ui.target).css(['top','left','right','width','height']);
+            var secondCSS = $(e.draggable[0]).css(['top','left','right','width','height']);
+
+            $(ui.target).css({
+                top:secondCSS['top'],
+                left:secondCSS['left'],
+                right:secondCSS['right'],
+                width:secondCSS['width'],
+                height:secondCSS['height']
+            });
+            $(e.draggable[0]).css({
+                top:firstCSS['top'],
+                left:firstCSS['left'],
+                right:firstCSS['right'],
+                width:firstCSS['width'],
+                height:firstCSS['height']
+            });
+        }
+    });
+
+    //.resizable({handles:"n, s, e, w"})
+
 
 <#if json?has_content>
     {
@@ -335,21 +436,13 @@ $(function () {
                 color: 'transparent'
             },
             colors: arrayOfColours[${c_index}%arrayOfColours.length],
-            chartArea: {left: 20, right: 20, width: (sideWidth - 60)}
+            chartArea: {width:"100%",left:20,right: 20}
         };
 
         var chart = new google.visualization.PieChart(document.getElementById(column.id));
-
         chart.draw(data, options);
     </#list>
     }
-
-    $('#filterTitle').on('click', function () {
-        if ($('#filterForm').is(':hidden'))
-            $('#filterForm').show();
-        else
-            $('#filterForm').hide();
-    });
 
     $('input[name=usernameAll]').on('click', function () {
         if ($(this).is(':checked'))
@@ -366,9 +459,12 @@ $(function () {
     });
 
     var $paperButtons = $('.paper_buttons');
+    var $layoutButtons = $('.layout_buttons');
     $('html').on('click', function () {
         if ($paperButtons.is(":visible"))
             $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
     });
 
     $('#paperMenu').on('click', function (event) {
@@ -376,8 +472,30 @@ $(function () {
             $paperButtons.show();
         else
             $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
         event.stopPropagation();
     });
+
+    $('#layoutButton').on('click', function (event) {
+        if ($layoutButtons.is(':hidden'))
+            $layoutButtons.show();
+        else
+            $layoutButtons.hide();
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
+        event.stopPropagation();
+    });
+
+    var colTotal = ${columns?size};
+    var colCount = 0;
+
+    var interval = setInterval(function(){
+        console.log('ho');
+        $('.chart_'+(colCount%colTotal)).css('display','none');
+        colCount++;
+        $('.chart_'+(colCount%colTotal)).css('display','inline-block');
+    },5000);
 
 });
 

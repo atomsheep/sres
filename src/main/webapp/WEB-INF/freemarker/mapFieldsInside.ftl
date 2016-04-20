@@ -37,12 +37,10 @@
     <#list record as r>
         <tr class="fieldRow">
             <td>
-                <input type="checkbox" name="extra${r_index?c}" class="checkField"
-                       <#if (r_index >= fields?size)>checked="checked"</#if>/>
+                <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= fields?size)>checked="checked"</#if>/>
             </td>
             <td>
-                <input type="text" name="key${r_index?c}" value="${r}"
-                       <#if (r_index < fields?size)>disabled="disabled"</#if>/>
+                <input type="text" name="key${r_index?c}" value="${r}" class='form-control' <#if (r_index < fields?size)>disabled="disabled"</#if>/>
             </td>
             <td>
                 <select name="value${r_index?c}" class="form-control"
