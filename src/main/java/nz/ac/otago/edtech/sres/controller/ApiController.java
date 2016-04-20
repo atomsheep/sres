@@ -6,10 +6,12 @@ import com.mongodb.client.MongoDatabase;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.sres.util.MongoUtil;
 import nz.ac.otago.edtech.util.CommonUtil;
+import nz.ac.otago.edtech.util.JSONUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -260,15 +262,16 @@ public class ApiController {
     @RequestMapping(value = "/user/{id}", method = RequestMethod.POST)
     public ResponseEntity<Document> user(@PathVariable String id,
                                          @RequestParam("token") String token,
-                                         @RequestParam("data") Document user) {
+                                         @RequestParam("data") String data) {
         Document oldUser = null;
         Document doc = validateToken(token);
         if (doc != null) {
             ObjectId uId = new ObjectId(id);
             oldUser = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, uId);
             if (oldUser != null) {
-                for (String key : user.keySet())
-                    oldUser.put(key, user.get(key));
+                JSONObject object = JSONUtil.parse(data);
+                for (String key : (Set<String>)object.keySet())
+                    oldUser.put(key, object.get(key));
                 db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq("_id", uId),
                         new Document("$set", oldUser));
                 MongoUtil.changeUserObjectId2String(oldUser);
