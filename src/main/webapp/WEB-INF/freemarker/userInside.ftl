@@ -42,7 +42,7 @@ ${SRES_INTRO_TEXT}
                     <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>
                 </td>
                 <td style='text-align:center'>
-                    <a href="${baseUrl}/user/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper details</a>
+                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper details</a>
                 </td>
                 <td style='text-align:center;border-right:none'>
                     <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="width:100%;display:block">Delete ${ICN}</button>
@@ -50,32 +50,7 @@ ${SRES_INTRO_TEXT}
             </tr>
         </#list>
     </#if>
-       <#--
-        <tr class='listOptions' style='display:none'>
-            <td>List actions:</td>
-            <td>
-                <button id="viewList" class="btn btn-default btn-primary">View student list</button>
-                <button id="viewPaper" class="btn btn-default btn-primary">View ${ICN} information</button>
-            </td>
-        </tr>
-        <tr>
-            <td>Administrator actions:</td>
-            <td>
-                <input class='btn btn-default btn-primary' type="button" id="editList"
-                       value="edit list options"
-                       onClick="javascript:window.location = 'editStudentListTable.cfm?action=edit&tableuuid='+$('#paperLists').val();">
-                <input class='btn btn-default btn-primary' type="button" id="bulk_import_data"
-                       value="bulk import data"
-                       onClick="javascript:window.location = 'importData.cfm?tableuuid=' + $('#paperLists').val();"/>
-            </td>
-        </tr>
-        <tr>
-            <td>Superadministrator actions:</td>
-            <td>
-                <button id="deleteList" class="btn btn-default btn-danger">Delete selected ${ICN}</button>
-            </td>
-        </tr>
-        -->
+
     </table>
 </div>
 

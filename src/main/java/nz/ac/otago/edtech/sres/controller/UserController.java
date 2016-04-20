@@ -33,18 +33,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.mongodb.assertions.Assertions.notNull;
@@ -65,6 +65,9 @@ public class UserController {
 
     // Which to use, DBObject, BasicDBObject, or Document
     // http://stackoverflow.com/questions/29722424/java-mongodb-bson-class-confusion
+
+    public static final String DATE_ONLY_FORMAT = "dd/MM/yyyy";
+    private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_ONLY_FORMAT);
 
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
@@ -155,7 +158,7 @@ public class UserController {
     public String addColumn(@PathVariable String id,
                             HttpServletRequest request,
                             ModelMap model) {
-        model.put("id", id);
+        model.put("paperId", id);
         model.put("pageName", "addColumn");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
@@ -165,22 +168,61 @@ public class UserController {
     public String editColumn(@PathVariable String id,
                              HttpServletRequest request,
                              ModelMap model) {
+
+        String[] keys = {"_id", "id", "name", "description", "tags", "paperref", "activeFrom", "activeTo"};
+        List<String> keyList = Arrays.asList(keys);
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+
+        ModelMap extra = new ModelMap();
+        for (String key : column.keySet()) {
+            if (!keyList.contains(key))
+                extra.put(key, column.get(key));
+        }
         model.put("column", column);
+        model.put("extra", extra);
+        model.put("paperId", column.get("paperref"));
         model.put("pageName", "addColumn");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
-    @RequestMapping(value = "/saveColumn/{id}", method = RequestMethod.GET)
-    public String saveColumn(@PathVariable String id,
-                             HttpServletRequest request,
-                             ModelMap model) {
-        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
-        model.put("column", column);
-        model.put("pageName", "addColumn");
-        MongoUtil.putCommonIntoModel(db, request, model);
-        return Common.DEFAULT_VIEW_NAME;
+    @RequestMapping(value = "/saveColumn", method = RequestMethod.POST)
+    public ResponseEntity<String> saveColumn(@RequestParam(value = "paperId", required = false) String paperId,
+                                             @RequestParam(value = "_id", required = false) String _id,
+                                             @RequestParam("name") String name,
+                                             @RequestParam(value = "description", required = false) String description,
+                                             @RequestParam("tags") String tags,
+                                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
+                                             @RequestParam(value = "activeTo", required = false) Date activeTo,
+                                             @RequestParam("json") String json,
+                                             HttpServletRequest request) {
+
+        String action = "saveColumn";
+        boolean success = false;
+        String detail = null;
+        JSONObject object = JSONUtil.parse(json);
+        object.put("name", name);
+        if (description != null)
+            object.put("description", description);
+        object.put("tags", tags);
+        if (activeFrom != null)
+            object.put("activeFrom", activeFrom);
+        if (activeTo != null)
+            object.put("activeTo", activeTo);
+        if (_id != null) {
+            // update existing column
+            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+                    .updateOne(eq("_id", new ObjectId(_id)),
+                            new Document("$set", new Document(object)));
+        } else {
+            ObjectId paperref = new ObjectId(paperId);
+            object.put("paperref", paperref);
+            // create a new column
+            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+                    .insertOne(new Document(object));
+        }
+        success = true;
+        return OtherUtil.outputJSON(action, success, detail);
     }
 
     @RequestMapping(value = "/addStudentList/{id}", method = RequestMethod.GET)
@@ -569,6 +611,51 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    @RequestMapping(value = "/editPaper/{id}", method = RequestMethod.GET)
+    public String editPaper(@PathVariable String id,
+                            HttpServletRequest request,
+                            ModelMap model) {
+        String[] keys = {"_id", "id", "code", "name", "year", "semester", "owner", "status"};
+        List<String> keyList = Arrays.asList(keys);
+
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
+        ModelMap extra = new ModelMap();
+        for (String key : paper.keySet()) {
+            if (!keyList.contains(key))
+                extra.put(key, paper.get(key));
+        }
+        model.put("paper", paper);
+        model.put("extra", extra);
+        model.put("pageName", "editPaper");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
+    @RequestMapping(value = "/savePaper", method = RequestMethod.POST)
+    public ResponseEntity<String> savePaper(@RequestParam(value = "paperId", required = false) String paperId,
+                                            @RequestParam("_id") String _id,
+                                            @RequestParam("code") String code,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("year") String year,
+                                            @RequestParam("semester") String semester,
+                                            @RequestParam("json") String json,
+                                            HttpServletRequest request) {
+        String action = "savePaper";
+        boolean success;
+        String detail = null;
+        JSONObject object = JSONUtil.parse(json);
+        object.put("code", code);
+        object.put("name", name);
+        object.put("year", year);
+        object.put("semester", semester);
+        // update existing column
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
+                .updateOne(eq("_id", new ObjectId(_id)),
+                        new Document("$set", new Document(object)));
+        success = true;
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
 
     @RequestMapping(value = "/filterStudentList", method = RequestMethod.POST)
     public String filterStudentList(@RequestParam("id") String id,
@@ -583,9 +670,6 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
 
         Set<ObjectId> set = new HashSet<ObjectId>();
-
-        log.debug("json = {}", json);
-
         JSONArray array = JSONUtil.parseArray(json);
 
         for (Object oo : array) {
@@ -675,25 +759,17 @@ public class UserController {
         boolean success = false;
         String detail = null;
 
-        ModelMap datum = new ModelMap();
-        value = value.trim();
-        if (NumberUtils.isNumber(value)) {
-            Number num = NumberUtils.createNumber(value);
-            datum.put("value", num);
-        } else
-            datum.put("value", value);
-        datum.put("timestamp", new Date());
-        datum.put("updatedBy", user.get("_id"));
-        List<ModelMap> list = new ArrayList<ModelMap>();
-        list.add(datum);
-
-        ObjectId userDataId = new ObjectId(id);
-        UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(
-                eq("_id", userDataId),
-                new Document("$push", new Document("data", new Document(new Document("$each", list).append("$position", 0)))));
-        if (result.getModifiedCount() == 1)
+        Map map = MongoUtil.updateUserData(db, value, id, user);
+        if (map != null)
             success = true;
         return OtherUtil.outputJSON(action, success, detail);
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        dateFormat.setLenient(false);
+        // true passed to CustomDateEditor constructor means convert empty String to null
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
     }
 
     // copy from com.mongodb.client.model.Filters
@@ -722,7 +798,6 @@ public class UserController {
             return writer.getDocument();
         }
     }
-
 
 }
 
