@@ -1,0 +1,45 @@
+.popup_simple
+{
+    font-size : 14px;
+    z-index : 5000;
+    position : absolute;
+    background: white;
+    border : 2px solid black;
+    padding : 30px;
+    text-align : center;
+    display:none;
+}
+
+.popup_simple_content
+{
+    float:left;
+    width:100%;
+}
+
+.popup_simple_confirm,
+.popup_simple_cancel
+{
+    cursor:pointer;
+    margin-top:20px;
+}
+
+.popup_simple_worker
+{
+    background: url(loading.gif) no-repeat center;
+    width:100%;
+    height:50px;
+}
+
+.popup_simple_veil
+{
+    z-index:4000;
+    position:fixed;
+    top:0;
+    left:0;
+    -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+    filter: alpha(opacity=50);
+    opacity:.3;
+    width:100%;
+    height:100%;
+    display:none;
+}

@@ -109,21 +109,23 @@ tr.fieldRow {
     font-weight: 300;
 }
 
-#paperList th, #paperList td, #studentList th, #studentList td{
-    padding:7px 10px;
+#paperList th, #paperList td, #studentList th, #studentList td, #column_table th, #column_table td{
+    padding:5px 10px;
     text-align: center;
-    border-left:1px solid #066888;
-    border-right:1px solid #066888;
+    border-right:1px solid #043B4E;
 }
 
-#paperList th, #studentList th { vertical-align: bottom;font-weight:500;font-style:italic;border:1px solid #043B4E;border-bottom-width: 10px;background:#066888 }
-#paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td { background: #043B4E }
+#paperList th, #studentList th, #column_table th { vertical-align: bottom;font-weight:500;font-style:italic;background:#066888 }
+#paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td,
+#column_table tr:nth-child(odd) td { background: #043B4E }
 
 #studentList td:hover{
     background:#066888 !important;cursor:pointer;
 }
 
-.filterDiv { padding:0 }
+.filterDiv { padding:0; border-bottom:1px solid #021E27 }
+.filterDiv input, .filterDiv select { border:none;border-right:1px solid #043B4E }
+
 .operatorDiv { padding:0 0 10px }
 
 .sres_panel { background:#021E27;border:1px solid #066888 }
@@ -144,6 +146,11 @@ a { color: #0886AF }
 .midPanel { top:51px; }
 .bottomPanel { bottom:0 }
 .topPanel, .midPanel, .bottomPanel { position:absolute;left:0;overflow:hidden;margin:20px; }
+.sidePanel1, .sidePanel2 { margin:20px;border:1px solid #066888;width:33%;position:absolute;top:51px;right:0;overflow:hidden }
+
+.placeHolder{ display:none; border:5px dotted #fff;background:#021E27;cursor:pointer;color:#fff;opacity:.4 }
+.placeHolder:hover{ opacity:1}
+.deletePanel{ cursor:pointer }
 
 .layout { float:left;width:20px;height:20px;margin-top:-1px }
 .layout1{ background-image: url(../img/layout1_blue.svg);border:none }
@@ -161,3 +168,8 @@ a { color: #0886AF }
 
 textarea { resize: vertical }
 
+.sres_checkbox { color:#fff;cursor:pointer;font-size:16px;width:18px;text-align:center }
+.sres_checkbox:hover { color:#aaa }
+
+.mainPopup { width:40% }
+.mainPopup td{ padding: 20px }
