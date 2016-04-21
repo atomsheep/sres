@@ -29,20 +29,29 @@
     </#if>
 </div>
 
+<div class='topPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+
 <div class='topPanel sres_panel'>
 
 <div style='margin:0;'>
-    <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='fa fa-times' style='float:right'></span></h4>
+    <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
     <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
-    <table width=100% cellspacing=0 cellpadding=0>
+    <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
+        <tr>
+            <th style='text-align:center;background:#066888;border-left:none'><input  checked="checked" type="checkbox" name="columnsAll"/></th>
+            <th style='text-align:left;background:#066888;'>Column name</th>
+            <th style='text-align:left;background:#066888'>Description</th>
+            <th style='text-align:left;background:#066888'>Tags</th>
+        </tr>
 <#list columns?chunk(1) as cc>
     <tr>
         <#list cc as c>
-            <td style='padding:10px 10px 0'>
-                <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox"/> <label for='check_${c._id}'>${c.name}</label>
-            </td>
-            <td>${c.description!}</td>
-            <td>${c.tags!}</td>
+            <td>
+                <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
+                </td>
+            <td style='text-align:left'>${c.name}</td>
+            <td style='text-align:left'>${c.description!}</td>
+            <td style='text-align:left'>${c.tags!}</td>
         </#list>
     </tr>
         </#list>
@@ -50,13 +59,16 @@
     </div>
 </div>
 </div>
+
+<div class='midPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+
 <div class='midPanel sres_panel'>
 
     <div style='margin:0;'>
-        <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times' style='float:right'></span></h4>
+        <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
         <div id='topBar' style='position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px'>
-            <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px'><span class='fa fa-plus'></span> New filter</span>
-            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px'>Filter results</button>
+            <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
+            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
         </div>
         <div style="clear:both"></div>
 
@@ -68,20 +80,13 @@
 
             <div id="filterList">
                 <div class="filterDiv">
-                    <div class="operatorDiv" style='float:left'>
-                        <select name="join" class="form-control" style='border-radius:0'>
-                            <option value="and">and</option>
-                            <option value="or">or</option>
-                        </select>
-                    </div>
-                    <div style='clear:both'></div>
-                    <select name="colref" class="form-control" style='float:left;border-radius:0'>
+                    <select name="colref" class="form-control" style='float:left;border-radius:0;width:40%'>
                     <#list columns as c>
                         <option value="${c._id}">${c.name}</option>
                     </#list>
                     </select>
 
-                    <select name="operator" class="form-control" style='float:left;border-radius:0'>
+                    <select name="operator" class="form-control" style='float:left;border-radius:0;width:20%'>
                         <option value="$eq">equal to</option>
                         <option value="$lt">less than</option>
                         <option value="$lte">less than or equal to</option>
@@ -90,14 +95,24 @@
                         <option value="$ne">not equal to</option>
                     </select>
 
-                    <input type="text" name="value" class="form-control" style="width: 250px;float:left;border-radius:0"/>
+                    <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
 
-                    <span class="fa fa-times removeFilter" style='margin-left:10px'></span>
+                       <select name="join" class="form-control" style='display:none;float:left;border-radius:0;width:10%'>
+                           <option value="and">and</option>
+                           <option value="or">or</option>
+                       </select>
+
+                    <div class='removeFilter btn btn-default btn-danger' style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span style='padding:10px' class="fa fa-times"></span></div>
+                    <div style='clear:both'></div>
+
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+<div class='bottomPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+
 <div class='bottomPanel sres_panel'>
 
     <h4 style='margin:0;padding:10px;background:#043B4E'>
@@ -110,7 +125,7 @@
         <#if results?has_content>
        <#-- <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>-->
         </#if>
-        <span class='fa fa-times' style='float:right'></span>
+        <span class='fa fa-times deletePanel' style='float:right'></span>
     </h4>
 
 
@@ -155,7 +170,7 @@
     </table>
 </form>
 <#else>
-<div style="padding: 0 20px 20px">
+<div style="padding:20px">
     No students found.
 </div>
 </#if>
@@ -163,9 +178,11 @@
 
 </div>
 
-<div id="sidePanel1" class='sres_panel' style="margin:20px;border:1px solid #066888;width:33%;position:fixed;top:51px;right:0;overflow:hidden">
+<div class='sidePanel1 sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+
+<div id="sidePanel1" class='sidePanel1 sres_panel'>
 <#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
-    <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times' style='float:right'></span></h4>
+    <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times deletePanel' style='float:right'></span></h4>
     <div style='font-size:24px;padding:10px;font-weight:300;'>
     ${ICN_C} code: ${paper.code!}<br/>
     ${ICN_C} name: ${paper.name!}<br/>
@@ -174,11 +191,13 @@
     </div>
 </div>
 
-<div id="sidePanel2" class='sres_panel' style="margin:20px;border:1px solid #066888;width:33%;background:white;position:fixed;top:51px;right:0;overflow:hidden">
+<div class='sidePanel2 sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+
+<div id="sidePanel2" class='sidePanel2 sres_panel' style='background:white'>
     <#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
-        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times' style='float:right'></span></h4>
+        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
     <#list columns as c>
-    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto;width: 400px; height: 300px;"></div>
+    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
 </#list>
 
 </div>
@@ -188,6 +207,95 @@
 <script type="text/javascript">
 
 $(function () {
+
+    $('input[name=usernameAll]').on('click', function () {
+        if ($(this).is(':checked')){
+            $('input[name=usernames]').prop('checked', true);
+            $('input[name=usernames]').next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
+        }
+        else{
+            $('input[name=usernames]').prop('checked', false);
+            $('input[name=usernames]').next('.sres_checkbox').removeClass('fa-check-circle').addClass('fa-circle-thin');
+        }
+    });
+
+    $('input[name=columnsAll]').on('click', function () {
+            $('input[name=columns]').each(function(){
+                var self = $(this);
+                self.click();
+                var checked = self.is(":checked");
+
+                if (checked)
+                {
+                    self.prop('checked', true);
+                    self.next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
+                }
+                else
+                {
+                    self.prop('checked', false);
+                    self.next('.sres_checkbox').removeClass('fa-check-circle').addClass('fa-circle-thin');
+                }
+            });
+    });
+
+    $('input[name=usernameAll]').click();
+
+    $('.deletePanel').on('click', function(){
+        var self = $(this);
+        var parent = self.parents('.sres_panel');
+        parent.prev('.placeHolder').show();
+        parent.hide();
+    });
+
+    $('input[type=checkbox]').each(function(i,e){
+        var self = $(this);
+        var newCheckbox = "";
+        if(self.is(":checked")){
+            newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
+        }   else{
+            newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
+        }
+        self.after(newCheckbox);
+        self.css('display','none');
+    });
+
+    $(document).on('click','.sres_checkbox',function(){
+        var self = $(this);
+        if(self.hasClass('fa-check-circle')){
+            self.removeClass('fa-check-circle').addClass('fa-circle-thin');
+        }                  else{
+            self.addClass('fa-check-circle').removeClass('fa-circle-thin');
+        }
+        self.prev('input[type=checkbox]').click();
+    });
+
+    var third = 1/3;
+    var screenwidth = $(document).width() - 60;
+
+    var firstPanelStart = 50 + $('#topBar').height();
+    var screenheight = $(document).height() - firstPanelStart - 80;
+    console.log(screenheight);
+    var secondPanelStart = firstPanelStart + (screenheight *.25) + 20;
+    var thirdPanelStart = secondPanelStart + (screenheight *.25) + 20;
+
+    var $sidePanel1 = $('.sidePanel1');
+    var $sidePanel2 = $('.sidePanel2');
+
+    $sidePanel1.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
+    $sidePanel2.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
+
+    $('.topPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
+    $('.midPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
+    $('.bottomPanel').css("width",(screenwidth*third*3+20)+"px").css("height",(screenheight *.5)+"px").css('top',thirdPanelStart+"px");
+
+    var sideWidth = $sidePanel1.width();
+    var sideHeight = $sidePanel1.height() -40;
+    $('.chart').css('margin-top','10px').css('width', sideWidth + 'px').css("height",sideHeight + "px");
+
+    var filterList = $('#filterList');
+    var filterDivHtml = $('.filterDiv').html();
+ //   $('div.removeFilter').remove();
+    $('.operatorDiv').remove();
 
     $.fn.shortText = function(str,length){
         var item = $(this);
@@ -205,38 +313,71 @@ $(function () {
         }
     });
 
-    var third = 1/3;
-    var screenwidth = $(document).width() - 60;
-
-    var firstPanelStart = 50 + $('#topBar').height();
-    var screenheight = $(document).height() - firstPanelStart - 80;
-    var secondPanelStart = firstPanelStart + (screenheight *.25) + 20;
-    var thirdPanelStart = secondPanelStart + (screenheight *.25) + 20;
-
-    var $sidePanel1 = $('#sidePanel1');
-    var $sidePanel2 = $('#sidePanel2');
-
-    $sidePanel1.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
-    $sidePanel2.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
-
-    $('.topPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
-    $('.midPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
-    $('.bottomPanel').css("width",(screenwidth*third*3+20)+"px").css("height",(screenheight *.5)+"px").css('top',thirdPanelStart+"px");
-
-    var sideWidth = $sidePanel1.width();
-    var sideHeight = $sidePanel1.height() -40;
-    $('.chart').css('margin-top','10px').css('width', sideWidth + 'px').css("height",sideHeight + "px");
-
-    var filterList = $('#filterList');
-    var filterDivHtml = $('.filterDiv').html();
-    $('span.removeFilter').remove();
-    $('.operatorDiv').remove();
 
     $('span.newFilter').on('click', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
+        div.prev('.filterDiv').find('input[name=value]').css('width','25%');
+        div.prev('.filterDiv').find('select[name=join]').css('display','inline-block');
         $('span.removeFilter').show();
     });
 
+    var columns = $('.topPanel:last').html();
+    var filters = $('.midPanel:last').html();
+    var studentList = $('.bottomPanel:last').html();
+    var paperInfo = $('.sidePanel1:last').html();
+    var dataOverview = $('.sidePanel2:last').html();
+
+    var p;
+
+    $(document).on('click','.addPanel',function(){
+        var self = $(this);
+        p.popup_simple('destroy');
+        var placeholder = p.data('placeholder');
+        var div = placeholder.next('.sres_panel');
+        placeholder.hide();
+        if(self.hasClass("addColumns"))
+            div.html(columns).show();
+        else if(self.hasClass("addFilters"))
+            div.html(filters).show();
+        else if(self.hasClass('addStudentList'))
+            div.html(studentList).show();
+        else if(self.hasClass('addPaperInfo'))
+            div.html(paperInfo).show();
+        else if(self.hasClass("addDataOverview"))
+            div.html(dataOverview).show();
+    });
+
+    $('.placeHolder').on('click', function(){
+        var self = $(this);
+        p = $("<div></div>").appendTo("body");
+        p.data('placeholder',self);
+
+        var inner = $("<div></div>");
+        var table = $("<table style='width:100%'></table>");
+        var tr1 = $("<tr></tr>");
+        var tr2 = $("<tr></tr>");
+        var button1 = "<td><button class='addPanel addColumns btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-bars' style='font-size:32px;transform:rotate(90deg)' ></span><br/>Columns</button></td>";
+        var button2 = "<td><button class='addPanel addFilters btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-sitemap' style='font-size:32px;' ></span><br/>Filters</button></td>";
+        var button3 = "<td><button class='addPanel addStudentList btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-bars' style='font-size:32px;' ></span><br/>Student list</button></td>";
+
+        var button4 = "<td><button class='addPanel addDataOverview btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-pie-chart' style='font-size:32px;' ></span><br/>Data overview</button></td>";
+        var button5 = "<td><button class='addPanel addPaperInfo btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-file-text-o' style='font-size:32px;' ></span><br/>${ICN_C} info</button></td>";
+        var button6 = "<td><button class='addPanel btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-envelope' style='font-size:32px;' ></span><br/>Email log</button></td>";
+
+        tr1.append(button1, button2, button3);
+        tr2.append(button4, button5, button6);
+        table.append(tr1, tr2);
+
+        inner.append("<h4 style='color:#021E27'>Add a panel</h4>");
+        inner.append(table);
+
+        p.popup_simple('init',{
+            content:inner,
+            extraClasses : ["mainPopup"],
+            confirm : false,
+            cancel:true
+        }).popup_simple("show").popup_simple("centre");
+    });
 
 
     $('.sres_panel').draggable({ handle: "h4",
@@ -306,7 +447,7 @@ $(function () {
     }
 </#if>
 
-    $(document).on('click', 'span.removeFilter', function () {
+    $(document).on('click', 'div.removeFilter', function () {
         $(this).parent().remove();
     });
 
@@ -444,15 +585,6 @@ $(function () {
     </#list>
     }
 
-    $('input[name=usernameAll]').on('click', function () {
-        if ($(this).is(':checked'))
-            $('input[name=usernames]').prop('checked', true);
-        else
-            $('input[name=usernames]').prop('checked', false);
-    });
-
-    $('input[name=usernameAll]').click();
-
     $('.emailStudents').on('click', function() {
         $('#resultsForm').submit();
         return false;
@@ -491,7 +623,6 @@ $(function () {
     var colCount = 0;
 
     var interval = setInterval(function(){
-        console.log('ho');
         $('.chart_'+(colCount%colTotal)).css('display','none');
         colCount++;
         $('.chart_'+(colCount%colTotal)).css('display','inline-block');

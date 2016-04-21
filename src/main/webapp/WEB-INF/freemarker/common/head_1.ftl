@@ -23,6 +23,10 @@
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.js"></script>
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css"/>
 
+    <!-- Plugins -->
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/popup_simple/popup_simple.css" />
+    <script src="${baseUrl}/assets/js/popup_simple/popup_simple.js" type="text/javascript"></script>
+
     <script>
   /*
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
