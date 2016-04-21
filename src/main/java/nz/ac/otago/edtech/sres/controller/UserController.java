@@ -518,7 +518,7 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         log.debug("id = {}", id);
         log.debug("usernames = {}", (Object[]) usernames);
-        model.put("columns",columns);
+        model.put("columns", columns);
         model.put("users", users);
         model.put("pageName", "emailStudents");
         MongoUtil.putCommonIntoModel(db, request, model);
@@ -553,6 +553,31 @@ public class UserController {
         model.put("pageName", "emailStudents");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
+    }
+
+    // remove given user (id) from paper (paperId)
+    @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
+    public ResponseEntity<String> removeUser(@RequestParam("id") String id,
+                                             @RequestParam("paperId") String paperId,
+                                             HttpServletRequest request) {
+        String action = "removeUser";
+        boolean success = false;
+        String detail = null;
+        Document user = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, id);
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
+        if ((user != null) && (paper != null)) {
+            // remove this paper from user's papers array
+            db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                    .updateOne(eq("_id", new ObjectId(id)),
+                            new Document("$pull", new Document("papers", new Document("paperref", new ObjectId(paperId))))
+                    );
+            success = true;
+        } else if ((user == null) && (paper == null))
+            detail = "Can not find given user and paper";
+        else if (user == null)
+            detail = "Can not find given user";
+        else detail = "Can not find given paper";
+        return OtherUtil.outputJSON(action, success, detail);
     }
 
     @RequestMapping(value = "/deletePaper/{id}", method = RequestMethod.GET)
@@ -752,7 +777,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/saveColumnValue", method = RequestMethod.POST)
-    public ResponseEntity<String> saveColumnValue(@RequestParam("id") String id,
+    public ResponseEntity<String> saveColumnValue(@RequestParam(value = "id", required = false) String id,
+                                                  @RequestParam(value = "userId", required = false) String userId,
+                                                  @RequestParam(value = "columnId", required = false) String columnId,
                                                   @RequestParam("value") String value,
                                                   HttpServletRequest request) {
         String action = "saveColumnValue";
@@ -760,10 +787,18 @@ public class UserController {
         Document user = MongoUtil.getUser(db, userName);
         boolean success = false;
         String detail = null;
-
-        Map map = MongoUtil.updateUserData(db, value, id, user);
-        if (map != null)
-            success = true;
+        if (id != null) {
+            Map map = MongoUtil.updateUserData(db, value, id, user);
+            if (map != null)
+                success = true;
+        } else if ((userId != null) && (columnId != null)) {
+            log.debug("save data here {}", value);
+            Map map = MongoUtil.saveUserData(db, value, new ObjectId(columnId), new ObjectId(userId), user);
+            if (map != null) {
+                detail = map.get("_id").toString();
+                success = true;
+            }
+        }
         return OtherUtil.outputJSON(action, success, detail);
     }
 

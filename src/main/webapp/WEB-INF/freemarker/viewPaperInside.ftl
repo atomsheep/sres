@@ -6,7 +6,10 @@
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 <div id='topBar' style='position:absolute;top:50px;left:0;right:0;background:#0886AF'>
-    <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'><a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> > View paper (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})</span>
+    <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
+        View ${ICN} (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})
+    </span>
     <#if paper?has_content>
         <div style='position:relative'>
             <div id='paperMenu' style='float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
@@ -118,7 +121,8 @@
 <div style='position:absolute;top:40px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
 <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
     <input name="id" type="hidden" value="${id}" />
-    <table id="studentList" width=100%>
+    <table id="studentList" width="100%">
+        <thead>
         <tr>
             <th style='text-align:center;background:#066888;border-left:none'><input type="checkbox" name="usernameAll"/></th>
             <th style='text-align:left;background:#066888;'>Username</th>
@@ -130,10 +134,11 @@
 
             </#list>
         </tr>
-
+        </thead>
+        <tbody>
         <#list results as r>
             <tr>
-                <td style='text-align:center;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
+                <td style='text-align:center;border-left:none' class="userCheck"><input type="checkbox" value="${r.username}" name="usernames"/> <span class="fa fa-times deleteUser" style="display:none" data-id="${r._id}"></span> </td>
                 <td style='text-align:left'>${r.username}</td>
                 <td style='text-align:left'>${r.givenNames}</td>
                 <td style='text-align:left'>${r.surname}</td>
@@ -141,17 +146,16 @@
                 <#list r.data as d>
                     <#if d.userData?has_content>
                     <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
-                        data-value="<#if d.userData?has_content>${d.userData.data[0].value}</#if>">
-                        <#if d.userData?has_content>
-                    ${d.userData.data[0].value}
-                        </td>
-                </#if>
+                        data-value="${d.userData.data[0].value}">
+                        ${d.userData.data[0].value}
+                    </td>
                     <#else>
-                    <td></td>
+                    <td class="${d.column._id} columnData" data-columnid="${d.column._id}" data-userid="${r._id}"></td>
                     </#if>
                 </#list>
             </tr>
         </#list>
+        </tbody>
     </table>
 </form>
 <#else>
@@ -331,7 +335,9 @@ $(function () {
     $('td', '#studentList').on("dblclick", function () {
         var slf = $(this);
         var id = slf.data('id');
-        if (id) {
+        var userId = slf.data("userid");
+        var columnId = slf.data("columnid");
+        if ((id !=null) || ((userId!=null) && (columnId!=null))) {
             var oldValue = $.trim(slf.text());
             var input = $('<input/>').attr('type', 'text').attr('value', oldValue);
             slf.html(input);
@@ -364,17 +370,22 @@ $(function () {
         } else {
             $('.' + value).hide();
         }
-
     });
 
     function saveChanges(td, input, oldValue) {
-        var id = td.data('id');
         var value = $.trim(input.val());
         if (value != oldValue) {
+            var id = td.data('id');
+            var userId = td.data("userid");
+            var columnId = td.data("columnid");
             $.post('${baseUrl}/user/saveColumnValue',
-                    { id: id, value: value },
+                    { id: id, userId: userId, columnId: columnId, value: value },
                     function (json) {
                         if (json.success) {
+                            if(json.detail) {
+                                console.log("detail", json.detail);
+                                td.data("id", json.detail);
+                            }
                             changeInputBackToText(td, input, value);
                         } else if (json.detail)
                             alert(json.detail);
@@ -410,7 +421,7 @@ $(function () {
         column.data = {};
         $('td.' + column.id).each(function (i, e) {
             var value = $(e).data('value');
-            if (value == "")
+            if ((value == null) || (value == ""))
                 value = "[blank]";
             if (!column.data[value])
                 column.data[value] = 1;
@@ -496,6 +507,33 @@ $(function () {
         colCount++;
         $('.chart_'+(colCount%colTotal)).css('display','inline-block');
     },5000);
+
+    $('td.userCheck').on("mouseover", function(){
+        var slf = $(this);
+        slf.find('span').show();
+    });
+
+    $('td.userCheck').on("mouseout", function () {
+        var slf = $(this);
+        slf.find('span').hide();
+    });
+
+    $('span.deleteUser').on('click', function(){
+        if(confirm("Are you sure you want to remove this user from current paper?")) {
+            var slf = $(this);
+            var id = slf.data('id');
+            console.log('delete user here', id);
+            var paperId = "${id}";
+            $.post('${baseUrl}/user/removeUser',
+                    {id: id, paperId: paperId},
+                    function(json){
+                        if(json.success) {
+                            console.log('removed user', id, 'from', paperId);
+                            slf.closest('tr').remove();
+                        }
+                    });
+        }
+    });
 
 });
 

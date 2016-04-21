@@ -291,7 +291,6 @@ public class MongoUtil {
             userdata.put("_id", oid);
             userdata.put("colref", colref);
             userdata.put("userref", userref);
-
             ModelMap datum = new ModelMap();
             if (NumberUtils.isNumber(value)) {
                 Number num = NumberUtils.createNumber(value);
