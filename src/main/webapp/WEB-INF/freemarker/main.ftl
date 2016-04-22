@@ -8,4 +8,6 @@
 
 <#include "${pageName}Inside.ftl" />
 
-<#include "common/footer.ftl" />
+<#if pageName != "viewPaper">
+    <#include "common/footer.ftl" />
+</#if>

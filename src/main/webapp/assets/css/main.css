@@ -115,7 +115,7 @@ tr.fieldRow {
     border-right:1px solid #043B4E;
 }
 
-#paperList th, #studentList th, #column_table th { vertical-align: bottom;font-weight:500;font-style:italic;background:#066888 }
+#paperList th, #studentList th, #column_table th { vertical-align: bottom;font-weight:500;font-style:italic;background:#fff;color:black }
 #paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td,
 #column_table tr:nth-child(odd) td { background: #043B4E }
 
@@ -142,11 +142,10 @@ label { font-weight:300; cursor:pointer;display:inline; }
 
 a { color: #0886AF }
 
-.topPanel { top:51px; }
-.midPanel { top:51px; }
-.bottomPanel { bottom:0 }
-.topPanel, .midPanel, .bottomPanel { position:absolute;left:0;overflow:hidden;margin:20px; }
-.sidePanel1, .sidePanel2 { margin:20px;border:1px solid #066888;width:33%;position:absolute;top:51px;right:0;overflow:hidden }
+.gridster { margin:10px }
+.gridster ul{ list-style:none;margin:0;padding:0; }
+/*.gridster ul li{ background:white }*/
+
 
 .placeHolder{ display:none; border:5px dotted #fff;background:#021E27;cursor:pointer;color:#fff;opacity:.4 }
 .placeHolder:hover{ opacity:1}
@@ -170,6 +169,14 @@ textarea { resize: vertical }
 
 .sres_checkbox { color:#fff;cursor:pointer;font-size:16px;width:18px;text-align:center }
 .sres_checkbox:hover { color:#aaa }
+th .sres_checkbox { color:#021E27 }
 
 .mainPopup { width:40% }
 .mainPopup td{ padding: 20px }
+
+.studentActions{ background:#043B4E; color:white;padding:10px }
+.studentActions:hover { background: #021E27;color:white }
+
+.topPanel {position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px;border-bottom:1px solid #043B4E}
+
+table.dataTable tbody tr { background: none !important }

@@ -23,6 +23,14 @@
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.js"></script>
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/bootstrap-tagsinput-latest/dist/bootstrap-tagsinput.css"/>
 
+    <script type="text/javascript" src="${baseUrl}/assets/js/jquery.gridster.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/css/jquery.gridster.css" />
+
+    <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/datatables.js"></script>
+    <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/FixedHeader-3.1.1/js/dataTables.fixedHeader.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/DataTables/datatables.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/DataTables/FixedHeader-3.1.1/css/fixedHeader.dataTables.css" />
+
     <!-- Plugins -->
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/popup_simple/popup_simple.css" />
     <script src="${baseUrl}/assets/js/popup_simple/popup_simple.js" type="text/javascript"></script>

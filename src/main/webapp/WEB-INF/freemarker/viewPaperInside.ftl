@@ -5,14 +5,14 @@
 ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
-<div id='topBar' style='position:absolute;top:50px;left:0;right:0;background:#0886AF'>
+<div id='topBar' class='topPanel' style='top:50px'>
     <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
         View ${ICN} (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})
     </span>
     <#if paper?has_content>
         <div style='position:relative'>
-            <div id='paperMenu' style='float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-bars'></span></div>
+            <div id='paperMenu' style='padding:9px 10px 10px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span style='display:block;' class='fa fa-bars'></span></div>
 
             <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
                 <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
@@ -32,185 +32,175 @@
     </#if>
 </div>
 
-<div class='topPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
+<div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow-y:scroll;overflow-x: hidden'>
 
-<div class='topPanel sres_panel'>
-
-<div style='margin:0;'>
-    <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
-    <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
-    <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
-        <tr>
-            <th style='text-align:center;background:#066888;border-left:none'><input  checked="checked" type="checkbox" name="columnsAll"/></th>
-            <th style='text-align:left;background:#066888;'>Column name</th>
-            <th style='text-align:left;background:#066888'>Description</th>
-            <th style='text-align:left;background:#066888'>Tags</th>
-        </tr>
-<#list columns?chunk(1) as cc>
-    <tr>
-        <#list cc as c>
-            <td>
-                <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
-                </td>
-            <td style='text-align:left'>${c.name}</td>
-            <td style='text-align:left'>${c.description!}</td>
-            <td style='text-align:left'>${c.tags!}</td>
-        </#list>
-    </tr>
-        </#list>
-        </table>
-    </div>
-</div>
-</div>
-
-<div class='midPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
-
-<div class='midPanel sres_panel'>
-
-    <div style='margin:0;'>
-        <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-        <div id='topBar' style='position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px'>
-            <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
-            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
-            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Save filters</button>
-            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Load filters</button>
-        </div>
-        <div style="clear:both"></div>
-
-        <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm"
-              class="form-inline" style='padding:40px 0 10px'>
-            <input type="hidden" name="id" value="${id}"/>
-            <input type="hidden" name="json" value=""/>
-
-
-            <div id="filterList">
-                <div class="filterDiv">
-                    <select name="colref" class="form-control" style='float:left;border-radius:0;width:40%'>
-                    <#list columns as c>
-                        <option value="${c._id}">${c.name}</option>
+    <div class="gridster">
+        <ul>
+            <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+                <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
+                <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
+                    <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
+                        <tr>
+                            <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox" name="columnsAll"/></th>
+                            <th style='text-align:left;'>Column name</th>
+                            <th style='text-align:left;'>Description</th>
+                            <th style='text-align:left;'>Tags</th>
+                            <th style='text-align:left;border-right:none'></th>
+                        </tr>
+                    <#list columns?chunk(1) as cc>
+                        <tr>
+                            <#list cc as c>
+                                <td>
+                                    <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
+                                </td>
+                                <td style='text-align:left'>${c.name}</td>
+                                <td style='text-align:left'>${c.description!}</td>
+                                <td style='text-align:left'>${c.tags!}</td>
+                                <td style='border-right:none;text-align:center;'><span class='fa fa-square' style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
+                            </#list>
+                        </tr>
                     </#list>
-                    </select>
-
-                    <select name="operator" class="form-control" style='float:left;border-radius:0;width:20%'>
-                        <option value="$eq">equal to</option>
-                        <option value="$lt">less than</option>
-                        <option value="$lte">less than or equal to</option>
-                        <option value="$gt">greater than</option>
-                        <option value="$gte">greater than or equal to</option>
-                        <option value="$ne">not equal to</option>
-                    </select>
-
-                    <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
-
-                       <select name="join" class="form-control" style='display:none;float:left;border-radius:0;width:10%'>
-                           <option value="and">and</option>
-                           <option value="or">or</option>
-                       </select>
-
-                    <div class='removeFilter btn btn-default btn-danger' style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span style='padding:10px' class="fa fa-times"></span></div>
-                    <div style='clear:both'></div>
-
+                    </table>
                 </div>
-            </div>
-        </form>
-    </div>
-</div>
+            </li>
+            <li class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1">
+                <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+                <div class='topPanel'>
+                    <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
+                    <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
+                </div>
+                <div style="clear:both"></div>
 
-<div class='bottomPanel sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
-
-<div class='bottomPanel sres_panel'>
-
-    <h4 style='margin:0;padding:10px;background:#043B4E'>
-    <#if json?has_content>
-        Search results (${results?size})
-        <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
-    <#else>
-        Students: ${results?size}
-    </#if>
-        <#if results?has_content>
-       <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>
-        </#if>
-        <span class='fa fa-times deletePanel' style='float:right'></span>
-    </h4>
+                <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm"
+                      class="form-inline" style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
+                    <input type="hidden" name="id" value="${id}"/>
+                    <input type="hidden" name="json" value=""/>
 
 
-<#if results?has_content>
-<div style='position:absolute;top:40px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
-<form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
-    <input name="id" type="hidden" value="${id}" />
-    <table id="studentList" width="100%">
-        <thead>
-        <tr>
-            <th style='text-align:center;background:#066888;border-left:none'><input type="checkbox" name="usernameAll"/></th>
-            <th style='text-align:left;background:#066888;'>Username</th>
-            <th style='text-align:left;background:#066888'>Given names</th>
-            <th style='text-align:left;background:#066888'>Surname</th>
-            <th style='text-align:left;background:#066888'>Email</th>
-            <#list columns as c>
-                <th class="${c._id}" style='background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                    <div id="filterList">
+                        <div class="filterDiv">
+                            <select name="colref" class="form-control" style='float:left;border-radius:0;width:40%'>
+                            <#list columns as c>
+                                <option value="${c._id}">${c.name}</option>
+                            </#list>
+                            </select>
 
-            </#list>
-        </tr>
-        </thead>
-        <tbody>
-        <#list results as r>
-            <tr>
-                <td style='text-align:center;border-left:none' class="userCheck"><input type="checkbox" value="${r.username}" name="usernames"/> <span class="fa fa-times deleteUser" style="display:none" data-id="${r._id}"></span> </td>
-                <td style='text-align:left'>${r.username}</td>
-                <td style='text-align:left'>${r.givenNames}</td>
-                <td style='text-align:left'>${r.surname}</td>
-                <td style='text-align:left'>${r.email!}</td>
-                <#list r.userdata as ud>
-                <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}" data-columnid="${ud.colref}" data-value="${ud.data[0].value}"> ${ud.data[0].value}</td>
-                </#list>
+                            <select name="operator" class="form-control" style='float:left;border-radius:0;width:20%'>
+                                <option value="$eq">equal to</option>
+                                <option value="$lt">less than</option>
+                                <option value="$lte">less than or equal to</option>
+                                <option value="$gt">greater than</option>
+                                <option value="$gte">greater than or equal to</option>
+                                <option value="$ne">not equal to</option>
+                            </select>
 
-                <#--
-                <#list r.data as d>
-                    <#if d.userData?has_content>
-                    <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
-                        data-value="${d.userData.data[0].value}">
-                        ${d.userData.data[0].value}
-                    </td>
+                            <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
+
+                            <select name="join" class="form-control" style='display:none;float:left;border-radius:0;width:10%'>
+                                <option value="and">and</option>
+                                <option value="or">or</option>
+                            </select>
+
+                            <div class='removeFilter btn btn-default btn-danger' style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span style='padding:10px' class="fa fa-times"></span></div>
+                            <div style='clear:both'></div>
+
+                        </div>
+                    </div>
+                </form>
+            </li>
+            <li class='sres_panel' data-row="3" data-col="1" data-sizex="3" data-sizey="2">
+
+                <h4 style='margin:0;padding:10px;background:#043B4E'>
+                    <#if json?has_content>
+                        Search results (${results?size})
+                <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
                     <#else>
-                    <td class="${d.column._id} columnData" data-columnid="${d.column._id}" data-userid="${r._id}"></td>
+                        Students: ${results?size}
                     </#if>
+                    <span class='fa fa-times deletePanel' style='float:right'></span>
+                </h4>
+
+                <div class='topPanel'>
+                    <#if results?has_content>
+                        <span class="btn btn-default btn-primary emailStudents" style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-envelope'></span> Email selected students</span>
+                        <button class="btn btn-default btn-primary" style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-mobile-phone'></span> SMS selected students</button>
+                        <button class="btn btn-default btn-primary" style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-pencil'></span> Edit selected students</button>
+                    </#if>
+                </div>
+
+                <div style='position:absolute;top:80px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
+                    <#if results?has_content>
+                        <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
+                            <input name="id" type="hidden" value="${id}" />
+                            <table id="studentList" width=100%>
+                                <thead>
+                                    <th style='text-align:center;border-left:none'><input type="checkbox" name="usernameAll"/></th>
+                                    <th style='text-align:left;'>Username</th>
+                                    <th style='text-align:left;'>Given names</th>
+                                    <th style='text-align:left;'>Surname</th>
+                                    <th style='text-align:left;'>Email</th>
+                                    <#list columns as c>
+                                        <th class="${c._id}" style='color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                                    </#list>
+                                </thead>
+                                <tbody>
+                                <#list results as r>
+                                    <tr>
+                                        <td style='text-align:center;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
+                                        <td style='text-align:left'>${r.username}</td>
+                                        <td style='text-align:left'>${r.givenNames}</td>
+                                        <td style='text-align:left'>${r.surname}</td>
+                                        <td style='text-align:left'>${r.email!}</td>
+                                        <#if r.userdata?has_content>
+                                        <#list r.userdata as ud>
+                                            <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}" data-columnid="${ud.colref}" data-value="${ud.data[0].value}"> ${ud.data[0].value}</td>
+                                        </#list>
+                                        <#else>
+                                            <#list columns as c>
+                                                <td></td>
+                                            </#list>
+                                        </#if>
+                                        <#--
+                                        <#list r.data as d>
+                                            <#if d.userData?has_content>
+                                                <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>' data-value="<#if d.userData?has_content>${d.userData.data[0].value}</#if>">
+                                                    ${d.userData.data[0].value}
+                                                </td>
+                                            <#else>
+                                                <td></td>
+                                            </#if>
+                                        </#list>
+                                        -->
+                                    </tr>
+                                </#list>
+                                </tbody>
+                            </table>
+                        </form>
+                    <#else>
+                        <div style="padding:20px">
+                            No students found.
+                        </div>
+                    </#if>
+                </div>
+            </li>
+
+            <li class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1">
+                <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+                <div style='font-size:24px;padding:10px;font-weight:300;'>
+                    ${ICN_C} code: ${paper.code!}<br/>
+                    ${ICN_C} name: ${paper.name!}<br/>
+                    Year : ${paper.year!}<br/>
+                    Semester: ${paper.semester!}
+                </div>
+            </li>
+            <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1" style='background:white;overflow:hidden'>
+                <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+                <#list columns as c>
+                    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
                 </#list>
-                -->
-            </tr>
-        </#list>
-        </tbody>
-    </table>
-</form>
-<#else>
-<div style="padding:20px">
-    No students found.
-</div>
-</#if>
-</div>
-
-</div>
-
-<div class='sidePanel1 sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
-
-<div id="sidePanel1" class='sidePanel1 sres_panel'>
-<#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
-    <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-    <div style='font-size:24px;padding:10px;font-weight:300;'>
-    ${ICN_C} code: ${paper.code!}<br/>
-    ${ICN_C} name: ${paper.name!}<br/>
-    Year : ${paper.year!}<br/>
-    Semester: ${paper.semester!}
+            </li>
+        </ul>
     </div>
-</div>
-
-<div class='sidePanel2 sres_panel placeHolder'><div style='padding:50px;text-align:center'>click here to add a panel</div></div>
-
-<div id="sidePanel2" class='sidePanel2 sres_panel' style='background:white'>
-    <#--<h3 style='margin:0;padding:20px;color:black;font-weight: 400'>${ICN_C} overview</h3>-->
-        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-    <#list columns as c>
-    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
-</#list>
 
 </div>
 
@@ -219,6 +209,23 @@
 <script type="text/javascript">
 
 $(function () {
+
+
+    var third = 1/3;
+    var quarter = 1/4;
+    var gap = 10;
+    var screenwidth = $(document).width() - (gap*10);
+    var firstPanelStart = 50 + $('#topBar').height() + (gap*2);
+    var screenheight = $(document).height() - firstPanelStart - (gap*8);
+
+    $(".gridster ul").gridster({
+        widget_margins: [gap, gap],
+        widget_base_dimensions: [(screenwidth*third), (screenheight*quarter)],
+        max_cols: 3,
+        resize: {
+            enabled:true
+        }
+    });
 
     $('input[name=usernameAll]').on('click', function () {
         if ($(this).is(':checked')){
@@ -232,27 +239,27 @@ $(function () {
     });
 
     $('input[name=columnsAll]').on('click', function () {
-            $('input[name=columns]').each(function(){
-                var self = $(this);
-                self.click();
-                var checked = self.is(":checked");
+        $('input[name=columns]').each(function(){
+            var self = $(this);
+            self.click();
+            var checked = self.is(":checked");
 
-                if (checked)
-                {
-                    self.prop('checked', true);
-                    self.next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
-                }
-                else
-                {
-                    self.prop('checked', false);
-                    self.next('.sres_checkbox').removeClass('fa-check-circle').addClass('fa-circle-thin');
-                }
-            });
+            if (checked)
+            {
+                self.prop('checked', true);
+                self.next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
+            }
+            else
+            {
+                self.prop('checked', false);
+                self.next('.sres_checkbox').removeClass('fa-check-circle').addClass('fa-circle-thin');
+            }
+        });
     });
 
     $('input[name=usernameAll]').click();
 
-    $('.deletePanel').on('click', function(){
+    $(document).on('click', '.deletePanel', function(){
         var self = $(this);
         var parent = self.parents('.sres_panel');
         parent.prev('.placeHolder').show();
@@ -281,28 +288,7 @@ $(function () {
         self.prev('input[type=checkbox]').click();
     });
 
-    var third = 1/3;
-    var screenwidth = $(document).width() - 60;
-
-    var firstPanelStart = 50 + $('#topBar').height();
-    var screenheight = $(document).height() - firstPanelStart - 80;
-    console.log(screenheight);
-    var secondPanelStart = firstPanelStart + (screenheight *.25) + 20;
-    var thirdPanelStart = secondPanelStart + (screenheight *.25) + 20;
-
-    var $sidePanel1 = $('.sidePanel1');
-    var $sidePanel2 = $('.sidePanel2');
-
-    $sidePanel1.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
-    $sidePanel2.css("width",(screenwidth*third)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
-
-    $('.topPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',firstPanelStart+"px");
-    $('.midPanel').css("width",(screenwidth*third*2)+"px").css("height",(screenheight *.25)+"px").css('top',secondPanelStart+"px");
-    $('.bottomPanel').css("width",(screenwidth*third*3+20)+"px").css("height",(screenheight *.5)+"px").css('top',thirdPanelStart+"px");
-
-    var sideWidth = $sidePanel1.width();
-    var sideHeight = $sidePanel1.height() -40;
-    $('.chart').css('margin-top','10px').css('width', sideWidth + 'px').css("height",sideHeight + "px");
+    $('.chart').css('margin-top','5px').css('width', (screenwidth*third) + 'px').css("height",(screenheight*quarter-30) + "px");
 
     var filterList = $('#filterList');
     var filterDivHtml = $('.filterDiv').html();
@@ -333,11 +319,11 @@ $(function () {
         $('span.removeFilter').show();
     });
 
-    var columns = $('.topPanel:last').html();
-    var filters = $('.midPanel:last').html();
-    var studentList = $('.bottomPanel:last').html();
-    var paperInfo = $('.sidePanel1:last').html();
-    var dataOverview = $('.sidePanel2:last').html();
+    var columns = $('.topLeftPanel:last').html();
+    var filters = $('.midLeftPanel:last').html();
+    var studentList = $('.bottomLeftPanel:last').html();
+    var paperInfo = $('.topRightPanel:last').html();
+    var dataOverview = $('.midRightPanel:last').html();
 
     var p;
 
@@ -390,44 +376,6 @@ $(function () {
             cancel:true
         }).popup_simple("show").popup_simple("centre");
     });
-
-
-    $('.sres_panel').draggable({ handle: "h4",
-        helper:function(event){
-            var div = "<div class='sres_panel' style='width:" + (screenwidth*third)+"px;height:" + (screenheight *.25)+"px'></div>";
-            return div;
-        }, containment: "document",
-        start: function(e, ui){
-            $(e.target).css('opacity',.5);
-            console.log(e);
-        },
-        stop : function(e, ui){
-            $(e.target).css('opacity',1);
-        }
-    }).droppable({
-        tolerance : "intersect",
-        over : function(ui,e){
-            var firstCSS = $(ui.target).css(['top','left','right','width','height']);
-            var secondCSS = $(e.draggable[0]).css(['top','left','right','width','height']);
-
-            $(ui.target).css({
-                top:secondCSS['top'],
-                left:secondCSS['left'],
-                right:secondCSS['right'],
-                width:secondCSS['width'],
-                height:secondCSS['height']
-            });
-            $(e.draggable[0]).css({
-                top:firstCSS['top'],
-                left:firstCSS['left'],
-                right:firstCSS['right'],
-                width:firstCSS['width'],
-                height:firstCSS['height']
-            });
-        }
-    });
-
-    //.resizable({handles:"n, s, e, w"})
 
 
 <#if json?has_content>
