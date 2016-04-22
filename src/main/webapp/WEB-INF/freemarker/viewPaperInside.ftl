@@ -72,6 +72,8 @@
         <div id='topBar' style='position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px'>
             <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
             <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
+            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Save filters</button>
+            <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Load filters</button>
         </div>
         <div style="clear:both"></div>
 
@@ -126,7 +128,7 @@
         Students: ${results?size}
     </#if>
         <#if results?has_content>
-       <#-- <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>-->
+       <a href="#" class="btn btn-default btn-primary emailStudents" style='margin-left:5px'>Email selected students</a>
         </#if>
         <span class='fa fa-times deletePanel' style='float:right'></span>
     </h4>
@@ -158,6 +160,11 @@
                 <td style='text-align:left'>${r.givenNames}</td>
                 <td style='text-align:left'>${r.surname}</td>
                 <td style='text-align:left'>${r.email!}</td>
+                <#list r.userdata as ud>
+                <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}" data-columnid="${ud.colref}" data-value="${ud.data[0].value}"> ${ud.data[0].value}</td>
+                </#list>
+
+                <#--
                 <#list r.data as d>
                     <#if d.userData?has_content>
                     <td data-id="${d.userData._id}" class="${d.column._id} columnData" style='text-align:center;<#if !d_has_next>border-right:none</#if>'
@@ -168,6 +175,7 @@
                     <td class="${d.column._id} columnData" data-columnid="${d.column._id}" data-userid="${r._id}"></td>
                     </#if>
                 </#list>
+                -->
             </tr>
         </#list>
         </tbody>

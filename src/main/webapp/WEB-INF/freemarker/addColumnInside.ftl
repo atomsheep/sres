@@ -48,6 +48,7 @@
                            style='vertical-align: top;display:inline-block;width:300px'/>
                 </td>
             </tr>
+        <#if extra?has_content>
         <#list extra?keys as key>
             <tr class="extra">
                 <td style='padding:0 5px 5px 0'>
@@ -62,6 +63,7 @@
                 </td>
             </tr>
         </#list>
+        </#if>
 
             <tr id='addNewColumnAttribute'>
                 <td colspan="2">

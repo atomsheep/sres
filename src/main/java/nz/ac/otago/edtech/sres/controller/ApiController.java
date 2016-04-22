@@ -307,6 +307,10 @@ public class ApiController {
                 // delete expired token
                 db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).deleteOne(eq("token", token));
                 doc = null;
+            } else {
+                db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).updateOne(eq("token", token),
+                        new Document("$set", new Document("lastModified", now))
+                        );
             }
         }
         return doc;

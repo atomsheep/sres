@@ -604,22 +604,30 @@ public class UserController {
                             HttpServletRequest request,
                             ModelMap model) {
         ObjectId paperId = new ObjectId(id);
-
-        model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
+        Document paper =   MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
+        model.put("paper", paper);
 
         List<ModelMap> results = new ArrayList<ModelMap>();
 
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
-
+        /*
         FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).find(
                 new Document("papers", new Document("$elemMatch", new Document("paperref", paperId)
                         .append("roles", "student")))
         );
+        //*/
+
+        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
+                new Document("$match", new Document("papers", new Document("$elemMatch",
+                        new Document("paperref", paperId).append("roles", "student") ))),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
 
         for (Document u : iterable) {
             ModelMap result = new ModelMap();
             result.putAll(u);
+            /*
             List<ModelMap> data = new ArrayList<ModelMap>();
+            log.debug("inside student list, before fetch column");
             for (Document c : columns) {
                 ModelMap datum = new ModelMap();
                 Document userData = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERDATA, eq("userref", u.get("_id")), eq("colref", c.get("_id")));
@@ -628,7 +636,9 @@ public class UserController {
                 data.add(datum);
             }
             result.put("data", data);
+            */
             results.add(result);
+            //log.debug("inside student list, after fetch column");
         }
         model.put("id", id);
         model.put("results", results);
@@ -734,6 +744,7 @@ public class UserController {
         }
         for (ObjectId oid : set) {
             ModelMap result = new ModelMap();
+            /*
             Document user = MongoUtil.getUser(db, oid);
             if (user != null) {
                 result.putAll(user);
@@ -748,7 +759,17 @@ public class UserController {
                 result.put("data", data);
                 results.add(result);
             }
-        }   //*/
+            */
+            AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
+                    new Document("$match", new Document("_id", oid)),
+                    new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
+            for(Document doc: iterable) {
+                result.putAll(doc);
+                results.add(result);
+                break;
+            }
+
+        }
         model.put("id", id);
         model.put("json", json);
         model.put("results", results);
