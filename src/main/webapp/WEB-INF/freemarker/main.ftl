@@ -7,7 +7,3 @@
 <#include "common/header.ftl" />
 
 <#include "${pageName}Inside.ftl" />
-
-<#if pageName != "viewPaper">
-    <#include "common/footer.ftl" />
-</#if>
