@@ -27,17 +27,7 @@ ${SRES_INTRO_TEXT}
                 <td style='text-align:center'>${l.year!}</td>
                 <td style='text-align:center'>${l.semester!}</td>
                 <td style='text-align:center'>
-                    <#assign studentCount = 0 />
-                    <#list l.users as u>
-                        <#list u.papers as p>
-                            <#if p.paperref == l._id>
-                                <#if p.roles?seq_contains("student")>
-                                    <#assign studentCount = studentCount + 1 />
-                                </#if>
-                            </#if>
-                        </#list>
-                    </#list>
-                    ${studentCount}
+                    ${l.studentCount!0}
                 </td>
                 <td style='text-align:center'>
                     <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>

@@ -287,9 +287,9 @@ public class UserController {
         boolean hasHeader = false;
         if (request.getParameter("hasHeader") != null)
             hasHeader = true;
-        int[] index = new int[MongoUtil.USER_FIELDS.length];
+      /*  int[] index = new int[MongoUtil.USER_FIELDS.length];
         for (int i = 0; i < MongoUtil.USER_FIELDS.length; i++)
-            index[i] = ServletUtil.getParameter(request, MongoUtil.USER_FIELDS[i], -1);
+            index[i] = ServletUtil.getParameter(request, MongoUtil.USER_FIELDS[i], -1);     */
 
         // get extra user information
         Map<String, Integer> userInfoFields = new HashMap<String, Integer>();
@@ -320,10 +320,10 @@ public class UserController {
                 for (CSVRecord record : records) {
                     ModelMap userMap = new ModelMap();
                     //userMap.put("role", "student");
-                    for (int i = 0; i < MongoUtil.USER_FIELDS.length; i++) {
+                  /*  for (int i = 0; i < MongoUtil.USER_FIELDS.length; i++) {
                         if (index[i] != -1)
                             userMap.put(MongoUtil.USER_FIELDS[i], record.get(index[i]));
-                    }
+                    }              */
                     ModelMap userInfo = new ModelMap();
                     for (String k : userInfoFields.keySet()) {
                         int ii = userInfoFields.get(k);
@@ -341,16 +341,14 @@ public class UserController {
                     if (!userInfo.isEmpty())
                         pp.put("userInfo", userInfo);
 
-                    List<Document> list = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERS, eq(MongoUtil.USERNAME, userMap.get(MongoUtil.USERNAME)), eq("papers.paperref", paperId));
-                    if (list.isEmpty()) {
-                        UpdateOptions uo = new UpdateOptions().upsert(true);
-                        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
-                                new Document(MongoUtil.USERNAME, userMap.get(MongoUtil.USERNAME)),
-                                new Document("$set", new Document(userMap))
-                                        .append("$addToSet", new Document("papers", pp)),
-                                uo
+               //     List<Document> list = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERS, eq(MongoUtil.USERNAME, userMap.get(MongoUtil.USERNAME)), eq("papers.paperref", paperId));
+                //    if (list.isEmpty()) {
+                        //UpdateOptions uo = new UpdateOptions().upsert(true);
+                        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(
+                                new Document(userMap)
+                                        .append("papers", pp)
                         );
-                    } else {
+                  /*  } else {
                         db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
                                 new Document(MongoUtil.USERNAME, userMap.get(MongoUtil.USERNAME)),
                                 new Document("$set", new Document(userMap))
@@ -363,7 +361,7 @@ public class UserController {
                                 new Document("$addToSet", new Document("papers.$.roles", "student"))
 
                         );
-                    }
+             //       }    */
                 }
             } catch (IOException ioe) {
                 log.error("IOException", ioe);

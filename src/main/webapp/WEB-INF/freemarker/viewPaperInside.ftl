@@ -146,11 +146,11 @@
                                 <tbody>
                                 <#list results as r>
                                     <tr>
-                                        <td style='text-align:center;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
+                                      <#--  <td style='text-align:center;border-left:none'><input type="checkbox" value="${r.username}" name="usernames"/></td>
                                         <td style='text-align:left'>${r.username}</td>
                                         <td style='text-align:left'>${r.givenNames}</td>
                                         <td style='text-align:left'>${r.surname}</td>
-                                        <td style='text-align:left'>${r.email!}</td>
+                                        <td style='text-align:left'>${r.email!}</td> -->
                                         <#if r.userdata?has_content>
                                         <#list r.userdata as ud>
                                             <#if ud.data?has_content>

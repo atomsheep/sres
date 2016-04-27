@@ -186,3 +186,6 @@ table.dataTable tbody tr { background: none !important }
 
 
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control { color: #ccc }
+
+.sres_name { background:#0886AF;color:white;border:none }
+.input-group[disabled] .sres_name { background:#ccc;color:#999; }

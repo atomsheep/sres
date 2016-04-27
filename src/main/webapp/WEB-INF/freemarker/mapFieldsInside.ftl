@@ -88,7 +88,7 @@ If the first line of your CSV file is the header, please indicate so by ticking 
         </h4>
 
         <div style='overflow-y:scroll;position:absolute;top:60px;bottom:0;left:0;right:0'>
-        <table>
+        <table style='width:100%'>
         <tr class="fieldRow">
             <td style='padding:0 5px 5px 20px'>
                 <input type="checkbox" name="extra" checked='checked'/>
@@ -101,16 +101,19 @@ If the first line of your CSV file is the header, please indicate so by ticking 
             <td style='padding:0 5px 5px 20px'>
                 <input type="checkbox" name="extra${r_index?c}" class="checkField" checked="checked"/>
             </td>
-            <td style='padding:0 5px 5px 0'>
-                <input type="text" name="key${r_index?c}" value="${r?html}" class='form-control' />
-            </td>
-            <td style='padding:0 5px 5px 0'>
+            <td style='width:50%;padding:0 5px 5px 0'>
                 <select name="value${r_index?c}" class="form-control" <#if (r_index < fields?size)>disabled="disabled"</#if>>
                     <option value="-1"></option>
                     <#list record as rr>
                         <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
                     </#list>
                 </select>
+            </td>
+            <td style='width:50%;padding:0 20px 5px 0'>
+                <div class='input-group input-group${r_index?c}'>
+                    <span class='input-group-addon sres_name'>SRES field name:</span>
+                    <input type="text" name="key${r_index?c}" value="${r?html}" class='form-control' />
+                </div>
             </td>
         </tr>
     </#list>
@@ -162,9 +165,11 @@ If the first line of your CSV file is the header, please indicate so by ticking 
             if (slf.is(':checked')) {
                 $('[name=key' + num + ']').removeAttr('disabled');
                 $('[name=value' + num + ']').removeAttr('disabled');
+                $('.input-group' + num).removeAttr('disabled');
             } else {
                 $('[name=key' + num + ']').attr('disabled', 'disabled');
                 $('[name=value' + num + ']').attr('disabled', 'disabled');
+                $('.input-group' + num).attr('disabled','disabled');
             }
             $('.numberChecked').text($('.checkField:checked').length);
         });
