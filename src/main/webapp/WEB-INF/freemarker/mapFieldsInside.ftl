@@ -14,8 +14,6 @@
 <div class='info_text'>Choose the fields you want to import from your student list. Later, when importing data, SRES will expect an identifier (e.g. username or student ID), to match to your users, so one of the fields you upload now should be a unique identifier field.
 If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.</div>
 
-<#assign record = list?first/>
-
     <input type="hidden" name="id" value="${id}"/>
     <input type="hidden" name="filename" value="${filename}"/>
     <input type="hidden" name="size" value="${record?size}"/>

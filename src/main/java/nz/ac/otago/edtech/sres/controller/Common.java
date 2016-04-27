@@ -168,10 +168,9 @@ public class Common implements ServletContextAware {
                     log.error("IO Exception", e);
                 }
                 return null;
-            }
+            } else
+                return "redirect:/user/";
         }
-        model.put("pageName", "login");
-        return DEFAULT_VIEW_NAME;
     }
 
 }

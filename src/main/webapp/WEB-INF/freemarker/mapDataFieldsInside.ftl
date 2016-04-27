@@ -2,7 +2,6 @@
 
 <h1>Map Data Fields</h1>
 
-<#assign record = list?first/>
 
 <form action="${baseUrl}/user/importUserData" method="post">
     <input type="hidden" name="id" value="${id}"/>
@@ -14,12 +13,19 @@
     <table>
         <tr class="fieldRow">
             <td></td>
-            <td>username</td>
             <td>
-                <select name="username" class="form-control">
-                    <option value="-1"></option>
+                               Identifier field:
+                <select name="sres_id" class="form-control">
+                <#list studentFields as f>
+                    <option value="${f?html}"> ${f?html}</option>
+                </#list>
+                </select>
+            </td>
+            <td>
+                Identifier field in CSV:
+                <select name="csv_id" class="form-control">
                 <#list record as r>
-                    <option value="${r_index}" <#if r_index == 0>selected="selected"</#if>  > ${r}</option>
+                    <option value="${r_index}"> ${r?html}</option>
                 </#list>
                 </select>
             </td>

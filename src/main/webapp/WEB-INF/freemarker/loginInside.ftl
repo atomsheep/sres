@@ -5,6 +5,10 @@
     can remember. DO NOT USE ANY VALUABLE PASSWORD. Next time, make sure you input the same username and password.
 </div>
 
+<#if error?has_content>
+    <div style="color: red; font-weight: bold">${error}</div>
+</#if>
+
 <form action="${baseUrl}/login" method="post">
     <input name="from" type="hidden" value="${fromUrl!}"/>
 
