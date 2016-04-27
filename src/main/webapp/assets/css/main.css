@@ -178,5 +178,11 @@ th .sres_checkbox { color:#021E27 }
 .studentActions:hover { background: #021E27;color:white }
 
 .topPanel {position:absolute;top:40px;left:0;right:0;background:#0886AF;height:40px;border-bottom:1px solid #043B4E}
+.bottomPanel {position:absolute;bottom:0;left:0;right:0;background:#043B4E;height:40px;border-top:1px solid #043B4E}
 
 table.dataTable tbody tr { background: none !important }
+
+.info_text { border:1px solid #066888;padding:20px;margin:0 20px }
+
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control { color: #ccc }

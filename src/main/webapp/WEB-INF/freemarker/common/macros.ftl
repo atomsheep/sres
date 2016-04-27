@@ -51,7 +51,7 @@ has session id in baseUrl
 </#macro>
 
 <#macro showProgress step totalSteps>
-<table style='font-size:32px'>
+<table style='font-size:32px;margin:auto'>
     <tr>
         <#list 1..totalSteps as i>
             <td>

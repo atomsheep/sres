@@ -1,12 +1,21 @@
+<span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add ${ICN} information</a> >
+        Add student list
+    </span>
+<div style='clear:both'></div>
 <@showProgress 2 5/>
 
-<h1>Add student list</h1>
+<h1 style='margin:0 20px'>Step 2: add student list</h1>
 
-<div class="box">
-    <form name="editStudentList" id="editStudentList" method="post"
-          action="${baseUrl}/user/addStudentList" enctype="multipart/form-data"
-          onSubmit="">
+<div class='info_text'>Upload a list of students for this ${ICN}. SRES only accepts student lists in CSV (comma separated value) format. Your CSV file must contain a unique identifier for each student (e.g. a username or student ID).
+    You will be asked to map your student attributes to SRES fields in the next step.</div>
 
+<form name="editStudentList" id="editStudentList" method="post" action="${baseUrl}/user/addStudentList" enctype="multipart/form-data" onSubmit="">
+
+    <div class="box info_text" style='margin:20px;padding:20px 20px 0'>
+
+        <h4 style='margin-top:0'>Upload student list</h4>
         <input type="hidden" name="id" value="${id}"/>
         <table>
             <tr>
@@ -14,23 +23,20 @@
                     <div class="input-group enrolment" id='input-group'>
                         <span class="input-group-btn">
                             <span class="btn btn-primary btn-file">
-                                Browse … <input type="file" name="files"/>
+                                Browse files ... <input type="file" name="files"/>
                             </span>
                         </span>
-                        <input type="text" style="display:inline-block;width:200px" class="form-control" readonly/>
+                        <input type="text" style="display:inline-block;width:200px;color:#555" class="form-control" readonly />
                     </div>
                     <br/>
                 </td>
             </tr>
-            <tr>
-                <td colspan="2">
-                    <input class="btn btn-default btn-primary" type="submit"
-                                       value="Add student list"/>
-                </td>
-            </tr>
         </table>
-    </form>
-</div>
+    </div>
+
+    <input class="btn btn-default btn-primary" type="submit" value="Upload student list and go to step 3: map student fields" style='margin:0 20px'/>
+
+</form>
 
 
 <script>

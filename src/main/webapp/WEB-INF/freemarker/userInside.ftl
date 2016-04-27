@@ -1,23 +1,23 @@
-<div style='border:1px solid #0d8806;padding:20px'>
+<div class='info_text'>
 ${SRES_INTRO_TEXT}
 </div>
 
-<div class="box" id="div_student_lists">
+<div class="box" id="div_student_lists" style='margin:0 20px'>
 
     <a class='btn btn-default btn-primary' id="addList" href="${baseUrl}/user/addPaper" style='margin-top:20px'>
         Add a new ${ICN}</a>
     <h3>${ICN_C} list</h3>
     <table id='paperList' class="borderless" width='100%' style='margin-top:20px;'>
     <tr>
-        <th width='12%' style='text-align:center;background:#066888;border-left:none'>${ICN_C} code</th>
-        <th width='12%' style='text-align:center;background:#066888;'>${ICN_C} name</th>
-        <th width='12%' style='text-align:center;background:#066888'>${ICN_C} year</th>
-        <th width='12%' style='text-align:center;background:#066888'>${ICN_C} semester</th>
-        <th width='12%' style='text-align:center;background:#066888'>Number of students</th>
-        <th width='12%' style='text-align:center;background:#066888'></th>
-        <th width='12%' style='text-align:center;background:#066888'></th>
-        <th width='12%' style='text-align:center;background:#066888'></th>
-        <th width='12%' style='text-align:center;background:#066888;border-right:none'></th>
+        <th width='12%' style='text-align:center;border-left:none'>${ICN_C} code</th>
+        <th width='12%' style='text-align:center;'>${ICN_C} name</th>
+        <th width='12%' style='text-align:center;'>${ICN_C} year</th>
+        <th width='12%' style='text-align:center;'>${ICN_C} semester</th>
+        <th width='12%' style='text-align:center;'>Number of students</th>
+        <th width='12%' style='text-align:center;background:none;border-right:none'></th>
+        <th width='12%' style='text-align:center;background:none;border-right:none'></th>
+        <th width='12%' style='text-align:center;background:none;border-right:none'></th>
+        <th width='12%' style='text-align:center;background:none;border-right:none'></th>
         </tr>
     <#if list?has_content>
         <#list list as l>

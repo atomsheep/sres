@@ -153,7 +153,9 @@
                                         <td style='text-align:left'>${r.email!}</td>
                                         <#if r.userdata?has_content>
                                         <#list r.userdata as ud>
-                                            <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}" data-columnid="${ud.colref}" data-value="${ud.data[0].value}"> ${ud.data[0].value}</td>
+                                            <#if ud.data?has_content>
+                                                <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}" data-columnid="${ud.colref}" data-value="${ud.data[0].value}"> ${ud.data[0].value}</td>
+                                            </#if>
                                         </#list>
                                         <#else>
                                             <#list columns as c>
