@@ -358,29 +358,43 @@ public class MongoUtil {
         Map map;
         Document oldUserData = getDocument(db, COLLECTION_NAME_USERDATA, eq("colref", colref), eq("userref", userref));
         if (oldUserData == null) {
-            ObjectId oid = new ObjectId();
-            ModelMap userdata = new ModelMap();
-            userdata.put("_id", oid);
-            userdata.put("colref", colref);
-            userdata.put("userref", userref);
-            ModelMap datum = new ModelMap();
-            if (NumberUtils.isNumber(value)) {
-                Number num = NumberUtils.createNumber(value);
-                datum.put("value", num);
-            } else
-                datum.put("value", value);
-            datum.put("timestamp", new Date());
-            datum.put("updateBy", who.get("_id"));
-            List<ModelMap> data = new ArrayList<ModelMap>();
-            data.add(datum);
-            userdata.put("data", data);
-            db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).insertOne(new Document(userdata));
-            map = userdata;
+            map = saveNewUserData(db, value, colref, userref, who);
         } else {
             ObjectId userDataId = (ObjectId) oldUserData.get("_id");
             map = updateUserData(db, value, userDataId, who);
         }
         return map;
+    }
+
+    /**
+     * save user data for given colref and userref without checking
+     *
+     * @param db      mongo database
+     * @param value   value
+     * @param colref  colref
+     * @param userref userref
+     * @param who     who
+     * @return user data as map
+     */
+    public static Map saveNewUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
+        ObjectId oid = new ObjectId();
+        ModelMap userdata = new ModelMap();
+        userdata.put("_id", oid);
+        userdata.put("colref", colref);
+        userdata.put("userref", userref);
+        ModelMap datum = new ModelMap();
+        if (NumberUtils.isNumber(value)) {
+            Number num = NumberUtils.createNumber(value);
+            datum.put("value", num);
+        } else
+            datum.put("value", value);
+        datum.put("timestamp", new Date());
+        datum.put("updateBy", who.get("_id"));
+        List<ModelMap> data = new ArrayList<ModelMap>();
+        data.add(datum);
+        userdata.put("data", data);
+        db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).insertOne(new Document(userdata));
+        return userdata;
     }
 
     /**

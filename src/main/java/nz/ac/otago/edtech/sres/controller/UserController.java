@@ -17,6 +17,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.input.BOMInputStream;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.BsonDocument;
@@ -245,6 +246,7 @@ public class UserController {
                     Reader in = new FileReader(file);
                     records = CSVFormat.EXCEL.parse(in);
                 }
+                int studentCount = 0;
                 // go through csv file
                 for (CSVRecord record : records) {
                     ModelMap userMap = new ModelMap();
@@ -265,7 +267,13 @@ public class UserController {
                     db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(
                             new Document(userMap)
                     );
+                    studentCount++;
                 }
+                // update studentCount for paper
+                db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
+                        eq("_id", paperId),
+                        new Document("$set", new Document("studentCount", studentCount))
+                );
             } catch (IOException ioe) {
                 log.error("IOException", ioe);
             }
@@ -387,12 +395,13 @@ public class UserController {
                         for (CSVRecord record : records) {
                             String un = record.get(unIndex);
                             Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("paperref", paperId), eq("userInfo." + fieldName, un));
+                            log.debug("find user.");
                             if (uu != null)
                                 for (ModelMap m : columnFields) {
                                     ObjectId colref = (ObjectId) m.get("_id");
                                     ObjectId userref = (ObjectId) uu.get("_id");
                                     String value = record.get((Integer) m.get("index")).trim();
-                                    MongoUtil.saveUserData(db, value, colref, userref, user);
+                                    MongoUtil.saveNewUserData(db, value, colref, userref, user);
                                 }
                         }
                     } catch (IOException ioe) {

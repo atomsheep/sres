@@ -14,7 +14,7 @@
         <tr class="fieldRow">
             <td></td>
             <td>
-                               Identifier field:
+                Identifier field:
                 <select name="sres_id" class="form-control">
                 <#list studentFields as f>
                     <option value="${f?html}"> ${f?html}</option>
@@ -45,13 +45,16 @@
     <#list record as r>
         <tr class="fieldRow">
             <td>
-                <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= 1)> checked="checked"</#if>/>
+                <input type="checkbox" name="extra${r_index?c}" class="checkField" <#if (r_index >= 1)>
+                       checked="checked"</#if>/>
             </td>
             <td>
-                <input type="text" name="name${r_index?c}" class='form-control' value="${r?html}" <#if (r_index < 1)>disabled="disabled"</#if>/>
-                </td>
+                <input type="text" name="name${r_index?c}" class='form-control' value="${r?html}"
+                       <#if (r_index < 1)>disabled="disabled"</#if>/>
+            </td>
             <td>
-                <input type="text" name="description${r_index?c}" value="" class='form-control' <#if (r_index < 1)>disabled="disabled"</#if>/>
+                <input type="text" name="description${r_index?c}" value="" class='form-control'
+                       <#if (r_index < 1)>disabled="disabled"</#if>/>
             </td>
             <td>
                 <select name="value${r_index?c}" class="form-control" <#if (r_index < 1)>disabled="disabled"</#if>>
@@ -78,10 +81,12 @@
             var name = slf.attr('name');
             var num = name.substring(5, name.length);
             if (slf.is(':checked')) {
-                $('[name=key' + num + ']').removeAttr('disabled');
+                $('[name=name' + num + ']').removeAttr('disabled');
+                $('[name=description' + num + ']').removeAttr('disabled');
                 $('[name=value' + num + ']').removeAttr('disabled');
             } else {
-                $('[name=key' + num + ']').attr('disabled', 'disabled');
+                $('[name=name' + num + ']').attr('disabled', 'disabled');
+                $('[name=description' + num + ']').attr('disabled', 'disabled');
                 $('[name=value' + num + ']').attr('disabled', 'disabled');
             }
         });
