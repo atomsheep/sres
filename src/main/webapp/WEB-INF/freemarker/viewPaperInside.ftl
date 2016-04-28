@@ -48,14 +48,12 @@
     <div class="gridster">
         <ul>
             <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times'
-                                                                                   style='float:right;'></span></h4>
+                <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
 
                 <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
                     <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
                         <tr>
-                            <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox"
-                                                                                  name="columnsAll"/></th>
+                            <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox" name="columnsAll"/></th>
                             <th style='text-align:left;'>Column name</th>
                             <th style='text-align:left;'>Description</th>
                             <th style='text-align:left;'>Tags</th>
@@ -65,14 +63,12 @@
                         <tr>
                             <#list cc as c>
                                 <td>
-                                    <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked"
-                                           class="columnCheckbox" name="columns"/>
+                                    <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
                                 </td>
                                 <td style='text-align:left'>${c.name}</td>
                                 <td style='text-align:left'>${c.description!}</td>
                                 <td style='text-align:left'>${c.tags!}</td>
-                                <td style='border-right:none;text-align:center;'><span class='fa fa-square'
-                                                                                       style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span>
+                                <td style='border-right:none;text-align:center;'><span class='fa fa-square' style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span>
                                 </td>
                             </#list>
                         </tr>
@@ -81,26 +77,17 @@
                 </div>
             </li>
             <li class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span
-                        class='fa fa-times deletePanel' style='float:right'></span></h4>
+                <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
 
                 <div class='topPanel'>
-                    <span class="btn btn-default btn-primary newFilter"
-                          style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span
-                            class='fa fa-plus'></span> New filter</span>
-                    <button class="btn btn-default btn-primary submit"
-                            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>
-                        <span class='fa fa-check'></span> Apply filters
-                    </button>
+                    <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
+                    <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
                 </div>
                 <div style="clear:both"></div>
 
-                <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm"
-                      class="form-inline"
-                      style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
+                <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
                     <input type="hidden" name="id" value="${id}"/>
                     <input type="hidden" name="json" value=""/>
-
 
                     <div id="filterList">
                         <div class="filterDiv">
@@ -119,8 +106,7 @@
                                 <option value="$ne">not equal to</option>
                             </select>
 
-                            <input placeholder="enter a value here, e.g. 10" type="text" name="value"
-                                   class="form-control" style="width: 35%;float:left;border-radius:0"/>
+                            <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
 
                             <select name="join" class="form-control"
                                     style='display:none;float:left;border-radius:0;width:10%'>
@@ -221,7 +207,8 @@
                 ${ICN_C} code: ${paper.code!}<br/>
                 ${ICN_C} name: ${paper.name!}<br/>
                     Year : ${paper.year!}<br/>
-                    Semester: ${paper.semester!}
+                    Semester: ${paper.semester!}<br/>
+                    Students: ${paper.studentCount!0}
                 </div>
             </li>
             <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1"
