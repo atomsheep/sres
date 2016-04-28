@@ -5,7 +5,6 @@
 
 <form action="${baseUrl}/user/importUserData" method="post">
     <input type="hidden" name="id" value="${id}"/>
-    <input type="hidden" name="filename" value="${filename}"/>
     <input type="hidden" name="size" value="${record?size}"/>
 
     <input type="checkbox" name="hasHeader" checked="checked"/> Has header in CSV file?

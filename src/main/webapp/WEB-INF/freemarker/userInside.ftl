@@ -4,7 +4,7 @@ ${SRES_INTRO_TEXT}
 
 <div class="box" id="div_student_lists" style='margin:0 20px'>
 
-    <a class='btn btn-default btn-primary' id="addList" href="${baseUrl}/user/addPaper" style='margin-top:20px'>
+    <a class='btn btn-default btn-primary' id="addList" href="${baseUrl}/user/editPaper" style='margin-top:20px'>
         Add a new ${ICN}</a>
     <h3>${ICN_C} list</h3>
     <table id='paperList' class="borderless" width='100%' style='margin-top:20px;'>
@@ -33,7 +33,7 @@ ${SRES_INTRO_TEXT}
                     <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>
                 </td>
                 <td style='text-align:center'>
-                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper details</a>
+                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper information</a>
                 </td>
                 <td style='text-align:center'>
                     <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary" style="width:100%;display:block">Edit columns</a>

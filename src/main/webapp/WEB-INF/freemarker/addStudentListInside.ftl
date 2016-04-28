@@ -1,6 +1,6 @@
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add ${ICN} information</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/editPaper/${id}">Edit ${ICN} information</a> >
         Add student list
     </span>
 <div style='clear:both'></div>
@@ -10,7 +10,7 @@
 
 <h1 style='margin:0 20px'>Step 2: add student list
     <button type="submit" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span class='fa fa-caret-right'></span></button>
-    <button type="button" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</button>
+    <a href="${baseUrl}/user/editPaper/${id}" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
 <div class='info_text'>Upload a list of students for this ${ICN}. SRES only accepts student lists in CSV (comma separated value) format. Your CSV file must contain a unique identifier for each student (e.g. a username or student ID).

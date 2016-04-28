@@ -1,7 +1,7 @@
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add ${ICN} information</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add student list</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/editPaper/${id}">Edit ${ICN} information</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addStudentList/${id}">Add student list</a> >
         Map student fields
     </span>
 <div style='clear:both'></div>
@@ -11,14 +11,13 @@
 <div style='position:absolute;top:180px;bottom:20px;left:0;right:0;overflow:hidden'>
 <h1 style='margin:0 20px'>Step 3: map student fields
     <button type="submit" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span class='fa fa-caret-right'></span></button>
-    <button type="button" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</button>
+    <a href="${baseUrl}/user/addStudentList/${id}" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
 <div class='info_text'>Choose the fields you want to import from your student list. Later, when importing data, SRES will expect an identifier (e.g. username or student ID), to match to your users, so one of the fields you upload now should be a unique identifier field.
 If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.</div>
 
     <input type="hidden" name="id" value="${id}"/>
-    <input type="hidden" name="filename" value="${filename}"/>
     <input type="hidden" name="size" value="${record?size}"/>
 
     <div class='info_text' style='clear:both;margin-top:20px'>
