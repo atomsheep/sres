@@ -1,19 +1,19 @@
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add ${ICN} information</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Add student list</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addPaper">Map student fields</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/editPaper/${id}">Add ${ICN} information</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/addStudentList/${id}">Add student list</a> >
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/mapFields/${id}">Map student fields</a> >
         Import student data
     </span>
 <div style='clear:both'></div>
 
 <@showProgress 4 5/>
 
-<form name="editStudentList" id="editStudentList" method="post" action="${baseUrl}/user/importStudentData" enctype="multipart/form-data">
+<form name="importStudentData" method="post" action="${baseUrl}/user/importStudentData" enctype="multipart/form-data">
 
 <h1 style='margin:0 20px'>Step 4: import student data
     <button type="submit" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span class='fa fa-caret-right'></span></button>
-    <button type="button" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</button>
+    <a href="${baseUrl}/user/mapFields/${id}" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
 <div class='info_text'>Upload a file of student data for this ${ICN}. SRES only accepts student data in CSV (comma separated value) format. Your CSV file must contain a unique identifier for each student (e.g. a username or student ID).

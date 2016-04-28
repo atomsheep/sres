@@ -19,8 +19,13 @@
                 <#list users as u>
                     <tr>
                         <td>
-                            <input id="user_${u.username}" type="checkbox" name="usernames" value="${u.username}" checked="checked"/>
-                            <label for="user_${u.username}">${u.username} (${u.givenNames} ${u.surname}) ${u.email!}</label>
+                            <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}" checked="checked"/>
+                            <label for="user_${u._id}">
+
+                                <#list u.userInfo?keys as k>
+                                 ${k}: ${u.userInfo[k]}
+                                </#list>
+                            </label>
                         </td>
                     </tr>
                 </#list>
