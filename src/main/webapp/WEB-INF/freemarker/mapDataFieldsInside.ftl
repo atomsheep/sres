@@ -9,20 +9,21 @@
 <div style='clear:both'></div>
 <@showProgress 5 5/>
 
-<form action="${baseUrl}/user/importUserData" method="post">
+<form name="editStudentList" id="editStudentList" action="${baseUrl}/user/importUserData" method="post">
 
-    <div style='position:absolute;top:180px;bottom:20px;left:0;right:0;overflow:hidden'>
         <h1 style='margin:0 20px'>Step 5: map data fields
             <button type="submit" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;'>Finish</button>
             <button type="button" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</button>
         </h1>
 
-        <div class='info_text'>Choose the fields you want to import from your student data file. If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.
+    <div style='overflow:hidden'>
+
+    <div class='info_text'>Choose the fields you want to import from your student data file. If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.
             You will need to specify the identifier field that SRES should use to map your data to your students (e.g. username or student ID) - in the first dropdown, select the student identifier field saved in SRES; in the second dropdown, select the matching identifier field from your data file.</div>
 
-    <input type="hidden" name="id" value="${id}"/>
-    <input type="hidden" name="filename" value="${filename}"/>
-    <input type="hidden" name="size" value="${record?size}"/>
+        <input type="hidden" name="id" value="${id}"/>
+        <input type="hidden" name="filename" value="${filename}"/>
+        <input type="hidden" name="size" value="${record?size}"/>
 
         <div class='info_text' style='clear:both;margin-top:20px'>
             <span class="fa-stack " style="font-size: 11px;margin-right: 5px;">
@@ -71,48 +72,45 @@
                 Data fields (<span class='numberChecked'>0</span> selected)
             </h4>
             <div style='overflow-y:scroll;position:absolute;top:60px;bottom:0;left:0;right:0'>
-
-            <table style='width:100%'>
-
-        <tr class="fieldRow">
-            <td style='padding:0 5px 5px 20px'>
-                <input type="checkbox" name="extra" checked='checked'/>
-            </td>
-            <td style='padding:0 5px 5px 0'>Select all</td>
-            <td style='padding:0 5px 5px 0'></td>
-        </tr>
-    <#list record as r>
-        <tr class="fieldRow">
-            <td style='padding:0 5px 5px 20px'>
-                <input type="checkbox" name="extra${r_index?c}" class="checkField" checked='checked'/>
-            </td>
-            <td style='width:33%;padding:0 5px 5px 0'>
-                <select name="value${r_index?c}" class="form-control" >
-                    <option value="-1"></option>
-                    <#list record as rr>
-                        <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
+                <table style='width:100%'>
+                    <tr class="fieldRow">
+                        <td style='padding:0 5px 5px 20px'>
+                            <input type="checkbox" name="extra" checked='checked'/>
+                        </td>
+                        <td style='padding:0 5px 5px 0'>Select all</td>
+                        <td style='padding:0 5px 5px 0'></td>
+                    </tr>
+                    <#list record as r>
+                    <tr class="fieldRow">
+                        <td style='padding:0 5px 5px 20px'>
+                            <input type="checkbox" name="extra${r_index?c}" class="checkField" checked='checked'/>
+                        </td>
+                        <td style='width:33%;padding:0 5px 5px 0'>
+                            <select name="value${r_index?c}" class="form-control" >
+                                <option value="-1"></option>
+                                <#list record as rr>
+                                    <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
+                                </#list>
+                            </select>
+                        </td>
+                        <td style='width:34%;padding:0 5px 5px 0'>
+                            <div class='input-group input-group${r_index?c}'>
+                                <span class='input-group-addon sres_name'>SRES field name:</span>
+                                <input type="text" name="name${r_index?c}" class='form-control' value="${r?html}" />
+                            </div>
+                        </td>
+                        <td style='width:33%;padding:0 20px 5px 0'>
+                            <div class='input-group input-group${r_index?c}'>
+                                <span class='input-group-addon sres_name'>Description:</span>
+                                <input type="text" name="description${r_index?c}" value="" class='form-control' />
+                            </div>
+                        </td>
+                    </tr>
                     </#list>
-                </select>
-            </td>
-            <td style='width:34%;padding:0 5px 5px 0'>
-                <div class='input-group input-group${r_index?c}'>
-                    <span class='input-group-addon sres_name'>SRES field name:</span>
-                    <input type="text" name="name${r_index?c}" class='form-control' value="${r?html}" />
-                </div>
-            </td>
-            <td style='width:33%;padding:0 20px 5px 0'>
-                <div class='input-group input-group${r_index?c}'>
-                    <span class='input-group-addon sres_name'>Description:</span>
-                    <input type="text" name="description${r_index?c}" value="" class='form-control' />
-                </div>
-            </td>
-        </tr>
-    </#list>
-    </table>
-                </div>
-
-</div>
-
+                </table>
+            </div>
+        </div>
+    </div>
 </form>
 
 <script type="text/javascript">

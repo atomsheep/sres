@@ -107,7 +107,7 @@
         var firstPanelStart = 50 + $('#topBar').height() + (gap * 2);
         var screenheight = $(document).height() - firstPanelStart - (gap * 8);
 
-        var grid = $(".gridster ul").gridster({
+        $(".gridster ul").gridster({
             widget_margins: [gap, gap],
             widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
             max_cols: 3,
