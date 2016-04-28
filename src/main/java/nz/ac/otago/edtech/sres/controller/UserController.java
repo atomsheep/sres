@@ -539,12 +539,9 @@ public class UserController {
         ObjectId paperId = new ObjectId(id);
         model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
         List<Document> users = new ArrayList<Document>();
-        for (String username : usernames) {
-            FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).find(
-                    new Document("username", username).append(
-                            "papers", new Document("$elemMatch", new Document("paperref", paperId)
-                            .append("roles", "student")))
-            );
+        for (String uid : usernames) {
+            FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                    .find(eq("_id", new ObjectId(uid)));
             for (Document u : iterable)
                 users.add(u);
         }
