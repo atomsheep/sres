@@ -107,15 +107,14 @@
         var firstPanelStart = 50 + $('#topBar').height() + (gap * 2);
         var screenheight = $(document).height() - firstPanelStart - (gap * 8);
 
-        $(".gridster ul").gridster({
+        var gridster = $(".gridster ul").gridster({
             widget_margins: [gap, gap],
             widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
             max_cols: 3,
-            resize: {
-                enabled: false
-            },
-            draggable: {ignore_dragging: true}
-        });
+            resize: { enabled: false }
+        }).data('gridster');
+
+        gridster.disable();
 
         $('#previewEmail').on('click',function(e){
             var subject = $('input[name=subject]').val();

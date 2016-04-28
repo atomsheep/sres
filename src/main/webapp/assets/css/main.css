@@ -74,10 +74,7 @@ h4 { font-weight:300 }
 
 
 
-.btn-file {
-    position: relative;
-    overflow: hidden;
-}
+.btn-file { position: relative; overflow: hidden; }
 
 .btn-file input[type=file] {
     position: absolute;
@@ -96,32 +93,25 @@ h4 { font-weight:300 }
 }
 
 
-input {
-    color: black;
-}
+input { color: black; }
 
-tr.fieldRow {
-    height: 30px;
-}
+tr.fieldRow { height: 30px; }
 
-#paperList td{
-    font-size:32px;
-    font-weight: 300;
-}
+#paperList td{ font-size:32px; font-weight: 300; }
 
 #paperList th, #paperList td, #studentList th, #studentList td, #column_table th, #column_table td{
     padding:5px 10px;
     text-align: center;
     border-right:1px solid #043B4E;
 }
+#paperList th:last-child, #paperList td:last-child, #studentList th:last-child, #studentList td:last-child, #column_table th:last-child, #column_table td:last-child{ border-right:none }
+
 
 #paperList th, #studentList th, #column_table th { vertical-align: bottom;font-weight:500;font-style:italic;background:#fff;color:black }
 #paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td,
 #column_table tr:nth-child(odd) td { background: #043B4E }
 
-#studentList td:hover{
-    background:#066888 !important;cursor:pointer;
-}
+#studentList td:hover{ background:#066888 !important;cursor:pointer; }
 
 .filterDiv { padding:0; border-bottom:1px solid #021E27 }
 .filterDiv input, .filterDiv select { border:none;border-right:1px solid #043B4E }

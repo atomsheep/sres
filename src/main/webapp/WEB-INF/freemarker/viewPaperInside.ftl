@@ -239,14 +239,15 @@ $(function () {
     var firstPanelStart = 50 + $('#topBar').height() + (gap * 2);
     var screenheight = $(document).height() - firstPanelStart - (gap * 8);
 
-    $(".gridster ul").gridster({
+    var gridster = $(".gridster ul").gridster({
         widget_margins: [gap, gap],
         widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
         max_cols: 3,
         resize: {
             enabled: true
         }
-    });
+    }).data('gridster') ;
+
 
     $('input[name=usernameAll]').on('click', function () {
         if ($(this).is(':checked')) {
@@ -281,8 +282,9 @@ $(function () {
     $(document).on('click', '.deletePanel', function () {
         var self = $(this);
         var parent = self.parents('.sres_panel');
-        parent.prev('.placeHolder').show();
-        parent.hide();
+        gridster.remove_widget(parent);
+        //parent.prev('.placeHolder').show();
+        //parent.hide();
     });
 
     $('input[type=checkbox]').each(function (i, e) {
