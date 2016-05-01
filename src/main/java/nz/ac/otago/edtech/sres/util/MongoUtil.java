@@ -34,6 +34,7 @@ public class MongoUtil {
     public static final String COLLECTION_NAME_COLUMNS = "columns";
     public static final String COLLECTION_NAME_USERDATA = "userdata";
     public static final String COLLECTION_NAME_TOKENS = "tokens";
+    public static final String COLLECTION_NAME_INTERVENTIONS = "interventions";
 
     public static final String USERNAME = "username";
     public static final String[] USER_FIELDS = {USERNAME, "givenNames", "surname", "preferredName", "email", "phone"};
@@ -51,7 +52,6 @@ public class MongoUtil {
     }
 
     public static ObjectId insertOne(MongoDatabase db, String collection, HttpServletRequest request) {
-
         ObjectId id = new ObjectId();
         ModelMap map = new ModelMap();
         map.put("_id", id);
@@ -63,7 +63,6 @@ public class MongoUtil {
         }
         db.getCollection(collection).insertOne(new Document(map));
         return id;
-
     }
 
     /**
