@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -514,25 +515,102 @@ public class UserController {
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
-                                @RequestParam("usernames") String[] usernames,
+                                @RequestParam("usernames") String[] userIds,
                                 ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         model.put("paper", MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId));
         List<Document> users = new ArrayList<Document>();
-        for (String uid : usernames) {
+        for (String uid : userIds) {
             FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
                     .find(eq("_id", new ObjectId(uid)));
             for (Document u : iterable)
                 users.add(u);
         }
+
+        String userName = AuthUtil.getUserName(request);
+        Document user = MongoUtil.getUser(db, userName);
+        Map email = new ModelMap();
+        ObjectId eid = new ObjectId();
+        email.put("_id", eid);
+        email.put("owner", user.get("_id"));
+        email.put("paperref",paperId);
+        email.put("studentlist",Arrays.asList(userIds));
+        email.put("type","email");
+        email.put("status","draft");
+
+        db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "redirect:/user/emailStudents/" + eid.toString();
+    }
+
+    @RequestMapping(value = "/emailStudents/{id}", method = RequestMethod.GET)
+    public String emailStudents(@PathVariable String id,
+                                HttpServletRequest request,
+                                ModelMap model) {
+
+        ObjectId emailId = new ObjectId(id);
+        Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
+        model.put("email", email);
+
+        ArrayList<String> userIds = (ArrayList<String>)email.get("studentlist");
+
+        List<Document> users = new ArrayList<Document>();
+        for (String uid : userIds) {
+            FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                    .find(eq("_id", new ObjectId(uid)));
+            for (Document u : iterable)
+                users.add(u);
+        }
+
+        ObjectId paperId = (ObjectId)email.get("paperref");
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
-        log.debug("id = {}", id);
-        log.debug("usernames = {}", (Object[]) usernames);
+
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
+        model.put("paper", paper);
+        model.put("studentFields", paper.get("studentFields"));
         model.put("columns", columns);
         model.put("users", users);
         model.put("pageName", "emailStudents");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
+    }
+
+    @RequestMapping(value = "/runConditional", method = RequestMethod.POST)
+    public ResponseEntity<List<Document>> runConditional(HttpServletRequest request,
+                             @RequestParam("colref") String colref,
+                             @RequestParam("operator") String operator,
+                             @RequestParam("value") String value){
+
+        List<Document> results = new ArrayList<Document>();
+        Set<ObjectId> set = new HashSet<ObjectId>();
+        {
+            Object o = value;
+            if (NumberUtils.isNumber(value))
+                o = NumberUtils.createNumber(value);
+            Bson valueFilter = new OperatorFilter<Object>(operator, "data.0.value", o);
+            Bson colFilter = eq("colref", new ObjectId(colref));
+
+            List<Document> userdata = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERDATA,
+                    colFilter,
+                    valueFilter
+            );
+            if (set.isEmpty()) {
+                for (Document doc : userdata)
+                    set.add((ObjectId) doc.get("userref"));
+            } else {
+                Set<ObjectId> tmp = new HashSet<ObjectId>();
+                for (Document doc : userdata)
+                    tmp.add((ObjectId) doc.get("userref"));
+            }
+        }
+        {
+            for (ObjectId oid : set) {
+                Document doc = MongoUtil.getUser(db,oid);
+                MongoUtil.changeUserObjectId2String(doc);
+                results.add(doc);
+            }
+        }
+        return new ResponseEntity<List<Document>>(results, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/sendEmails", method = RequestMethod.POST)
@@ -739,9 +817,13 @@ public class UserController {
             }
             results.add(result);
         }
+
+        List<Document> interventions = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, "paperref", paperId);
+
         model.put("id", id);
         model.put("results", results);
         model.put("columns", columns);
+        model.put("interventions", interventions);
         model.put("pageName", "viewPaper");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;

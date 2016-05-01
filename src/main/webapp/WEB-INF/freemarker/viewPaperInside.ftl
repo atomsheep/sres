@@ -59,20 +59,25 @@
                             <th style='text-align:left;'>Tags</th>
                             <th style='text-align:left;border-right:none'></th>
                         </tr>
-                    <#list columns?chunk(1) as cc>
-                        <tr>
-                            <#list cc as c>
-                                <td>
-                                    <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
-                                </td>
-                                <td style='text-align:left'>${c.name}</td>
-                                <td style='text-align:left'>${c.description!}</td>
-                                <td style='text-align:left'>${c.tags!}</td>
-                                <td style='border-right:none;text-align:center;'><span class='fa fa-square' style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span>
-                                </td>
+                        <#if columsn?has_content>
+                            <#list columns?chunk(1) as cc>
+                                <tr>
+                                    <#list cc as c>
+                                        <td>
+                                            <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
+                                        </td>
+                                        <td style='text-align:left'>${c.name}</td>
+                                        <td style='text-align:left'>${c.description!}</td>
+                                        <td style='text-align:left'>${c.tags!}</td>
+                                        <td style='border-right:none;text-align:center;'><span class='fa fa-square' style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
+                                    </#list>
+                                </tr>
                             </#list>
-                        </tr>
-                    </#list>
+                        <#else>
+                            <tr>
+                                <td style='padding:20px;text-align:left'>No columns found.</td>
+                            </tr>
+                        </#if>
                     </table>
                 </div>
             </li>
@@ -123,7 +128,7 @@
                     </div>
                 </form>
             </li>
-            <li class='sres_panel' data-row="3" data-col="1" data-sizex="3" data-sizey="2">
+            <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
 
                 <h4 style='margin:0;padding:10px;background:#043B4E'>
                 <#if json?has_content>
@@ -203,14 +208,15 @@
                 <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span
                         class='fa fa-times deletePanel' style='float:right'></span></h4>
 
-                <div style='font-size:24px;padding:10px;font-weight:300;'>
-                ${ICN_C} code: ${paper.code!}<br/>
-                ${ICN_C} name: ${paper.name!}<br/>
+                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;font-size:24px;padding:10px;font-weight:300;'>
+                    ${ICN_C} code: ${paper.code!}<br/>
+                    ${ICN_C} name: ${paper.name!}<br/>
                     Year : ${paper.year!}<br/>
                     Semester: ${paper.semester!}<br/>
                     Students: ${paper.studentCount!0}
                 </div>
             </li>
+
             <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1"
                 style='background:white;overflow:hidden'>
                 <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel'
@@ -219,6 +225,32 @@
             <#list columns as c>
                 <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
             </#list>
+            </li>
+
+            <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1">
+                <h4 style='margin:0;padding:10px;background:#043B4E'>Intervention log <span
+                        class='fa fa-times deletePanel' style='float:right'></span></h4>
+
+                <table style='width:100%' id='intervention_table'>
+                    <tr>
+                        <th style='text-align:left;'>Type</th>
+                        <th style='text-align:left;'>Status</th>
+                        <th style='text-align:left;'>Students</th>
+                    </tr>
+                    <#if interventions?has_content>
+                        <#list interventions as i>
+                            <tr>
+                                <td style='padding:5px 5px 0 5px;text-align:left'>${i.type!}</td>
+                                <td style='text-align:left'>${i.status!}</td>
+                                <td style='text-align:left'>${i.studentlist?size} students</td>
+                            </tr>
+                        </#list>
+                    <#else>
+                        <tr>
+                            <td style='padding:20px;text-align:left'>No interventions found.</td>
+                        </tr>
+                    </#if>
+                </table>
             </li>
         </ul>
     </div>
@@ -239,14 +271,15 @@ $(function () {
     var firstPanelStart = 50 + $('#topBar').height() + (gap * 2);
     var screenheight = $(document).height() - firstPanelStart - (gap * 8);
 
-    $(".gridster ul").gridster({
+    var gridster = $(".gridster ul").gridster({
         widget_margins: [gap, gap],
         widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
         max_cols: 3,
         resize: {
             enabled: true
         }
-    });
+    }).data('gridster') ;
+
 
     $('input[name=usernameAll]').on('click', function () {
         if ($(this).is(':checked')) {
@@ -281,8 +314,9 @@ $(function () {
     $(document).on('click', '.deletePanel', function () {
         var self = $(this);
         var parent = self.parents('.sres_panel');
-        parent.prev('.placeHolder').show();
-        parent.hide();
+        gridster.remove_widget(parent);
+        //parent.prev('.placeHolder').show();
+        //parent.hide();
     });
 
     $('input[type=checkbox]').each(function (i, e) {

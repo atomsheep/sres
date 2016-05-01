@@ -22,8 +22,9 @@
     <div style='overflow:hidden'>
 
         <div class='info_text'>Choose the fields you want to import from your student list. Later, when importing data,
-            SRES will expect an identifier (e.g. username or student ID), to match to your users, so one of the fields
-            you upload now should be a unique identifier field.
+            SRES will expect an identifier (e.g. username or student ID), to match to your users, so at least one of the fields
+            you upload now should be a unique identifier field. You can mark one or more fields as identifier fields (optional),
+            and SRES will prioritise these fields when matching student data.
             If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.
         </div>
 
@@ -37,7 +38,7 @@
                    style="font-family:Roboto, sans-serif;color:#033141;font-weight: bold;font-size: 14px;">1</i>
             </span>
             Does your CSV file have a header in the first line?
-            <input type="checkbox" name="hasHeader" checked="checked"/>
+            <input type="checkbox" class='sres_check' name="hasHeader" checked="checked"/>
         </div>
 
         <div class='info_text side2' style='padding:0;margin:20px 20px 0;height:20px;position:relative'>
@@ -48,37 +49,45 @@
                        style="font-family:Roboto, sans-serif;color:#033141;font-weight: bold;font-size: 14px;">2</i>
                 </span>
                 Student fields (<span class='numberChecked'>0</span> selected)
+
+                <span style='float:right;margin-right:20px'>
+                    (<span class='identifiersChecked'>0</span> identifiers selected)
+                </span>
+                <div style='clear:both'></div>
             </h4>
 
             <div style='overflow-y:scroll;position:absolute;top:60px;bottom:0;left:0;right:0'>
                 <table style='width:100%'>
                     <tr class="fieldRow">
-                        <td style='padding:0 5px 5px 20px'>
-                            <input type="checkbox" name="extra" checked='checked'/>
+                        <td style='padding:0 5px 5px 20px;text-align:center'>
+                            <input type="checkbox" name="extra" class='sres_check' checked='checked'/>
                         </td>
-                        <td style='padding:0 5px 5px 0'>Select all</td>
+                        <td style='padding:0 5px 5px 0;'>Select all</td>
                         <td style='padding:0 5px 5px 0'></td>
+                        <td style='padding:0 20px 5px 0;text-align:center'>ID?</td>
                     </tr>
                 <#list record as r>
                     <tr class="fieldRow">
-                        <td style='padding:0 5px 5px 20px'>
-                            <input type="checkbox" name="extra${r_index?c}" class="checkField" checked="checked"/>
+                        <td style='padding:0 5px 5px 20px;text-align:center'>
+                            <input type="checkbox" name="extra${r_index?c}" class="checkField sres_check" checked="checked"/>
                         </td>
                         <td style='width:50%;padding:0 5px 5px 0'>
                             <select name="value${r_index?c}" class="form-control"
                                     <#if (r_index < fields?size)>disabled="disabled"</#if>>
-                                <option value="-1"></option>
                                 <#list record as rr>
                                     <option value="${rr_index}"
                                             <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
                                 </#list>
                             </select>
                         </td>
-                        <td style='width:50%;padding:0 20px 5px 0'>
+                        <td style='width:50%;padding:0 5px 5px 0'>
                             <div class='input-group input-group${r_index?c}'>
                                 <span class='input-group-addon sres_name'>SRES field name:</span>
                                 <input type="text" name="key${r_index?c}" value="${r?html}" class='form-control'/>
                             </div>
+                        </td>
+                        <td style='padding:0 20px 5px 0;text-align:center'>
+                            <input type="checkbox" name="identifiers" class="starField" value="${r_index?c}"/>
                         </td>
                     </tr>
                 </#list>
@@ -93,7 +102,7 @@
 
     $(function () {
 
-        $('input[type=checkbox]').each(function (i, e) {
+        $('input[type=checkbox].sres_check').each(function (i, e) {
             var self = $(this);
             var newCheckbox = "";
             if (self.is(":checked")) {
@@ -104,6 +113,46 @@
             self.after(newCheckbox);
             self.css('display', 'none');
         });
+
+        $('input[type=checkbox].starField').each(function (i, e) {
+            var self = $(this);
+            var newCheckbox = "";
+            if (self.is(":checked")) {
+                newCheckbox = "<span class='star_checkbox fa fa-star'></span>";
+            } else {
+                newCheckbox = "<span class='star_checkbox fa fa-star-o'></span>";
+            }
+            self.after(newCheckbox);
+            self.css('display', 'none');
+        });
+
+        $(document).on('click', '.star_checkbox', function () {
+            var self = $(this);
+            if (self.hasClass('fa-star')) {
+                self.removeClass('fa-star').addClass('fa-star-o');
+            } else {
+                self.addClass('fa-star').removeClass('fa-star-o');
+            }
+            self.prev('input[type=checkbox]').click();
+        });
+
+        $('.starField').on('change', function () {
+            var slf = $(this);
+            var name = slf.attr('name');
+            var num = name.substring(5, name.length);
+            if (slf.is(':checked')) {
+                //TODO: make this do something
+            /*    $('[name=key' + num + ']').removeAttr('disabled');
+                $('[name=value' + num + ']').removeAttr('disabled');
+                $('.input-group' + num).removeAttr('disabled');    */
+            } else {
+             /*   $('[name=key' + num + ']').attr('disabled', 'disabled');
+                $('[name=value' + num + ']').attr('disabled', 'disabled');
+                $('.input-group' + num).attr('disabled', 'disabled');     */
+            }
+            $('.identifiersChecked').text($('.starField:checked').length);
+        });
+
 
         $(document).on('click', '.sres_checkbox', function () {
             var self = $(this);
