@@ -249,11 +249,11 @@ public class ApiController {
                 oids.add((ObjectId) pp.get("_id"));
             Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
             Set<Document> set = new HashSet<Document>();
-            String[] fields = {"username", "givenNames", "surname", "email"};
+            String[] fields = {"Student ID", "Family name", "Institutional email", "Given name(s)"};
             for (String field : fields) {
                 FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
-                        .find(new Document(field, regex)
-                                .append("papers.paperref", new Document("$in", oids))
+                        .find(new Document("userInfo." + field, regex)
+                                .append("paperref", new Document("$in", oids))
                         );
                 for (Document document : iterable) {
                     document.put("id", document.get("_id").toString());
