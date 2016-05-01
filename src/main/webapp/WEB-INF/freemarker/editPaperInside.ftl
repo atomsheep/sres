@@ -12,8 +12,8 @@ Edit ${ICN} information
 
     <h1 style='margin:0 20px'>Step 1: edit ${ICN} information
         <button type="submit" class="btn btn-default btn-primary"
-                style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span
-                class='fa fa-caret-right submit'></span></button>
+                style='float:right;border-radius:0;padding:10px 10px 9px;'>
+            Next step <span class='fa fa-caret-right submit'></span></button>
     </h1>
 
     <div class='info_text'>Edit your ${ICN} information. By default, SRES requires a ${ICN} code, name, year and
@@ -104,7 +104,7 @@ Edit ${ICN} information
     </#if>
 
         $('#addKeyValue').on('click', function () {
-            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input class='form-control' type='text' name='value" + index + "' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
+            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input placeholder='attribute value' class='form-control' type='text' name='value" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
             index++;
             $('input[name=size]').val(index);
             $('#addNewColumnAttribute').before(newRow);

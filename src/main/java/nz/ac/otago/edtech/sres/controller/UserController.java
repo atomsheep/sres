@@ -124,15 +124,8 @@ public class UserController {
     public String editPaper(@PathVariable String id,
                             HttpServletRequest request,
                             ModelMap model) {
-        String[] keys = {"_id", "id", "code", "name", "year", "semester", "owner", "status", "studentFile", "studentFields", "studentCount", "dataFile"};
-        List<String> keyList = Arrays.asList(keys);
-
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
-        ModelMap extra = new ModelMap();
-        for (String key : paper.keySet()) {
-            if (!keyList.contains(key))
-                extra.put(key, paper.get(key));
-        }
+        Document extra = (Document) paper.get("extra");
         model.put("paper", paper);
         model.put("extra", extra);
         model.put("pageName", "editPaper");
@@ -150,27 +143,32 @@ public class UserController {
                             @RequestParam("size") int size,
                             HttpServletRequest request) {
 
-        ModelMap paper = new ModelMap();
+        ModelMap extra = new ModelMap();
         for (int i = 0; i < size; i++) {
             if ((request.getParameter("key" + i) != null) && (request.getParameter("value" + i) != null)) {
                 String key = request.getParameter("key" + i).trim();
                 String value = request.getParameter("value" + i).trim();
-                paper.put(key, value);
+                extra.put(key, value);
             }
         }
-        paper.put("code", code);
-        paper.put("name", name);
-        paper.put("year", year);
-        paper.put("semester", semester);
-        ObjectId id = null;
+        Date now = new Date();
+        ObjectId id;
         if (_id == null) {
+            ModelMap paper = new ModelMap();
+            paper.put("code", code);
+            paper.put("name", name);
+            paper.put("year", year);
+            paper.put("semester", semester);
+            paper.put("extra", extra);
             String userName = AuthUtil.getUserName(request);
             Document user = MongoUtil.getUser(db, userName);
             id = new ObjectId();
             paper.put("_id", id);
             paper.put("owner", user.get("_id"));
             paper.put("status", "active");
+            paper.put("created", now);
             db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
+            log.debug("new paper id {}", id);
             if (user != null) {
                 // paper info
                 ModelMap pp = new ModelMap();
@@ -183,6 +181,13 @@ public class UserController {
             }
             log.debug("new paper id {}", id);
         } else {
+            Document paper = MongoUtil.getPaper(db, _id);
+            paper.put("code", code);
+            paper.put("name", name);
+            paper.put("year", year);
+            paper.put("semester", semester);
+            paper.put("extra", extra);
+            paper.put("lastModified", now);
             id = new ObjectId(_id);
             // update existing column
             db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
@@ -191,39 +196,6 @@ public class UserController {
         }
         return "redirect:/user/addStudentList/" + id.toString();
     }
-
-    // save paper information, redirect to upload student list page
-    @RequestMapping(value = "/addPaper", method = RequestMethod.POST)
-    public String addPaper(HttpServletRequest request) {
-        // get login username
-        String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
-        ModelMap paper = new ModelMap();
-        Enumeration<String> parameterNames = request.getParameterNames();
-        while (parameterNames.hasMoreElements()) {
-            String name = parameterNames.nextElement();
-            String value = request.getParameter(name);
-            paper.put(name, value);
-        }
-        ObjectId id = new ObjectId();
-        paper.put("_id", id);
-        paper.put("owner", user.get("_id"));
-        paper.put("status", "active");
-        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
-        if (user != null) {
-            // paper info
-            ModelMap pp = new ModelMap();
-            pp.put("paperref", id);
-            List<String> roles = new ArrayList<String>();
-            roles.add("owner");
-            pp.put("roles", roles);
-            db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(new Document(MongoUtil.USERNAME, userName),
-                    new Document("$addToSet", new Document("papers", pp)));
-        }
-        log.debug("new paper id {}", id);
-        return "redirect:/user/addStudentList/" + id.toString();
-    }
-
 
     // display upload student list form  2/5
     @RequestMapping(value = "/addStudentList/{id}", method = RequestMethod.GET)
@@ -246,14 +218,18 @@ public class UserController {
         if (file.getSize() == 0)
             return "redirect:/user/viewPaper/" + id;
 
-        File uploadDir = uploadLocation.getUploadDir();
-        String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
-        File upload = new File(uploadDir, filename);
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db, paperId);
+        File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+        if (!paperDir.exists())
+            paperDir.mkdirs();
+        String filename = CommonUtil.getUniqueFilename(paperDir.getAbsolutePath(), file.getOriginalFilename());
+        File upload = new File(paperDir, filename);
         if (StringUtils.isNotBlank(upload.getPath())) {
             try {
                 file.transferTo(upload);
                 db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
-                        eq("_id", new ObjectId(id)),
+                        eq("_id", paperId),
                         new Document("$set", new Document("studentFile", filename))
                 );
             } catch (IOException e) {
@@ -270,8 +246,8 @@ public class UserController {
                             ModelMap model) {
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         String filename = paper.get("studentFile").toString();
-        File uploadDir = uploadLocation.getUploadDir();
-        File upload = new File(uploadDir, filename);
+        File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+        File upload = new File(paperDir, filename);
         if (upload.exists()) {
             try {
                 // read csv file without header
@@ -326,7 +302,8 @@ public class UserController {
         );
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         String filename = paper.get("studentFile").toString();
-        File file = new File(uploadLocation.getUploadDir(), filename);
+        File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+        File file = new File(paperDir, filename);
         if (file.exists()) {
             ObjectId paperId = new ObjectId(id);
             Iterable<CSVRecord> records;
@@ -400,9 +377,11 @@ public class UserController {
 
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         model.put("studentFields", paper.get("studentFields"));
-        File uploadDir = uploadLocation.getUploadDir();
-        String filename = CommonUtil.getUniqueFilename(uploadDir.getAbsolutePath(), file.getOriginalFilename());
-        File upload = new File(uploadDir, filename);
+        File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+        if (!paperDir.exists())
+            paperDir.mkdirs();
+        String filename = CommonUtil.getUniqueFilename(paperDir.getAbsolutePath(), file.getOriginalFilename());
+        File upload = new File(paperDir, filename);
         if (StringUtils.isNotBlank(upload.getPath())) {
             try {
                 file.transferTo(upload);
@@ -426,8 +405,8 @@ public class UserController {
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         String filename = paper.get("dataFile").toString();
         model.put("studentFields", paper.get("studentFields"));
-        File uploadDir = uploadLocation.getUploadDir();
-        File upload = new File(uploadDir, filename);
+        File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+        File upload = new File(paperDir, filename);
         if (upload.exists()) {
             try {
                 // read csv file without header
@@ -495,18 +474,19 @@ public class UserController {
             if (!columnFields.isEmpty()) {
                 Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
                 String filename = paper.get("dataFile").toString();
-                File file = new File(uploadLocation.getUploadDir(), filename);
-                if (file.exists()) {
+                File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+                File upload = new File(paperDir, filename);
+                if (upload.exists()) {
                     Iterable<CSVRecord> records;
                     try {
                         if (hasHeader) {
                             // read csv file with header
-                            InputStream input = new FileInputStream(file);
+                            InputStream input = new FileInputStream(upload);
                             Reader reader = new InputStreamReader(new BOMInputStream(input), "UTF-8");
                             records = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
                         } else {
                             // read csv file without header
-                            Reader in = new FileReader(file);
+                            Reader in = new FileReader(upload);
                             records = CSVFormat.EXCEL.parse(in);
                         }
                         // go through csv file
@@ -590,7 +570,7 @@ public class UserController {
                             HttpServletRequest request,
                             ModelMap model) {
         model.put("paperId", id);
-        model.put("pageName", "addColumn");
+        model.put("pageName", "editColumn");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
@@ -600,60 +580,89 @@ public class UserController {
                              HttpServletRequest request,
                              ModelMap model) {
 
-        String[] keys = {"_id", "id", "name", "description", "tags", "paperref", "activeFrom", "activeTo"};
-        List<String> keyList = Arrays.asList(keys);
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
-
-        ModelMap extra = new ModelMap();
-        for (String key : column.keySet()) {
-            if (!keyList.contains(key))
-                extra.put(key, column.get(key));
-        }
+        Document extra = (Document) column.get("extra");
         model.put("column", column);
         model.put("extra", extra);
         model.put("paperId", column.get("paperref"));
-        model.put("pageName", "addColumn");
+        model.put("pageName", "editColumn");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
 
     @RequestMapping(value = "/saveColumn", method = RequestMethod.POST)
-    public ResponseEntity<String> saveColumn(@RequestParam(value = "paperId", required = false) String paperId,
-                                             @RequestParam(value = "_id", required = false) String _id,
-                                             @RequestParam("name") String name,
-                                             @RequestParam(value = "description", required = false) String description,
-                                             @RequestParam("tags") String tags,
-                                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
-                                             @RequestParam(value = "activeTo", required = false) Date activeTo,
-                                             @RequestParam("json") String json,
-                                             HttpServletRequest request) {
+    public String saveColumn(@RequestParam(value = "paperId", required = false) String paperId,
+                             @RequestParam(value = "_id", required = false) String _id,
+                             @RequestParam("name") String name,
+                             @RequestParam(value = "description", required = false) String description,
+                             @RequestParam("tags") String tags,
+                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
+                             @RequestParam(value = "activeTo", required = false) Date activeTo,
+                             @RequestParam(value = "entryMethod", required = false) String entryMethod,
+                             @RequestParam(value = "customDisplay", required = false) String customDisplay,
+                             @RequestParam(value = "possibleValues", required = false) String possibleValues,
+                             @RequestParam("size") int size,
+                             HttpServletRequest request) {
 
-        String action = "saveColumn";
-        boolean success = false;
-        String detail = null;
-        JSONObject object = JSONUtil.parse(json);
-        object.put("name", name);
-        if (description != null)
-            object.put("description", description);
-        object.put("tags", tags);
-        if (activeFrom != null)
-            object.put("activeFrom", activeFrom);
-        if (activeTo != null)
-            object.put("activeTo", activeTo);
-        if (_id != null) {
-            // update existing column
-            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
-                    .updateOne(eq("_id", new ObjectId(_id)),
-                            new Document("$set", new Document(object)));
-        } else {
+        ModelMap extra = new ModelMap();
+        for (int i = 0; i < size; i++) {
+            if ((request.getParameter("key" + i) != null) && (request.getParameter("value" + i) != null)) {
+                String key = request.getParameter("key" + i).trim();
+                String value = request.getParameter("value" + i).trim();
+                extra.put(key, value);
+            }
+        }
+        Date now = new Date();
+        if (_id == null) {
+            ModelMap column = new ModelMap();
+            column.put("name", name);
+            if (description != null)
+                column.put("description", description);
+            column.put("tags", tags);
+            if (activeFrom != null)
+                column.put("activeFrom", activeFrom);
+            if (activeTo != null)
+                column.put("activeTo", activeTo);
+            if (entryMethod != null)
+                column.put("entryMethod", entryMethod);
+            if (customDisplay != null)
+                column.put("customDisplay", customDisplay);
+            if (possibleValues != null)
+                column.put("possibleValues", possibleValues);
             ObjectId paperref = new ObjectId(paperId);
-            object.put("paperref", paperref);
+            column.put("paperref", paperref);
+            column.put("extra", extra);
+            column.put("created", now);
             // create a new column
             db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
-                    .insertOne(new Document(object));
+                    .insertOne(new Document(column));
+
+        } else {
+            ObjectId cId = new ObjectId(_id);
+            Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, cId);
+            column.put("name", name);
+            if (description != null)
+                column.put("description", description);
+            column.put("tags", tags);
+            if (activeFrom != null)
+                column.put("activeFrom", activeFrom);
+            if (activeTo != null)
+                column.put("activeTo", activeTo);
+            if (entryMethod != null)
+                column.put("entryMethod", entryMethod);
+            if (customDisplay != null)
+                column.put("customDisplay", customDisplay);
+            if (possibleValues != null)
+                column.put("possibleValues", possibleValues);
+            column.put("extra", extra);
+            column.put("lastModified", now);
+            // update existing column
+            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+                    .updateOne(eq("_id", cId),
+                            new Document("$set", new Document(column)));
+            paperId = ((ObjectId) column.get("paperref")).toString();
         }
-        success = true;
-        return OtherUtil.outputJSON(action, success, detail);
+        return "redirect:/user/viewColumnList/" + paperId;
     }
 
 

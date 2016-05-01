@@ -96,13 +96,11 @@ public class ApiController {
         if (doc != null) {
             String username = (String) doc.get("username");
             papers = MongoUtil.getPapers(db, username);
-            for (Document p : papers)
-                MongoUtil.changeObjectId2String(p);
-            /**
-             papers = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_PAPERS, eq("owner", username), eq("status", "active"));
-             for (Document paper : papers)
-             MongoUtil.changeObjectId2String(paper);
-             //*/
+            for (Document p : papers) {
+                p.remove("studentFile");
+                p.remove("dataFile");
+                MongoUtil.changePaperObjectId2String(p);
+            }
             return new ResponseEntity<List<Document>>(papers, HttpStatus.OK);
         } else
             return new ResponseEntity<List<Document>>(papers, HttpStatus.UNAUTHORIZED);
@@ -114,8 +112,11 @@ public class ApiController {
         Document paper = null;
         Document doc = validateToken(token);
         if (doc != null) {
-            paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
-            MongoUtil.changeObjectId2String(paper);
+            // TODO: if user has not access to given paper, maybe return something different
+            paper = MongoUtil.getPaper(db, id);
+            paper.remove("studentFile");
+            paper.remove("dataFile");
+            MongoUtil.changePaperObjectId2String(paper);
             return new ResponseEntity<Document>(paper, HttpStatus.OK);
         } else
             return new ResponseEntity<Document>(paper, HttpStatus.UNAUTHORIZED);
@@ -150,6 +151,28 @@ public class ApiController {
             return new ResponseEntity<Document>(column, HttpStatus.OK);
         } else
             return new ResponseEntity<Document>(column, HttpStatus.UNAUTHORIZED);
+    }
+
+    @RequestMapping(value = "/column/{id}/customDisplay", method = RequestMethod.GET)
+    public ResponseEntity<Document> customDisplay(@PathVariable String id,
+                                                  @RequestParam("userid") String userid,
+                                                  @RequestParam("token") String token) {
+        Document output = null;
+        Document doc = validateToken(token);
+        if (doc != null) {
+            Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+            if ((column != null) && (column.get("customDisplay") != null)) {
+                String customDisplay = column.get("customDisplay").toString();
+                Document user = MongoUtil.getUser(db, userid);
+                if (user != null) {
+                    // TODO: replace value in customDisplay with real user value
+
+                    output.put("html", customDisplay);
+                }
+            }
+            return new ResponseEntity<Document>(output, HttpStatus.OK);
+        } else
+            return new ResponseEntity<Document>(output, HttpStatus.UNAUTHORIZED);
     }
 
     @RequestMapping(value = "/userdata", method = RequestMethod.GET)
@@ -229,9 +252,8 @@ public class ApiController {
             String[] fields = {"username", "givenNames", "surname", "email"};
             for (String field : fields) {
                 FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
-                        .find(
-                                new Document(field, regex)
-                                        .append("papers.paperref", new Document("$in", oids))
+                        .find(new Document(field, regex)
+                                .append("papers.paperref", new Document("$in", oids))
                         );
                 for (Document document : iterable) {
                     document.put("id", document.get("_id").toString());
@@ -270,7 +292,7 @@ public class ApiController {
             oldUser = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, uId);
             if (oldUser != null) {
                 JSONObject object = JSONUtil.parse(data);
-                for (String key : (Set<String>)object.keySet())
+                for (String key : (Set<String>) object.keySet())
                     oldUser.put(key, object.get(key));
                 db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq("_id", uId),
                         new Document("$set", oldUser));
@@ -310,7 +332,7 @@ public class ApiController {
             } else {
                 db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).updateOne(eq("token", token),
                         new Document("$set", new Document("lastModified", now))
-                        );
+                );
             }
         }
         return doc;

@@ -1,30 +1,21 @@
 <span>
     <a style='text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-    <a style='text-decoration: underline' href="${baseUrl}/user/viewPaper/${id}">View paper</a> >
+    <a style='text-decoration: underline' href="${baseUrl}/user/viewPaper/${paperId}">View paper</a> >
     <a style='text-decoration: underline' href='${baseUrl}/user/viewColumnList/${id}'>Edit columns</a> >
-<#if column?has_content>
     Edit column
-<#else>
-    Add new column
-</#if>
 </span>
 
-<h1>
-<#if column?has_content>
-    Edit column
-<#else>
-    Add new column
-</#if>
-</h1>
+<h1>Edit column</h1>
 
 <div class="box">
-    <form name="addColumnForm">
+    <form name="editColumnForm" method="post" action="${baseUrl}/user/saveColumn">
     <#if paperId?has_content>
         <input type="hidden" name="paperId" value="${paperId}"/>
     </#if>
     <#if column?has_content>
         <input type="hidden" name="_id" value="${column._id}"/>
     </#if>
+        <input type="hidden" name="size" value="0"/>
         <table>
             <tr>
                 <td style='padding:0 5px 5px 0'>Column name</td>
@@ -48,21 +39,42 @@
                            style='vertical-align: top;display:inline-block;width:300px'/>
                 </td>
             </tr>
-        <#if extra?has_content>
-        <#list extra?keys as key>
-            <tr class="extra">
+            <tr>
+                <td style='padding:0 5px 5px 0;vertical-align:top'>Entry method</td>
                 <td style='padding:0 5px 5px 0'>
-                    <input placeholder='attribute name' class='form-control' type='text' name='attName'
-                           value='${key?html}' size='4'
-                           style='vertical-align: top;display:inline-block;width:300px'/>
-                </td>
-                <td style='padding:0 5px 5px 0;vertical-align: top'>
-                    <input class='form-control' type='text' name='attValue' placeholder='attribute value'
-                           value='${extra[key]?html}' size='4'
-                           style='vertical-align: top;display:inline-block;width:300px'/>
+                    <input class='form-control' type="text" name="entryMethod" value="${(column.entryMethod)!?html}" size="8"
+                           style='display:inline-block;width:300px' required/>
                 </td>
             </tr>
-        </#list>
+            <tr>
+                <td style='padding:0 5px 5px 0;vertical-align:top'>Custom display</td>
+                <td style='padding:0 5px 5px 0'>
+                    <textarea class='form-control' name="customDisplay"
+                              style='resize:vertical;width:300px'><#if (column.customDisplay)?has_content>${column.customDisplay}</#if></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td style='padding:0 5px 5px 0;vertical-align:top'>Possible values</td>
+                <td style='padding:0 5px 5px 0'>
+                    <textarea class='form-control' name="possibleValues"
+                              style='resize:vertical;width:300px'><#if (column.possibleValues)?has_content>${column.possibleValues}</#if></textarea>
+                </td>
+            </tr>
+        <#if extra?has_content>
+            <#list extra?keys as key>
+                <tr class="extra">
+                    <td style='padding:0 5px 5px 0'>
+                        <input placeholder='attribute name' class='form-control' type='text' name='key${key_index}'
+                               value='${key?html}' size='4'
+                               style='vertical-align: top;display:inline-block;width:300px'/>
+                    </td>
+                    <td style='padding:0 5px 5px 0;vertical-align: top'>
+                        <input placeholder='attribute value' class='form-control' type='text' name='value${key_index}'
+                               value='${extra[key]?html}' size='4'
+                               style='vertical-align: top;display:inline-block;width:300px'/>
+                    </td>
+                </tr>
+            </#list>
         </#if>
 
             <tr id='addNewColumnAttribute'>
@@ -107,7 +119,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <input class='btn btn-default btn-primary submit' type="button" value="Save"
+                    <input class='btn btn-default btn-primary' type="submit" value="Save"
                            style='margin-top:20px'/>
                 </td>
             </tr>
@@ -122,40 +134,20 @@
             format: "dd/mm/yyyy"
         });
 
+        var index = 0;
+    <#if extra?has_content>
+        index = ${extra?keys?size};
+        $('input[name=size]').val(index);
+    </#if>
+
         $('#addKeyValue').on('click', function () {
-            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='attName' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input class='form-control' type='text' name='attValue' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
+            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input placeholder='attribute value' class='form-control' type='text' name='value" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
+            index++;
+            $('input[name=size]').val(index);
             $('#addNewColumnAttribute').before(newRow);
             return false;
         });
 
-        $('input.submit').on("click", function () {
-            var paperId = $('input[name=paperId]').val();
-            var _id = $('input[name=_id]').val();
-            var name = $('input[name=name]').val();
-            var description = $('textarea[name=description]').val();
-            var tags = $('input[name=tags]').val();
-            var activeFrom = $('input[name=activeFrom]').val();
-            var activeTo = $('input[name=activeTo]').val();
-            var attributes = {};
-            $('tr.extra').each(function (i, e) {
-                var attName = $('[name=attName]', this).val();
-                var attValue = $('[name=attValue]', this).val();
-                attributes[attName] = attValue;
-            });
-            var attString = JSON.stringify(attributes);
-            console.log("attribute string", attString);
-            $.post("${baseUrl}/user/saveColumn",
-                    {paperId: paperId, _id: _id, name: name, description: description, tags: tags, activeFrom: activeFrom, activeTo: activeTo, json: attString},
-                    function (json) {
-                        console.log('json', json);
-                        if (json.success) {
-                            var url = "${baseUrl}/user/viewColumnList/" + paperId;
-                            console.log('url', url);
-                            location.href = url;
-                        } else if (json.detail)
-                            alert(json.detail);
-                    });
-        });
     });
 </script>
 

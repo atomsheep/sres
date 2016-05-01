@@ -4,6 +4,7 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
+import nz.ac.otago.edtech.spring.bean.UploadLocation;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -15,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.ui.ModelMap;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.*;
 
 import static com.mongodb.client.model.Filters.and;
@@ -76,10 +78,8 @@ public class MongoUtil {
     public static List<Document> getAllDocuments(MongoDatabase db, String collection) {
         List<Document> documents = new ArrayList<Document>();
         FindIterable<Document> iterable = db.getCollection(collection).find();
-        for (Document document : iterable) {
-            document.put("id", document.get("_id").toString());
+        for (Document document : iterable)
             documents.add(document);
-        }
         return documents;
     }
 
@@ -94,10 +94,8 @@ public class MongoUtil {
     public static List<Document> findDocuments(MongoDatabase db, String collection, Bson filter) {
         List<Document> documents = new ArrayList<Document>();
         FindIterable<Document> iterable = db.getCollection(collection).find(filter);
-        for (Document document : iterable) {
-            document.put("id", document.get("_id").toString());
+        for (Document document : iterable)
             documents.add(document);
-        }
         return documents;
     }
 
@@ -112,10 +110,8 @@ public class MongoUtil {
     public static List<Document> getDocuments(MongoDatabase db, String collection, Bson... filters) {
         List<Document> documents = new ArrayList<Document>();
         FindIterable<Document> iterable = db.getCollection(collection).find(and(filters));
-        for (Document document : iterable) {
-            document.put("id", document.get("_id").toString());
+        for (Document document : iterable)
             documents.add(document);
-        }
         return documents;
     }
 
@@ -305,7 +301,40 @@ public class MongoUtil {
                 for (Document paper : papersDoc)
                     MongoUtil.changeObjectId2String(paper, "paperref");
             }
+            if (user.get("paperref") != null)
+                MongoUtil.changeObjectId2String(user, "paperref");
         }
+    }
+
+    public static void changePaperObjectId2String(Document paper) {
+        if (paper != null) {
+            changeObjectId2String(paper);
+            if (paper.get("owner") != null)
+                MongoUtil.changeObjectId2String(paper, "owner");
+        }
+    }
+
+    /**
+     * get all papers given user has access to
+     *
+     * @param db mongo database
+     * @param id paper id
+     * @return paper object
+     */
+    public static Document getPaper(MongoDatabase db, String id) {
+        return getPaper(db, new ObjectId(id));
+    }
+
+    /**
+     * get all papers given user has access to
+     *
+     * @param db  mongo database
+     * @param pid paper object id
+     * @return paper object
+     */
+    public static Document getPaper(MongoDatabase db, ObjectId pid) {
+        Document paper = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, eq("_id", pid), eq("status", "active"));
+        return paper;
     }
 
     /**
@@ -322,15 +351,10 @@ public class MongoUtil {
         List<Document> papersDoc = (List<Document>) userDoc.get("papers");
         for (Document paper : papersDoc) {
             ObjectId pid = (ObjectId) paper.get("paperref");
-            @SuppressWarnings("unchecked")
-            List<String> roles = (List<String>) paper.get("roles");
-            log.debug("roles = {}", roles);
-            // roles who can see this paper: owner, tutor, ...
-            if (roles.contains("owner") || roles.contains("tutor")) {
-                Document pp = MongoUtil.getDocument(db, COLLECTION_NAME_PAPERS, eq("_id", pid), eq("status", "active"));
-                if (pp != null)
-                    papers.add(pp);
-            }
+            //String role = paper.get("role").toString();
+            Document pp = getPaper(db, pid);
+            if (pp != null)
+                papers.add(pp);
         }
         return papers;
     }
@@ -342,6 +366,14 @@ public class MongoUtil {
         }
         return result;
 
+    }
+
+    public static File getPaperDir(UploadLocation uploadLocation, Document paper) {
+        if ((uploadLocation == null) || (paper == null))
+            throw new IllegalArgumentException("uploadLocation is not set or paper is null");
+        File uploadDir = uploadLocation.getUploadDir();
+        File paperDir = new File(uploadDir, paper.get("_id").toString());
+        return paperDir;
     }
 
     /**
