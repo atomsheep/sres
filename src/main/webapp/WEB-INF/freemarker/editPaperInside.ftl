@@ -90,10 +90,7 @@ Edit ${ICN} information
             </#list>
         </#if>
             <tr id='addNewColumnAttribute'><td></td></tr>
-
         </table>
-
-
     </div>
 
 </form>

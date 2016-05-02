@@ -154,25 +154,20 @@ public class UserController {
         }
         Date now = new Date();
         ObjectId id;
+        Document paper;
         if (_id == null) {
-            ModelMap paper = new ModelMap();
-            paper.put("code", code);
-            paper.put("name", name);
-            paper.put("year", year);
-            paper.put("semester", semester);
-            paper.put("extra", extra);
+            id = new ObjectId();
+            paper = new Document();
             String userName = AuthUtil.getUserName(request);
             Document user = MongoUtil.getUser(db, userName);
-            id = new ObjectId();
             paper.put("_id", id);
             paper.put("owner", user.get("_id"));
             paper.put("status", "active");
             paper.put("created", now);
-            db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).insertOne(new Document(paper));
             log.debug("new paper id {}", id);
             if (user != null) {
                 // paper info
-                ModelMap pp = new ModelMap();
+                Document pp = new Document();
                 pp.put("paperref", id);
                 List<String> roles = new ArrayList<String>();
                 roles.add("owner");
@@ -182,19 +177,21 @@ public class UserController {
             }
             log.debug("new paper id {}", id);
         } else {
-            Document paper = MongoUtil.getPaper(db, _id);
-            paper.put("code", code);
-            paper.put("name", name);
-            paper.put("year", year);
-            paper.put("semester", semester);
-            paper.put("extra", extra);
+            paper = MongoUtil.getPaper(db, _id);
             paper.put("lastModified", now);
             id = new ObjectId(_id);
-            // update existing column
-            db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
-                    .updateOne(eq("_id", id),
-                            new Document("$set", new Document(paper)));
         }
+
+        paper.put("code", code);
+        paper.put("name", name);
+        paper.put("year", year);
+        paper.put("semester", semester);
+        paper.put("extra", extra);
+
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
+                .updateOne(eq("_id", id),new Document("$set", new Document(paper)),
+                        new UpdateOptions().upsert(true));
+
         return "redirect:/user/addStudentList/" + id.toString();
     }
 
@@ -561,7 +558,7 @@ public class UserController {
 
         String userName = AuthUtil.getUserName(request);
         Document user = MongoUtil.getUser(db, userName);
-        Map email = new ModelMap();
+        Document email = new Document();
         ObjectId eid = new ObjectId();
         email.put("_id", eid);
         email.put("owner", user.get("_id"));
@@ -707,11 +704,6 @@ public class UserController {
                              @RequestParam("name") String name,
                              @RequestParam(value = "description", required = false) String description,
                              @RequestParam("tags") String tags,
-                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
-                             @RequestParam(value = "activeTo", required = false) Date activeTo,
-                             @RequestParam(value = "entryMethod", required = false) String entryMethod,
-                             @RequestParam(value = "customDisplay", required = false) String customDisplay,
-                             @RequestParam(value = "possibleValues", required = false) String possibleValues,
                              @RequestParam("size") int size,
                              HttpServletRequest request) {
 
@@ -724,56 +716,70 @@ public class UserController {
             }
         }
         Date now = new Date();
+        ObjectId cId;
+        Document column;
+
         if (_id == null) {
-            ModelMap column = new ModelMap();
-            column.put("name", name);
-            if (description != null)
-                column.put("description", description);
-            column.put("tags", tags);
-            if (activeFrom != null)
-                column.put("activeFrom", activeFrom);
-            if (activeTo != null)
-                column.put("activeTo", activeTo);
-            if (entryMethod != null)
-                column.put("entryMethod", entryMethod);
-            if (customDisplay != null)
-                column.put("customDisplay", customDisplay);
-            if (possibleValues != null)
-                column.put("possibleValues", possibleValues);
+            cId = new ObjectId();
+            column = new Document();
+            column.put("_id", cId);
             ObjectId paperref = new ObjectId(paperId);
             column.put("paperref", paperref);
-            column.put("extra", extra);
             column.put("created", now);
-            // create a new column
-            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
-                    .insertOne(new Document(column));
-
         } else {
-            ObjectId cId = new ObjectId(_id);
-            Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, cId);
-            column.put("name", name);
-            if (description != null)
-                column.put("description", description);
-            column.put("tags", tags);
-            if (activeFrom != null)
-                column.put("activeFrom", activeFrom);
-            if (activeTo != null)
-                column.put("activeTo", activeTo);
-            if (entryMethod != null)
-                column.put("entryMethod", entryMethod);
-            if (customDisplay != null)
-                column.put("customDisplay", customDisplay);
-            if (possibleValues != null)
-                column.put("possibleValues", possibleValues);
-            column.put("extra", extra);
+            cId = new ObjectId(_id);
+            column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, cId);
             column.put("lastModified", now);
-            // update existing column
-            db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
-                    .updateOne(eq("_id", cId),
-                            new Document("$set", new Document(column)));
-            paperId = ((ObjectId) column.get("paperref")).toString();
         }
-        return "redirect:/user/viewColumnList/" + paperId;
+
+        column.put("name", name);
+        if (description != null)
+            column.put("description", description);
+        column.put("tags", tags);
+        column.put("extra", extra);
+
+        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+                .updateOne(eq("_id", cId), new Document("$set", new Document(column)),
+                        new UpdateOptions().upsert(true));
+
+        return "redirect:/user/editColumnRestrictions/" + cId.toString();
+    }
+
+    @RequestMapping(value = "/editColumnRestrictions/{id}", method = RequestMethod.GET)
+    public String editColumnRestrictions(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+
+        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+        Document extra = (Document) column.get("extra");
+        model.put("column", column);
+        model.put("extra", extra);
+        model.put("paperId", column.get("paperref"));
+        model.put("pageName", "editColumnRestrictions");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
+    @RequestMapping(value = "/saveColumnRestrictions", method = RequestMethod.POST)
+    public String saveColumnRestrictions(
+                             @RequestParam(value = "_id", required = false) String _id,
+                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
+                             @RequestParam(value = "activeTo", required = false) Date activeTo,
+                             HttpServletRequest request) {
+
+        Date now = new Date();
+        ObjectId cId = new ObjectId(_id);
+        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, cId);
+        if (activeFrom != null)
+            column.put("activeFrom", activeFrom);
+        if (activeTo != null)
+            column.put("activeTo", activeTo);
+        column.put("lastModified", now);
+        // update existing column
+        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+            .updateOne(eq("_id", cId), new Document("$set", new Document(column)));
+
+        return "redirect:/user/editScanningInformation/" + cId.toString();
     }
 
 
