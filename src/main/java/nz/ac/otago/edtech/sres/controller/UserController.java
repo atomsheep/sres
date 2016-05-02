@@ -277,6 +277,7 @@ public class UserController {
     @RequestMapping(value = "/importUser", method = RequestMethod.POST)
     public String importUser(HttpServletRequest request,
                              @RequestParam("id") String id,
+                             @RequestParam("identifiers") int[] identifiers,
                              @RequestParam("size") int size) {
         boolean hasHeader = false;
         if (request.getParameter("hasHeader") != null)
@@ -295,11 +296,19 @@ public class UserController {
                 }
             }
         }
+        List<String> identifierList = new ArrayList<String>();
+        for(int ii: identifiers) {
+            String fieldName = request.getParameter("key" + ii);
+            log.debug("ii = {} field name = {}", ii, fieldName);
+            // TODO: save identifiers;
+            identifierList.add(fieldName);
+        }
+
         // TODO: get old student fields first, then combine with new fields
         // update studentFields in paper
         db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
                 eq("_id", new ObjectId(id)),
-                new Document("$set", new Document("studentFields", columns))
+                new Document("$set", new Document("studentFields", columns).append("identifiers", identifierList))
         );
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         String filename = paper.get("studentFile").toString();
@@ -405,7 +414,16 @@ public class UserController {
 
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
         String filename = paper.get("dataFile").toString();
-        model.put("studentFields", paper.get("studentFields"));
+        @SuppressWarnings("unchecked")
+        List<String> studentFields = (List<String>)paper.get("studentFields");
+        @SuppressWarnings("unchecked")
+        List<String> identifiers = (List<String>)paper.get("identifiers");
+
+        Set<String> set = new LinkedHashSet<String>();
+        set.addAll(identifiers);
+        set.addAll(studentFields);
+
+        model.put("studentFields", set);
         File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
         File upload = new File(paperDir, filename);
         if (upload.exists()) {
@@ -434,10 +452,13 @@ public class UserController {
 
     // save student data into userdata
     @RequestMapping(value = "/importUserData", method = RequestMethod.POST)
-    public String importUserData(HttpServletRequest request,
+    public ResponseEntity<String> importUserData(HttpServletRequest request,
                                  @RequestParam("id") String id,
                                  @RequestParam("size") int size) {
 
+        String action = "importUserData";
+        boolean success = false;
+        String detail = null;
         String userName = AuthUtil.getUserName(request);
         Document user = MongoUtil.getUser(db, userName);
         boolean hasHeader = false;
@@ -446,6 +467,12 @@ public class UserController {
         String fieldName = ServletUtil.getParameter(request, "sres_id");
         int unIndex = ServletUtil.getParameter(request, "csv_id", -1);
         ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db, paperId);
+        // update paper identifiers
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(eq("_id", paperId),
+                new Document("$addToSet", new Document("identifiers", fieldName)));
+
+        int userCount = 0;
         if (unIndex != -1) {
             List<ModelMap> columnFields = new ArrayList<ModelMap>();
             for (int i = 0; i < size; i++) {
@@ -459,6 +486,7 @@ public class UserController {
                         map.put("description", description);
                         map.put("index", value);
                         map.put("paperref", paperId);
+                        map.put("identifier", fieldName);
                         // update column if exists, create a new one if does not exist
                         db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
                                 .updateOne(and(eq("name", name), eq("paperref", paperId)),
@@ -473,7 +501,6 @@ public class UserController {
                 }
             }
             if (!columnFields.isEmpty()) {
-                Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
                 String filename = paper.get("dataFile").toString();
                 File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
                 File upload = new File(paperDir, filename);
@@ -496,6 +523,7 @@ public class UserController {
                             Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("paperref", paperId), eq("userInfo." + fieldName, un));
                             log.debug("find user.");
                             if (uu != null)
+                                userCount++;
                                 for (ModelMap m : columnFields) {
                                     ObjectId colref = (ObjectId) m.get("_id");
                                     ObjectId userref = (ObjectId) uu.get("_id");
@@ -509,7 +537,11 @@ public class UserController {
                 }
             }
         }
-        return "redirect:/user/viewPaper/" + id;
+        success = true;
+        ModelMap extra = new ModelMap();
+        extra.put("userCount", userCount);
+        extra.put("paperId", paperId);
+        return OtherUtil.outputJSON(action, success, detail, extra);
     }
 
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)

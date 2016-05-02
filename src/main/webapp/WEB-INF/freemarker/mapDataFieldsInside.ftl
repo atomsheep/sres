@@ -12,7 +12,7 @@
 <form action="${baseUrl}/user/importUserData" method="post">
 
     <h1 style='margin:0 20px'>Step 5: map data fields
-        <button type="submit" class="btn btn-default btn-primary"
+        <button type="button" class="btn btn-default btn-primary submit"
                 style='float:right;border-radius:0;padding:10px 10px 9px;'>Finish
         </button>
         <button type="button" class="btn btn-default btn-primary"
@@ -23,8 +23,9 @@
 
     <div style='overflow:hidden'>
 
-        <div class='info_text'>Choose the fields you want to import from your student data file. If the first line of
-            your CSV file is the header, please indicate so by ticking the checkbox below.
+        <div class='info_text'>
+            Choose the fields you want to import from your student data file. If the first line of your CSV file is the
+            header, please indicate so by ticking the checkbox below.
             You will need to specify the identifier field that SRES should use to map your data to your students (e.g.
             username or student ID) - in the first dropdown, select the student identifier field saved in SRES; in the
             second dropdown, select the matching identifier field from your data file.
@@ -187,6 +188,10 @@
         var height = $(window).height();
         var newHeight = height - top - (20);
         $('.side2').css("height", newHeight + "px");
+
+        $('button.submit').on('click', function() {
+
+        });
     });
 
 </script>

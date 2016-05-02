@@ -8,7 +8,7 @@
     </span>
 <div style='clear:both'></div>
 <@showProgress 3 5/>
-<form name="editStudentList" id="editStudentList" action="${baseUrl}/user/importUser" method="post">
+<form name="mapFieldsForm" action="${baseUrl}/user/importUser" method="post">
 
     <h1 style='margin:0 20px'>Step 3: map student fields
         <button type="submit" class="btn btn-default btn-primary"
@@ -21,11 +21,12 @@
 
     <div style='overflow:hidden'>
 
-        <div class='info_text'>Choose the fields you want to import from your student list. Later, when importing data,
-            SRES will expect an identifier (e.g. username or student ID), to match to your users, so at least one of the fields
-            you upload now should be a unique identifier field. You can mark one or more fields as identifier fields (optional),
-            and SRES will prioritise these fields when matching student data.
-            If the first line of your CSV file is the header, please indicate so by ticking the checkbox below.
+        <div class='info_text'>
+            Choose the fields you want to import from your student list. Later, when importing data,
+            SRES will expect an identifier (e.g. username or student ID), to match to your users, so at least one of the
+            fields you upload now should be a unique identifier field. You can mark one or more fields as identifier
+            fields (optional), and SRES will prioritise these fields when matching student data. If the first line of
+            your CSV file is the header, please indicate so by ticking the checkbox below.
         </div>
 
         <input type="hidden" name="id" value="${id}"/>
@@ -53,6 +54,7 @@
                 <span style='float:right;margin-right:20px'>
                     (<span class='identifiersChecked'>0</span> identifiers selected)
                 </span>
+
                 <div style='clear:both'></div>
             </h4>
 
@@ -69,7 +71,8 @@
                 <#list record as r>
                     <tr class="fieldRow">
                         <td style='padding:0 5px 5px 20px;text-align:center'>
-                            <input type="checkbox" name="extra${r_index?c}" class="checkField sres_check" checked="checked"/>
+                            <input type="checkbox" name="extra${r_index?c}" class="checkField sres_check"
+                                   checked="checked"/>
                         </td>
                         <td style='width:50%;padding:0 5px 5px 0'>
                             <select name="value${r_index?c}" class="form-control"
@@ -137,19 +140,6 @@
         });
 
         $('.starField').on('change', function () {
-            var slf = $(this);
-            var name = slf.attr('name');
-            var num = name.substring(5, name.length);
-            if (slf.is(':checked')) {
-                //TODO: make this do something
-            /*    $('[name=key' + num + ']').removeAttr('disabled');
-                $('[name=value' + num + ']').removeAttr('disabled');
-                $('.input-group' + num).removeAttr('disabled');    */
-            } else {
-             /*   $('[name=key' + num + ']').attr('disabled', 'disabled');
-                $('[name=value' + num + ']').attr('disabled', 'disabled');
-                $('.input-group' + num).attr('disabled', 'disabled');     */
-            }
             $('.identifiersChecked').text($('.starField:checked').length);
         });
 
