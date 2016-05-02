@@ -24,64 +24,72 @@ Edit ${ICN} information
         <h4 style='margin:0 0 20px;padding:10px;background:#043B4E;'>Required default ${ICN} fields</h4>
         <table style='width:100%'>
             <tr>
-                <td style='padding:0 5px 5px 20px'>${ICN_C} code</td>
-                <td style='padding:0 20px 5px 0;width:80%'>
-                    <input class='form-control' type="text" name="code" value="${(paper.code)!}" size="8"
+                <td style='padding:0 20px 5px 20px'>
+                    <div class='input-group input-group1' style='width:100%'>
+                        <span class='input-group-addon sres_name' style='width:150px;text-align:left'>${ICN_C} code:</span>
+                        <input class='form-control' type="text" name="code" value="${(paper.code)!}" size="8"
                            style='display:inline-block;' required/>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td style='padding:0 5px 5px 20px'>${ICN_C} name</td>
-                <td style='padding:0 20px 5px 0'>
-                    <input class='form-control' type="text" name="name" style='display:inline-block;'
-                           value="${(paper.name)!}" size="40" required/>
+                <td style='padding:0 20px 5px 20px'>
+                    <div class='input-group input-group2' style='width:100%'>
+                        <span class='input-group-addon sres_name' style='width:150px;text-align:left'>${ICN_C} name:</span>
+                        <input class='form-control' type="text" name="name" style='display:inline-block;'
+                               value="${(paper.name)!}" size="40" required/>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td style='padding:0 5px 5px 20px'>Calendar year</td>
-                <td style='padding:0 20px 5px 0'>
-                    <input class='form-control' type="text" name="year" value="${(paper.year)!}" size="4"
-                           style='display:inline-block;' required/>
+                <td style='padding:0 20px 5px 20px'>
+                    <div class='input-group input-group3' style='width:100%'>
+                        <span class='input-group-addon sres_name' style='width:150px;text-align:left'>Year:</span>
+                        <input class='form-control' type="text" name="year" value="${(paper.year)!}" size="4"
+                               style='display:inline-block;' required/>
+                    </div>
                 </td>
             </tr>
             <tr>
-                <td style='padding:0 5px 5px 20px'>Semester</td>
-                <td style='padding:0 20px 0 0'>
-                    <input class='form-control' type="text" name="semester" value="${(paper.semester)!}"
-                           style='display:inline-block;' size="2" required/>
+                <td style='padding:0 20px 0 20px'>
+                    <div class='input-group input-group4' style='width:100%'>
+                        <span class='input-group-addon sres_name' style='width:150px;text-align:left'>Semester:</span>
+                        <input class='form-control' type="text" name="semester" value="${(paper.semester)!}"
+                               style='display:inline-block;' size="2" required/>
+                    </div>
                 </td>
             </tr>
         </table>
     </div>
 
-    <div class="box info_text side2" style='padding:0;margin:20px 20px 20px 10px;width:calc(50% - 30px);float:left'>
-        <h4 style='margin:0 0 20px;padding:10px;background:#043B4E;'>Extra ${ICN} fields</h4>
+    <div class="box info_text side2" style='position:relative;padding:0;margin:20px 20px 20px 10px;width:calc(50% - 30px);float:left'>
+        <h4 style='margin:0;padding:10px;background:#043B4E;'>Extra ${ICN} fields (<span class='extraFieldsSize'>0</span>)</h4>
 
-        <table style='width:100%'>
+        <div class='topPanel'>
+            <div class='btn btn-default btn-primary' id="addKeyValue"  style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
+                Add new paper attribute
+            </div>
+        </div>
+
+        <table style='width:100%;margin-top:60px'>
         <#if extra?has_content>
             <#list extra?keys as key>
                 <tr class="extra">
                     <td>
                         <input placeholder='attribute name' class='form-control' type='text' name='key${key_index}'
                                value='${key?html}' size='4'
-                               style='vertical-align: top;display:inline-block;width:300px'/>
+                               style='vertical-align: top;display:inline-block;'/>
                     </td>
                     <td>
                         <input class='form-control' type='text' name='value${key_index}' placeholder='attribute value'
                                value='${extra[key]?html}' size='4'
-                               style='vertical-align: top;display:inline-block;width:300px'/>
+                               style='vertical-align: top;display:inline-block;'/>
                     </td>
                 </tr>
 
             </#list>
         </#if>
-            <tr id='addNewColumnAttribute'>
-                <td colspan="2">
-                    <button class='btn btn-default btn-primary' type="button" id="addKeyValue" style='margin-top:20px'>
-                        Add new paper attribute
-                    </button>
-                </td>
-            </tr>
+            <tr id='addNewColumnAttribute'><td></td></tr>
 
         </table>
 
@@ -104,10 +112,11 @@ Edit ${ICN} information
     </#if>
 
         $('#addKeyValue').on('click', function () {
-            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 0'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td><td style='padding:0 5px 5px 0;vertical-align: top'><input placeholder='attribute value' class='form-control' type='text' name='value" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;width:300px' /></td></tr>";
+            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 20px'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;' /></td><td style='padding:0 20px 5px 0;vertical-align: top'><input class='form-control' type='text' name='value" + index + "' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;' /></td></tr>";
             index++;
             $('input[name=size]').val(index);
             $('#addNewColumnAttribute').before(newRow);
+            $('.extraFieldsSize').text($('.extra').length);
             return false;
         });
 

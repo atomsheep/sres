@@ -97,7 +97,7 @@ input { color: black; }
 
 tr.fieldRow { height: 30px; }
 
-#paperList td{ font-size:32px; font-weight: 300; }
+#paperList td{ font-size:22px; font-weight: 300; }
 
 #paperList th, #paperList td, #studentList th, #studentList td, #column_table th, #column_table td, #intervention_table th, #intervention_table td{
     padding:5px 10px;
@@ -174,8 +174,7 @@ table.dataTable tbody tr { background: none !important }
 
 .info_text { border:1px solid #066888;padding:20px;margin:0 20px }
 
-
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control { color: #ccc }
 
 .sres_name, .sres_identifier { background:#0886AF;color:white;border:none }
-.input-group[disabled] .sres_name { background:#ccc;color:#999; }
+.input-group[disabled] .sres_name { background:#ccc;color:#777; }
