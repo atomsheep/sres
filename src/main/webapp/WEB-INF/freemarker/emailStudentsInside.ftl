@@ -89,7 +89,7 @@
                             <td>
                                 <div class='input-group input-group1'>
                                     <span class='input-group-addon sres_name'>Subject:</span>
-                                    <input style='width:100%' type="text" name="subject" class="form-control" value="<#if paper.code?has_content>[From ${paper.code}]</#if> "/>
+                                    <input style='width:100%' type="text" name="subject" class="form-control" value="${email.subject!}"/>
                                 </div>
                             </td>
                         </tr>
@@ -97,7 +97,7 @@
                             <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">Introductory paragraph (for <span class='totalStudents'>${users?size}</span> students)</h4></th>
                         </tr>
                         <tr>
-                            <td style='padding-bottom:10px'><textarea style='border-radius:0;min-height:100px' placeholder="Dear [givenNames]," name="body" class="form-control"></textarea></td>
+                            <td style='padding-bottom:10px'><textarea style='border-radius:0;min-height:100px' name="body" class="form-control">${email.introductoryParagraph!}</textarea></td>
                         </tr>
                         <tr id='addParagraphs'>
                             <td style='padding:0'>
@@ -119,7 +119,7 @@
                             <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">Concluding paragraph (for <span class='totalStudents'>${users?size}</span> students)</h4></th>
                         </tr>
                         <tr>
-                            <td><textarea style='border-radius:0;min-height:100px' name="end" class="form-control" placeholder="Regards, [staff name]"></textarea></td>
+                            <td><textarea style='border-radius:0;min-height:100px' name="end" class="form-control">${email.concludingParagraph!}</textarea></td>
                         </tr>
                     </table>
                 </div>
@@ -264,8 +264,14 @@
         });
 
         $('input[name=usernames]').on('click', function(){
-            totalStudents = $('input[name=usernames]:checked').length;
-            $('.totalStudents').text(totalStudents);
+            var self= $(this);
+
+            $.post('${baseUrl}/user/addRemoveUser',
+                    {emailId:'${email._id}', userId:self.val(), remove:self.is(":checked")},
+                function(json){
+                    totalStudents = $('input[name=usernames]:checked').length;
+                    $('.totalStudents').text(totalStudents);
+                });
         });
 
         $(document).on('change','.conditionalElement',function(){

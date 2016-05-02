@@ -9,7 +9,7 @@
 <div style='clear:both'></div>
 <@showProgress 5 5/>
 
-<form action="${baseUrl}/user/importUserData" method="post">
+<form name="mapDataFieldsForm" action="${baseUrl}/user/importUserData" method="post">
 
     <h1 style='margin:0 20px'>Step 5: map data fields
         <button type="button" class="btn btn-default btn-primary submit"
@@ -190,8 +190,60 @@
         $('.side2').css("height", newHeight + "px");
 
         $('button.submit').on('click', function() {
-
+            $('[name=mapDataFieldsForm]').ajaxSubmit(options);
+            return false;
         });
+
+
+        var options = {
+            target:        '#output2',   // target element(s) to be updated with server response
+            dataType: 'json',
+            beforeSubmit:  beforeSubmit,  // pre-submit callback
+            error: function(err){
+
+                console.log('error', err);
+            },
+            success:       showResponse  // post-submit callback
+        };
+
+        var p = $("<div></div>").appendTo("body");
+
+        function beforeSubmit() {
+          console.log("before submit");
+
+            p.popup_simple('init', {
+                content: "<img src='${baseUrl}/assets/img/saving.gif' /><br/>Thinking",
+                extraClasses: ["loadingPopup"],
+                confirm: false,
+                cancel: false
+            }).popup_simple("show").popup_simple("centre");
+
+          return true;
+        }
+
+        function showResponse(responseText, statusText, xhr, $form) {
+            console.log("after submit");
+            console.log("response text", responseText);
+            p.popup_simple('setContent',responseText.userCount + " users matched.")
+                    .popup_simple('setConfirm',true, function(){
+                        // redirect to view paper page
+                        location.href = '${baseUrl}/user/viewPaper/' + responseText.paperId;
+                    })
+                    .popup_simple('setCancel',true);
+            $('.popup_simple_confirm').addClass('btn btn-default btn-primary').css({
+                borderRadius:0,
+                padding:"10px 10px 9px",
+                marginTop: "10px",
+                marginRight: "10px"
+            }).text("View ${ICN}");
+            $('.popup_simple_cancel').addClass('btn btn-default btn-danger').css({
+                borderRadius:0,
+                padding:"10px 10px 9px",
+                marginTop: "10px",
+                marginLeft: "10px"
+            });
+
+        }
     });
 
 </script>

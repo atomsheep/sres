@@ -178,3 +178,6 @@ table.dataTable tbody tr { background: none !important }
 
 .sres_name, .sres_identifier { background:#0886AF;color:white;border:none }
 .input-group[disabled] .sres_name { background:#ccc;color:#777; }
+
+.loadingPopup{ top:70px !important;font-weight:300;font-size:24px !important;width:300px;background: #021E27 !important;border:1px solid #0886AF !important; }
+.loadingPopup img { margin-bottom:10px }

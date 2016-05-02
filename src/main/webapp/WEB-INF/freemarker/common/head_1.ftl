@@ -17,6 +17,7 @@
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/javascript.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="${baseUrl}/assets/js/jquery.form.min.js"></script>
 
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-datepicker-1.5.1-dist/js/bootstrap-datepicker.js"></script>
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/bootstrap-datepicker-1.5.1-dist/css/bootstrap-datepicker.css"/>
