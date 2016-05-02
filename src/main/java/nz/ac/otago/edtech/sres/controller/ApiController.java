@@ -220,12 +220,33 @@ public class ApiController {
 
     @RequestMapping(value = "/users", method = RequestMethod.GET)
     public ResponseEntity<List<Document>> users(@RequestParam("token") String token,
-                                                @RequestParam(value = "paperid", required = false) String[] paperIds,
+                                                //@RequestParam(value = "paperid", required = false) String[] paperIds,
+                                                @RequestParam("paperid") String paperId,
                                                 @RequestParam("term") String term) {
         List<Document> users = new ArrayList<Document>();
         Document doc = validateToken(token);
         if (doc != null) {
             String username = (String) doc.get("username");
+            Document paper = MongoUtil.getPaper(db, paperId);
+            @SuppressWarnings("unchecked")
+            List<String> identifiers = (List<String>)paper.get("identifiers");
+            Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
+            Set<Document> set = new HashSet<Document>();
+            for (String field : identifiers) {
+                FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                        .find(new Document("userInfo." + field, regex)
+                                .append("paperref", paper.get("_id"))
+                        );
+                for (Document document : iterable) {
+                    set.add(document);
+                }
+            }
+            users.addAll(set);
+            for (Document u : users)
+                MongoUtil.changeUserObjectId2String(u);
+            return new ResponseEntity<List<Document>>(users, HttpStatus.OK);
+
+            /*
             // all papers this user has access to
             List<Document> papers = MongoUtil.getPapers(db, username);
             if (paperIds != null) {
@@ -247,6 +268,7 @@ public class ApiController {
             List<ObjectId> oids = new ArrayList<ObjectId>();
             for (Document pp : papers)
                 oids.add((ObjectId) pp.get("_id"));
+
             Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
             Set<Document> set = new HashSet<Document>();
             String[] fields = {"Student ID", "Family name", "Institutional email", "Given name(s)"};
@@ -256,7 +278,6 @@ public class ApiController {
                                 .append("paperref", new Document("$in", oids))
                         );
                 for (Document document : iterable) {
-                    document.put("id", document.get("_id").toString());
                     set.add(document);
                 }
             }
@@ -264,6 +285,7 @@ public class ApiController {
             for (Document u : users)
                 MongoUtil.changeUserObjectId2String(u);
             return new ResponseEntity<List<Document>>(users, HttpStatus.OK);
+            */
         } else
             return new ResponseEntity<List<Document>>(users, HttpStatus.UNAUTHORIZED);
     }
