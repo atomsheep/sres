@@ -557,6 +557,7 @@ public class UserController {
         email.put("studentlist",Arrays.asList(userIds));
         email.put("type","email");
         email.put("status","draft");
+        email.put("datecreated",new Date());
 
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
         MongoUtil.putCommonIntoModel(db, request, model);

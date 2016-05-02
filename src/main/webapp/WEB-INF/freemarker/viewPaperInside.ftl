@@ -18,7 +18,7 @@
         <div class='paper_buttons'
              style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
             <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-            <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} details</a>
+            <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
             <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
             <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
@@ -59,7 +59,7 @@
                             <th style='text-align:left;'>Tags</th>
                             <th style='text-align:left;border-right:none'></th>
                         </tr>
-                        <#if columsn?has_content>
+                        <#if columns?has_content>
                             <#list columns?chunk(1) as cc>
                                 <tr>
                                     <#list cc as c>
@@ -69,7 +69,7 @@
                                         <td style='text-align:left'>${c.name}</td>
                                         <td style='text-align:left'>${c.description!}</td>
                                         <td style='text-align:left'>${c.tags!}</td>
-                                        <td style='border-right:none;text-align:center;'><span class='fa fa-square' style='font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
+                                        <td style='border-right:none;text-align:center;'><span class='fa fa-square colourPicker' data-column='${c._id}' style='cursor:pointer;font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
                                     </#list>
                                 </tr>
                             </#list>
@@ -233,16 +233,18 @@
 
                 <table style='width:100%' id='intervention_table'>
                     <tr>
-                        <th style='text-align:left;'>Type</th>
-                        <th style='text-align:left;'>Status</th>
-                        <th style='text-align:left;'>Students</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Students</th>
+                        <th>Created</th>
                     </tr>
                     <#if interventions?has_content>
                         <#list interventions as i>
                             <tr>
-                                <td style='padding:5px 5px 0 5px;text-align:left'>${i.type!}</td>
-                                <td style='text-align:left'>${i.status!}</td>
-                                <td style='text-align:left'>${i.studentlist?size} students</td>
+                                <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
+                                <td style=''>${i.status!}</td>
+                                <td style=''>${i.studentlist?size}</td>
+                                <td style=''><#if i.datecreated?has_content>${i.datecreated?datetime}</#if></td>
                             </tr>
                         </#list>
                     <#else>
@@ -362,6 +364,13 @@ $(function () {
             var text = self.text();
             self.shortText(text, 20);
         }
+    });
+
+    $('.colourPicker').on('click', function(){
+        var self = $(this);
+        var column = self.data('column');
+        console.log('colour');
+        //TODO: change colours
     });
 
 
