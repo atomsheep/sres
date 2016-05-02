@@ -56,17 +56,17 @@
                                 <td style='text-align:center'>
                                     ${l.studentCount!0}
                                 </td>
-                                <td style='text-align:center'>
-                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="width:100%;display:block">View paper</a>
+                                <td style='text-align:center;padding:0'>
+                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">View paper</a>
                                 </td>
-                                <td style='text-align:center'>
-                                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="width:100%;display:block">Edit paper info</a>
+                                <td style='text-align:center;padding:0'>
+                                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Edit paper info</a>
                                 </td>
-                                <td style='text-align:center'>
-                                    <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary" style="width:100%;display:block">Edit columns</a>
+                                <td style='text-align:center;padding:0'>
+                                    <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Edit columns</a>
                                 </td>
-                                <td style='text-align:center;border-right:none'>
-                                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="width:100%;display:block">Delete ${ICN}</button>
+                                <td style='text-align:center;border-right:none;padding:0'>
+                                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Delete ${ICN}</button>
                                 </td>
                             </tr>
                         </#list>
