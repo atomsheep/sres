@@ -141,14 +141,9 @@
             var name = slf.attr('name');
             var num = name.substring(5, name.length);
             if (slf.is(':checked')) {
-                //TODO: make this do something
-            /*    $('[name=key' + num + ']').removeAttr('disabled');
-                $('[name=value' + num + ']').removeAttr('disabled');
-                $('.input-group' + num).removeAttr('disabled');    */
+
             } else {
-             /*   $('[name=key' + num + ']').attr('disabled', 'disabled');
-                $('[name=value' + num + ']').attr('disabled', 'disabled');
-                $('.input-group' + num).attr('disabled', 'disabled');     */
+
             }
             $('.identifiersChecked').text($('.starField:checked').length);
         });
