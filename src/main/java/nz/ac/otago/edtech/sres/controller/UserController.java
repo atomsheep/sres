@@ -907,6 +907,23 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    @RequestMapping(value = "/saveDashboardLayout", method = RequestMethod.POST)
+    public ResponseEntity<String> saveDashboardLayout(
+            @RequestParam(value = "paperId", required = false) String paperId,
+            @RequestParam(value = "gridData", required = false) String gridData,
+            HttpServletRequest request) {
+
+        ObjectId pId = new ObjectId(paperId);
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
+        paper.put("gridData",gridData);
+
+        // update existing column
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
+                .updateOne(eq("_id", pId), new Document("$set", new Document(paper)));
+
+        return OtherUtil.outputJSON("", true, "");
+    }
+
     @RequestMapping(value = "/filterStudentList", method = RequestMethod.POST)
     public String filterStudentList(@RequestParam("id") String id,
                                     @RequestParam("json") String json,
