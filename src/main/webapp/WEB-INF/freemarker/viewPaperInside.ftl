@@ -47,87 +47,8 @@
 
     <div class="gridster">
         <ul>
-            <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
-
-                <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
-                    <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
-                        <tr>
-                            <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox" name="columnsAll"/></th>
-                            <th style='text-align:left;'>Column name</th>
-                            <th style='text-align:left;'>Description</th>
-                            <th style='text-align:left;'>Tags</th>
-                            <th style='text-align:left;border-right:none'></th>
-                        </tr>
-                        <#if columns?has_content>
-                            <#list columns?chunk(1) as cc>
-                                <tr>
-                                    <#list cc as c>
-                                        <td>
-                                            <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
-                                        </td>
-                                        <td style='text-align:left'>${c.name}</td>
-                                        <td style='text-align:left'>${c.description!}</td>
-                                        <td style='text-align:left'>${c.tags!}</td>
-                                        <td style='border-right:none;text-align:center;'><span class='fa fa-square colourPicker' data-column='${c._id}' style='cursor:pointer;font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
-                                    </#list>
-                                </tr>
-                            </#list>
-                        <#else>
-                            <tr>
-                                <td style='padding:20px;text-align:left'>No columns found.</td>
-                            </tr>
-                        </#if>
-                    </table>
-                </div>
-            </li>
-            <li class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-
-                <div class='topPanel'>
-                    <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
-                    <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
-                </div>
-                <div style="clear:both"></div>
-
-                <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
-                    <input type="hidden" name="id" value="${id}"/>
-                    <input type="hidden" name="json" value=""/>
-
-                    <div id="filterList">
-                        <div class="filterDiv">
-                            <select name="colref" class="form-control" style='float:left;border-radius:0;width:40%'>
-                            <#list columns as c>
-                                <option value="${c._id}">${c.name}</option>
-                            </#list>
-                            </select>
-
-                            <select name="operator" class="form-control" style='float:left;border-radius:0;width:20%'>
-                                <option value="$eq">equal to</option>
-                                <option value="$lt">less than</option>
-                                <option value="$lte">less than or equal to</option>
-                                <option value="$gt">greater than</option>
-                                <option value="$gte">greater than or equal to</option>
-                                <option value="$ne">not equal to</option>
-                            </select>
-
-                            <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
-
-                            <select name="join" class="form-control"
-                                    style='display:none;float:left;border-radius:0;width:10%'>
-                                <option value="and">and</option>
-                                <option value="or">or</option>
-                            </select>
-
-                            <div class='removeFilter btn btn-default btn-danger'
-                                 style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span
-                                    style='padding:10px' class="fa fa-times"></span></div>
-                            <div style='clear:both'></div>
-
-                        </div>
-                    </div>
-                </form>
-            </li>
+            <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1"></li>
+            <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1"></li>
             <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
 
                 <h4 style='margin:0;padding:10px;background:#043B4E'>
@@ -204,18 +125,7 @@
                 </div>
             </li>
 
-            <li class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span
-                        class='fa fa-times deletePanel' style='float:right'></span></h4>
-
-                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;font-size:24px;padding:10px;font-weight:300;'>
-                    ${ICN_C} code: ${paper.code!}<br/>
-                    ${ICN_C} name: ${paper.name!}<br/>
-                    Year : ${paper.year!}<br/>
-                    Semester: ${paper.semester!}<br/>
-                    Students: ${paper.studentCount!0}
-                </div>
-            </li>
+            <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1"></li>
 
             <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1"
                 style='background:white;overflow:hidden'>
@@ -228,31 +138,7 @@
             </li>
 
             <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Intervention log <span
-                        class='fa fa-times deletePanel' style='float:right'></span></h4>
 
-                <table style='width:100%' id='intervention_table'>
-                    <tr>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Students</th>
-                        <th>Created</th>
-                    </tr>
-                    <#if interventions?has_content>
-                        <#list interventions as i>
-                            <tr>
-                                <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
-                                <td style=''>${i.status!}</td>
-                                <td style=''>${i.studentlist?size}</td>
-                                <td style=''><#if i.datecreated?has_content>${i.datecreated?datetime}</#if></td>
-                            </tr>
-                        </#list>
-                    <#else>
-                        <tr>
-                            <td style='padding:20px;text-align:left'>No interventions found.</td>
-                        </tr>
-                    </#if>
-                </table>
             </li>
         </ul>
     </div>
@@ -281,6 +167,23 @@ $(function () {
             enabled: true
         }
     }).data('gridster') ;
+
+
+    //async loading of panels-------------------------------------------------
+
+    $.get("${baseUrl}/user/getColumns/${paper._id}", function(data){
+        $('#panel1').html(data);
+    });
+
+    $.get("${baseUrl}/user/getFilters/${paper._id}", function(data){
+        $('#panel2').html(data);
+    });
+
+    $.get("${baseUrl}/user/getPaperInfo/${paper._id}", function(data){
+        $('#panel4').html(data);
+    });
+
+    //-------------------------------------------------------------------------
 
 
     $('input[name=usernameAll]').on('click', function () {
