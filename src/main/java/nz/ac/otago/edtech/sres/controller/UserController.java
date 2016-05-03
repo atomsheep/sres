@@ -788,9 +788,14 @@ public class UserController {
                                          ModelMap model) {
 
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
+        ObjectId pId = new ObjectId(column.get("paperref").toString());
+        Document paper = MongoUtil.getPaper(db, pId);
         Document extra = (Document) column.get("extra");
+        List<Document> columns = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_COLUMNS,"paperref",pId);
         model.put("column", column);
+        model.put("columns", columns);
         model.put("extra", extra);
+        model.put("paper", paper);
         model.put("paperId", column.get("paperref"));
         model.put("pageName", "editScanningInformation");
         MongoUtil.putCommonIntoModel(db, request, model);
