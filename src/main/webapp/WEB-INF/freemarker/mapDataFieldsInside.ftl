@@ -12,7 +12,7 @@
 <form action="${baseUrl}/user/importUserData" method="post">
 
     <h1 style='margin:0 20px'>Step 5: map data fields
-        <button type="button" class="btn btn-default btn-primary submit"
+        <button type="submit" class="btn btn-default btn-primary submit"
                 style='float:right;border-radius:0;padding:10px 10px 9px;'>Finish
         </button>
         <button type="button" class="btn btn-default btn-primary"

@@ -519,7 +519,7 @@ public class UserController {
                             String un = record.get(unIndex);
                             Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("paperref", paperId), eq("userInfo." + fieldName, un));
                             log.debug("find user.");
-                            if (uu != null)
+                            if ((uu != null) && (uu.get("_id") != null)){
                                 userCount++;
                                 for (ModelMap m : columnFields) {
                                     ObjectId colref = (ObjectId) m.get("_id");
@@ -527,6 +527,7 @@ public class UserController {
                                     String value = record.get((Integer) m.get("index")).trim();
                                     MongoUtil.saveNewUserData(db, value, colref, userref, user);
                                 }
+                            }
                         }
                     } catch (IOException ioe) {
                         log.error("IOException", ioe);
@@ -877,13 +878,13 @@ public class UserController {
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
         model.put("paper", paper);
         model.put("studentFields", paper.get("studentFields"));
-
+    /*
         List<ModelMap> results = new ArrayList<ModelMap>();
 
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
-                new Document("$match", new Document("paperref", paperId)),
-                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
+            new Document("$match", new Document("paperref", paperId)),
+            new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
 
         for (Document u : iterable) {
             ModelMap result = new ModelMap();
@@ -897,13 +898,10 @@ public class UserController {
             }
             results.add(result);
         }
-
-        List<Document> interventions = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, "paperref", paperId);
-
+                                  */
         model.put("id", id);
-        model.put("results", results);
-        model.put("columns", columns);
-        model.put("interventions", interventions);
+    //    model.put("results", results);
+    //    model.put("columns", columns);
         model.put("pageName", "viewPaper");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
@@ -1070,14 +1068,51 @@ public class UserController {
     }
 
     @RequestMapping(value = "/getInterventions/{id}", method = RequestMethod.GET)
-    public String getInterventions(@PathVariable String id,
-                             HttpServletRequest request,
-                             ModelMap model) {
+         public String getInterventions(@PathVariable String id,
+                                        HttpServletRequest request,
+                                        ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
         MongoUtil.putCommonIntoModel(db, request, model);
-        return "dashboard/columnPanel";
+        return "dashboard/interventionPanel";
+    }
+
+    @RequestMapping(value = "/getStudentData/{id}", method = RequestMethod.GET)
+    public String getStudentData(@PathVariable String id,
+                                   HttpServletRequest request,
+                                   ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
+        model.put("paper", paper);
+        model.put("studentFields", paper.get("studentFields"));
+
+        List<ModelMap> results = new ArrayList<ModelMap>();
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
+                new Document("$match", new Document("paperref", paperId)),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
+
+        for (Document u : iterable) {
+            ModelMap result = new ModelMap();
+            result.put("_id", u.get("_id"));
+            result.put("userInfo", u.get("userInfo"));
+            @SuppressWarnings("unchecked")
+            List<Document> userdata = (List<Document>) u.get("userdata");
+            for (Document ud : userdata) {
+                String colref = ud.get("colref").toString();
+                result.put(colref, ud);
+            }
+            results.add(result);
+        }
+
+        model.put("id", id);
+        model.put("results", results);
+        model.put("columns", columns);
+        model.put("pageName", "viewPaper");
+        model.put("baseUrl",ServletUtil.getContextURL(request));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "dashboard/studentDataPanel";
     }
 
     @InitBinder

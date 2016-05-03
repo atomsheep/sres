@@ -47,98 +47,41 @@
 
     <div class="gridster">
         <ul>
-            <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1"></li>
-            <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1"></li>
-            <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
-
-                <h4 style='margin:0;padding:10px;background:#043B4E'>
-                <#if json?has_content>
-                    Search results (${results?size})
-                <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
-                <#else>
-                    Students: ${results?size}
-                </#if>
-                    <span class='fa fa-times deletePanel' style='float:right'></span>
-                </h4>
-
-                <div class='topPanel'>
-                <#if results?has_content>
-                    <span class="btn btn-default btn-primary emailStudents"
-                          style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span
-                            class='fa fa-envelope'></span> Email selected students</span>
-                    <button class="btn btn-default btn-primary"
-                            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                        <span class='fa fa-mobile-phone'></span> SMS selected students
-                    </button>
-                    <button class="btn btn-default btn-primary"
-                            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                        <span class='fa fa-pencil'></span> Edit selected students
-                    </button>
-                </#if>
+            <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1">
+                <div class='innerContent'>
+                    <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                 </div>
-
-                <div style='position:absolute;top:80px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
-                <#if results?has_content>
-                    <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
-                        <input name="id" type="hidden" value="${id}"/>
-                        <table id="studentList" width=100%>
-                            <thead>
-                            <th style='text-align:center;border-left:none'><input type="checkbox" name="usernameAll"/>
-                            </th>
-                                <#list studentFields as f>
-                                <th style='text-align:left;'>${f?html}</th>
-                                </#list>
-                                <#list columns as c>
-                                <th class="${c._id}"
-                                    style='color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
-                                </#list>
-                            </thead>
-                            <tbody>
-                                <#list results as r>
-                                <tr>
-                                    <td style='text-align:center;border-left:none'>
-                                        <input type="checkbox" value="${r._id}" name="usernames"/>
-                                    </td>
-                                    <#list studentFields as f>
-                                        <td style='text-align:left;' data-value="${f?html}">${r.userInfo[f]}</td>
-                                    </#list>
-                                    <#list columns as c>
-                                        <#if r[c._id]?has_content>
-                                            <#assign ud = r[c._id]/>
-                                            <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}"
-                                                data-columnid="${ud.colref}"
-                                                data-value="${ud.data[0].value?html}"> ${ud.data[0].value?html}</td>
-                                        <#else>
-                                            <td class="${c._id}" data-userid="${r._id}" data-columnid="${c._id}"></td>
-                                        </#if>
-                                    </#list>
-                                </tr>
-                                </#list>
-                            </tbody>
-                        </table>
-                    </form>
-                <#else>
-                    <div style="padding:20px">
-                        No students found.
-                    </div>
-                </#if>
+            </li>
+            <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1">
+                <div class='innerContent'>
+                    <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                </div>
+            </li>
+            <li id='panel3' class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
+                <div class='innerContent'>
+                    <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                </div>
+            </li>
+            <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="2">
+                <div class='innerContent'>
+                    <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                 </div>
             </li>
 
-            <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1"></li>
-
-            <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1"
+            <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1"
                 style='background:white;overflow:hidden'>
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel'
-                                                                                         style='float:right'></span>
-                </h4>
-            <#list columns as c>
-                <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
-            </#list>
+                <div class='innerContent'>
+                    <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+        <#--      <#list columns as c>
+                    <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
+                </#list> -->
+                </div>
             </li>
 
-            <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1">
-
+            <li id='panel6' class='sres_panel' data-row="4" data-col="3" data-sizex="1" data-sizey="1">
+                <div class='innerContent'>
+                    <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                </div>
             </li>
         </ul>
     </div>
@@ -172,21 +115,45 @@ $(function () {
     //async loading of panels-------------------------------------------------
 
     $.get("${baseUrl}/user/getColumns/${paper._id}", function(data){
-        $('#panel1').html(data);
+        $('.innerContent','#panel1').html(data);
+        replaceCheckboxes('#panel1');
     });
 
     $.get("${baseUrl}/user/getFilters/${paper._id}", function(data){
-        $('#panel2').html(data);
+        $('.innerContent', '#panel2').html(data);
+        replaceCheckboxes('#panel2');
+
+        filterList = $('#filterList');
+        filterDivHtml = $('.filterDiv').html();
+    });
+
+    $.get("${baseUrl}/user/getStudentData/${paper._id}", function(data){
+        $('.innerContent','#panel3').html(data);
+        replaceCheckboxes('#panel3');
+
+        $('th','#panel3').each(function () {
+            var self = $(this);
+            if (self.find("input").length == 0) {
+                var text = self.text();
+                self.shortText(text, 20);
+            }
+        });
     });
 
     $.get("${baseUrl}/user/getPaperInfo/${paper._id}", function(data){
-        $('#panel4').html(data);
+        $('.innerContent','#panel4').html(data);
+        replaceCheckboxes('#panel4');
+    });
+
+    $.get("${baseUrl}/user/getInterventions/${paper._id}", function(data){
+        $('.innerContent','#panel6').html(data);
+        replaceCheckboxes('#panel6');
     });
 
     //-------------------------------------------------------------------------
 
 
-    $('input[name=usernameAll]').on('click', function () {
+    $(document).on('click', 'input[name=usernameAll]', function () {
         if ($(this).is(':checked')) {
             $('input[name=usernames]').prop('checked', true);
             $('input[name=usernames]').next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
@@ -197,7 +164,7 @@ $(function () {
         }
     });
 
-    $('input[name=columnsAll]').on('click', function () {
+    $(document).on('click', 'input[name=columnsAll]', function () {
         $('input[name=columns]').each(function () {
             var self = $(this);
             self.click();
@@ -214,27 +181,26 @@ $(function () {
         });
     });
 
-    $('input[name=usernameAll]').click();
-
     $(document).on('click', '.deletePanel', function () {
         var self = $(this);
         var parent = self.parents('.sres_panel');
         gridster.remove_widget(parent);
-        //parent.prev('.placeHolder').show();
-        //parent.hide();
     });
 
-    $('input[type=checkbox]').each(function (i, e) {
-        var self = $(this);
-        var newCheckbox = "";
-        if (self.is(":checked")) {
-            newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
-        } else {
-            newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
-        }
-        self.after(newCheckbox);
-        self.css('display', 'none');
-    });
+    function replaceCheckboxes(div_id){
+        $('input[type=checkbox]',div_id).each(function (i, e) {
+            var self = $(this);
+            var newCheckbox = "";
+            if (self.is(":checked")) {
+                newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
+            } else {
+                newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
+            }
+            self.after(newCheckbox);
+            self.css('display', 'none');
+        });
+    }
+
 
     $(document).on('click', '.sres_checkbox', function () {
         var self = $(this);
@@ -250,7 +216,6 @@ $(function () {
 
     var filterList = $('#filterList');
     var filterDivHtml = $('.filterDiv').html();
-    //   $('div.removeFilter').remove();
     $('.operatorDiv').remove();
 
     $.fn.shortText = function (str, length) {
@@ -261,23 +226,16 @@ $(function () {
         item.text(toset).attr('title', str);
     };
 
-    $('th').each(function () {
-        var self = $(this);
-        if (self.find("input").length == 0) {
-            var text = self.text();
-            self.shortText(text, 20);
-        }
-    });
-
+   /*
     $('.colourPicker').on('click', function(){
         var self = $(this);
         var column = self.data('column');
         console.log('colour');
         //TODO: change colours
-    });
+    });  */
 
 
-    $('span.newFilter').on('click', function () {
+    $(document).on('click', 'span.newFilter', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         div.prev('.filterDiv').find('input[name=value]').css('width', '25%');
         div.prev('.filterDiv').find('select[name=join]').css('display', 'inline-block');
@@ -342,41 +300,40 @@ $(function () {
         }).popup_simple("show").popup_simple("centre");
     });
 
-
-<#if json?has_content>
-    {
-        var jsonString = "${json?js_string}";
-        if (jsonString) {
-            var array = $.parseJSON(jsonString);
-            console.log('array', array);
-            for (var i = 0; i < array.length; i++) {
-                var join = array[i].join;
-                var colref = array[i].colref;
-                var operator = array[i].operator;
-                var value = array[i].value;
-                if (i == 0) {
-                    var filterDiv = $('.filterDiv');
-                    $('[name=colref]', filterDiv).val(colref);
-                    $('[name=operator]', filterDiv).val(operator);
-                    $('[name=value]', filterDiv).val(value);
-                } else {
-                    $('span.newFilter').click();
-                    var filterDiv = $('.filterDiv:last');
-                    $('[name=join]', filterDiv).val(join);
-                    $('[name=colref]', filterDiv).val(colref);
-                    $('[name=operator]', filterDiv).val(operator);
-                    $('[name=value]', filterDiv).val(value);
+    <#if json?has_content>
+        {
+            var jsonString = "${json?js_string}";
+            if (jsonString) {
+                var array = $.parseJSON(jsonString);
+                console.log('array', array);
+                for (var i = 0; i < array.length; i++) {
+                    var join = array[i].join;
+                    var colref = array[i].colref;
+                    var operator = array[i].operator;
+                    var value = array[i].value;
+                    if (i == 0) {
+                        var filterDiv = $('.filterDiv');
+                        $('[name=colref]', filterDiv).val(colref);
+                        $('[name=operator]', filterDiv).val(operator);
+                        $('[name=value]', filterDiv).val(value);
+                    } else {
+                        $('span.newFilter').click();
+                        var filterDiv = $('.filterDiv:last');
+                        $('[name=join]', filterDiv).val(join);
+                        $('[name=colref]', filterDiv).val(colref);
+                        $('[name=operator]', filterDiv).val(operator);
+                        $('[name=value]', filterDiv).val(value);
+                    }
                 }
             }
         }
-    }
-</#if>
+    </#if>
 
     $(document).on('click', 'div.removeFilter', function () {
         $(this).parent().remove();
     });
 
-    $('button.submit').on('click', function () {
+    $(document).on('click', 'button.submit', function () {
         var id = $('[name=id]').val();
         var array = [];
         $('.filterDiv').each(function (i, e) {
@@ -394,7 +351,7 @@ $(function () {
         $('[name=filterForm]').submit();
     });
 
-    $('td', '#studentList').on("dblclick", function () {
+    $(document).on("dblclick", '#studentList td', function () {
         var slf = $(this);
         var id = slf.data('id');
         var userId = slf.data("userid");
@@ -424,7 +381,7 @@ $(function () {
         }
     });
 
-    $('input.columnCheckbox').on('change', function () {
+    $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
         if (slf.is(':checked')) {
@@ -454,8 +411,6 @@ $(function () {
                     });
         } else
             changeInputBackToText(td, input, value);
-
-
     }
 
     function changeInputBackToText(td, input, value) {
@@ -471,131 +426,114 @@ $(function () {
         ["#C71A1A", "#E32626", "#E84A4A", "#EC6F6F", "#F19393", "#360707", "#5A0C0C", "#7E1010", "#A21515"]
     ];
 
+   // google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
+ <#--
+    function drawCharts() {
 
-    google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
+    <#list columns as c>
+        var column = {};
+        column.name = "${c.name?js_string}";
+        column.id = "${c._id}";
+        column.data = {};
+        $('td.' + column.id).each(function (i, e) {
+            var value = $(e).data('value');
+            if ((value == null) || (value == ""))
+                value = "[blank]";
+            if (!column.data[value])
+                column.data[value] = 1;
+            else
+                column.data[value] += 1;
+        });
+        console.log('column.data', column.data);
 
-function drawCharts() {
+        var arrayOfArray = [
+            ['Task', 'sdd']
+        ];
+        $.each(column.data, function (i, e) {
+            arrayOfArray.push([i, e]);
+        });
 
-<#list columns as c>
-    var column = {};
-    column.name = "${c.name?js_string}";
-    column.id = "${c._id}";
-    column.data = {};
-    $('td.' + column.id).each(function (i, e) {
-        var value = $(e).data('value');
-        if ((value == null) || (value == ""))
-            value = "[blank]";
-        if (!column.data[value])
-            column.data[value] = 1;
+        var data = google.visualization.arrayToDataTable(arrayOfArray);
+
+        var options = {
+            title: column.name,
+            backgroundColor: 'transparent',
+            legend: {textStyle: {color: '#000'}, position: "labeled"},
+            pieSliceTextStyle: {
+                color: 'transparent'
+            },
+            colors: arrayOfColours[${c_index}% arrayOfColours.length
+    ],
+        chartArea: {
+            width:"100%", left:20, right:20
+        }
+    };
+
+        var chart = new google.visualization.PieChart(document.getElementById(column.id));
+        chart.draw(data, options);
+    </#list>
+    }
+      -->
+    $(document).on('click', '.emailStudents', function () {
+        $('#resultsForm').submit();
+        return false;
+    });
+
+    var $paperButtons = $('.paper_buttons');
+    var $layoutButtons = $('.layout_buttons');
+    $('html').on('click', function () {
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
+    });
+
+    $('#paperMenu').on('click', function (event) {
+        if ($paperButtons.is(':hidden'))
+            $paperButtons.show();
         else
-            column.data[value] += 1;
-    });
-    console.log('column.data', column.data);
-
-    var arrayOfArray = [
-        ['Task', 'sdd']
-    ];
-    $.each(column.data, function (i, e) {
-        arrayOfArray.push([i, e]);
+            $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
+        event.stopPropagation();
     });
 
-    var data = google.visualization.arrayToDataTable(arrayOfArray);
+  <#--  var colTotal = ${columns?size};
+    var colCount = 0;
 
-    var options = {
-        title: column.name,
-        backgroundColor: 'transparent',
-        legend: {textStyle: {color: '#000'}, position: "labeled"},
-        pieSliceTextStyle: {
-            color: 'transparent'
-        },
-        colors: arrayOfColours[${c_index}% arrayOfColours.length
-],
-    chartArea: {
-        width:"100%", left
-    :
-        20, right
-    :
-        20
-    }
-};
+    var interval = setInterval(function () {
+        $('.chart_' + (colCount % colTotal)).css('display', 'none');
+        colCount++;
+        $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
+    }, 5000);       -->
 
-    var chart = new google.visualization.PieChart(document.getElementById(column.id));
-    chart.draw(data, options);
-</#list>
-}
-
-$('.emailStudents').on('click', function () {
-    $('#resultsForm').submit();
-    return false;
-});
-
-var $paperButtons = $('.paper_buttons');
-var $layoutButtons = $('.layout_buttons');
-$('html').on('click', function () {
-    if ($paperButtons.is(":visible"))
-        $paperButtons.hide();
-    if ($layoutButtons.is(":visible"))
-        $layoutButtons.hide();
-});
-
-$('#paperMenu').on('click', function (event) {
-    if ($paperButtons.is(':hidden'))
-        $paperButtons.show();
-    else
-        $paperButtons.hide();
-    if ($layoutButtons.is(":visible"))
-        $layoutButtons.hide();
-    event.stopPropagation();
-});
-
-$('#layoutButton').on('click', function (event) {
-    if ($layoutButtons.is(':hidden'))
-        $layoutButtons.show();
-    else
-        $layoutButtons.hide();
-    if ($paperButtons.is(":visible"))
-        $paperButtons.hide();
-    event.stopPropagation();
-});
-
-var colTotal = ${columns?size};
-var colCount = 0;
-
-var interval = setInterval(function () {
-    $('.chart_' + (colCount % colTotal)).css('display', 'none');
-    colCount++;
-    $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
-}, 5000);
-
-$('td.userCheck').on("mouseover", function () {
-    var slf = $(this);
-    slf.find('span').show();
-});
-
-$('td.userCheck').on("mouseout", function () {
-    var slf = $(this);
-    slf.find('span').hide();
-});
-
-$('span.deleteUser').on('click', function () {
-    if (confirm("Are you sure you want to remove this user from current paper?")) {
+    $('td.userCheck').on("mouseover", function () {
         var slf = $(this);
-        var id = slf.data('id');
-        console.log('delete user here', id);
-        var paperId = "${id}";
-        $.post('${baseUrl}/user/removeUser',
-                {id: id, paperId: paperId},
-                function (json) {
-                    if (json.success) {
-                        console.log('removed user', id, 'from', paperId);
-                        slf.closest('tr').remove();
-                    }
-                });
-    }
+        slf.find('span').show();
+    });
+
+    $('td.userCheck').on("mouseout", function () {
+        var slf = $(this);
+        slf.find('span').hide();
+    });
+
+    $('span.deleteUser').on('click', function () {
+        if (confirm("Are you sure you want to remove this user from current paper?")) {
+            var slf = $(this);
+            var id = slf.data('id');
+            console.log('delete user here', id);
+            var paperId = "${id}";
+            $.post('${baseUrl}/user/removeUser',
+                    {id: id, paperId: paperId},
+                    function (json) {
+                        if (json.success) {
+                            console.log('removed user', id, 'from', paperId);
+                            slf.closest('tr').remove();
+                        }
+                    });
+        }
+    });
+
 });
-
-})
-;
-
 
 </script>
