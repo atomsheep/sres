@@ -21,7 +21,8 @@ Edit column restrictions
 </h1>
 
 <div class='info_text'>
-    Some information
+    These options are for use with the SRES scanning app. Frst, you can specify predefined values to show when inputting data - the display text field will show on the app, and the value field will be saved as the student data (e.g. show 'Correct' on the app and save '100' as the data).
+    Second, when a user is scanned for this column, you can display custom information on the app (e.g. data from another column in SRES, or specific student fields). Copy and paste the shortcodes into the custom display textbox to display data from the SRES on the scanning app.
 </div>
 
     <div class='info_text side1' style='position:relative;padding:0;margin:20px 10px 20px 20px;width:calc(34% - 30px);float:left'>
@@ -122,11 +123,6 @@ Edit column restrictions
         $('.side2').css("height", (newHeight/2 -10) + "px");
         $('.side3').css("height", (newHeight/2 -10) + "px");
 
-        $('.input-daterange').datepicker({
-            autoclose: true,
-            format: "dd/mm/yyyy"
-        });
-
         $.fn.shortText = function (str, length) {
             var item = $(this);
             var toset = str;
@@ -144,16 +140,17 @@ Edit column restrictions
         });
 
         var index = 0;
-    <#if extra?has_content>
-        index = ${extra?keys?size};
-        $('input[name=size]').val(index);
-    </#if>
+        <#if extra?has_content>
+            index = ${extra?keys?size};
+            $('input[name=size]').val(index);
+        </#if>
 
         $('#addKeyValue').on('click', function () {
-            var newRow = "<tr><td style='padding:0 10px 5px 20px;width:40%'><div class='input-group input-group1' style='width:100%'><span class='input-group-addon sres_name' style='text-align:left'>Value:</span><input class='form-control' type='text' name='value' value='' style='vertical-align: top;display:inline-block;'/></div></td><td style='padding:0 20px 5px 0'><div class='input-group input-group2' style='width:100%'><span class='input-group-addon sres_name' style='text-align:left'>Display text:</span><input class='form-control' type='text' name='display' value='' style='vertical-align: top;display:inline-block;'/></div></td></tr>";
+            var newRow = "<tr class='predefined'><td style='padding:0 10px 5px 20px;width:40%'><div class='input-group input-group1' style='width:100%'><span class='input-group-addon sres_name' style='text-align:left'>Value:</span><input class='form-control' type='text' name='value' value='' style='vertical-align: top;display:inline-block;'/></div></td><td style='padding:0 20px 5px 0'><div class='input-group input-group2' style='width:100%'><span class='input-group-addon sres_name' style='text-align:left'>Display text:</span><input class='form-control' type='text' name='display' value='' style='vertical-align: top;display:inline-block;'/></div></td></tr>";
             index++;
             $('input[name=size]').val(index);
             $('#addNewColumnAttribute').before(newRow);
+            $('.extraFieldsSize').text($('.predefined').length);
             return false;
         });
 

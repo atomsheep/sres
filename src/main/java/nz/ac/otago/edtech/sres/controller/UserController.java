@@ -802,6 +802,27 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    @RequestMapping(value = "/saveScanningInformation", method = RequestMethod.POST)
+    public String saveScanningInformation(
+            @RequestParam(value = "_id", required = false) String _id,
+            @RequestParam(value = "customDisplay", required = false) String customDisplay,
+            HttpServletRequest request) {
+
+        Date now = new Date();
+        ObjectId cId = new ObjectId(_id);
+        Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, cId);
+        String pId = column.get("paperref").toString();
+
+        if (customDisplay != null)
+            column.put("customDisplay", customDisplay);
+
+        column.put("lastModified", now);
+        // update existing column
+        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
+                .updateOne(eq("_id", cId), new Document("$set", new Document(column)));
+
+        return "redirect:/user/viewColumnList/" + pId;
+    }
 
     // remove given user (id) from paper (paperId)
     @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
