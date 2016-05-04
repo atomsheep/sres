@@ -5,7 +5,7 @@ h3 { font-size:24px; font-weight:300; }
 .mainHeading { background:#021E27;padding:50px; }
 .mainHeading .inner{ max-width:1200px;margin:auto; }
 .mainTitle { font-size:100px; }
-.mainTitle, .subTitle { text-align:center;color:white;margin:0; }
+.mainTitle, .subTitle { text-align:left;color:white;margin:0; }
 .subTitle { margin-top:-20px; }
 
 .navigation{ list-style:none;background:#0886AF;text-align:center;padding:0;margin:0; }
