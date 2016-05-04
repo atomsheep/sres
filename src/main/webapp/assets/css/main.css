@@ -184,3 +184,10 @@ table.dataTable tbody tr { background: none !important }
 
 .loadingPopup{ top:70px !important;font-weight:300;font-size:24px !important;width:300px;background: #021E27 !important;border:1px solid #0886AF !important; }
 .loadingPopup img { margin-bottom:10px }
+.datepicker table tr td.active.active { background: #0886AF !important; }
+
+
+/*quill*/
+.quill-toolbar { background:white;border:1px solid #066888  }
+.quillField{ background:white;min-height: 150px;color:black;resize:vertical;border:1px solid #066888 }
+.btn-quill { border:none;background:white;padding:8px }

@@ -1,7 +1,7 @@
 <div class="container-fluid">
 <#if !pageName?? || pageName != "home">
 
-    <div style="height: 50px;border-bottom: 1px solid #066888;background: #043B4E;position: absolute;left: 0;right: 0;">
+    <div style="height: 50px;border-bottom: 1px solid #066888;background: #021E27;position: absolute;left: 0;right: 0;">
         <a href='${baseUrl}/user'>
             <img height="40px" src="/sres/assets/img/logo1.svg" style="float: left;margin-top: 5px;margin-left:3px">
             <span style="font-size: 36px;float: left;margin-left: 5px;font-weight:bold;color:white">SRES</span>

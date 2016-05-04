@@ -5,6 +5,7 @@
 ["#C7651A","#E37826","#E88F4A","#ECA56F","#F1BC93","#361B07","#5A2E0C","#7E4010","#A25215"],
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
+
 <div id='topBar' class='topPanel' style='top:50px'>
     <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
@@ -24,10 +25,9 @@
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
         </div>
 
-    <#--<div id='layoutButton' style='float:right;margin:0 0 0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>-->
+    <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
-        <div class='layout_buttons'
-             style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
+        <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
             <div class='menuButton'>
                 <div class='layout1 layout'></div>
                 <div style='float:left;margin-left:5px'>Layout 1</div>
@@ -47,213 +47,45 @@
 
     <div class="gridster">
         <ul>
-            <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
-
-                <div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
-                    <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
-                        <tr>
-                            <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox" name="columnsAll"/></th>
-                            <th style='text-align:left;'>Column name</th>
-                            <th style='text-align:left;'>Description</th>
-                            <th style='text-align:left;'>Tags</th>
-                            <th style='text-align:left;border-right:none'></th>
-                        </tr>
-                        <#if columns?has_content>
-                            <#list columns?chunk(1) as cc>
-                                <tr>
-                                    <#list cc as c>
-                                        <td>
-                                            <input id='check_${c._id}' type="checkbox" value="${c._id}" checked="checked" class="columnCheckbox" name="columns"/>
-                                        </td>
-                                        <td style='text-align:left'>${c.name}</td>
-                                        <td style='text-align:left'>${c.description!}</td>
-                                        <td style='text-align:left'>${c.tags!}</td>
-                                        <td style='border-right:none;text-align:center;'><span class='fa fa-square colourPicker' data-column='${c._id}' style='cursor:pointer;font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
-                                    </#list>
-                                </tr>
-                            </#list>
-                        <#else>
-                            <tr>
-                                <td style='padding:20px;text-align:left'>No columns found.</td>
-                            </tr>
-                        </#if>
-                    </table>
-                </div>
-            </li>
-            <li class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1">
-                <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-
-                <div class='topPanel'>
-                    <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
-                    <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
-                </div>
-                <div style="clear:both"></div>
-
-                <form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
-                    <input type="hidden" name="id" value="${id}"/>
-                    <input type="hidden" name="json" value=""/>
-
-                    <div id="filterList">
-                        <div class="filterDiv">
-                            <select name="colref" class="form-control" style='float:left;border-radius:0;width:40%'>
-                            <#list columns as c>
-                                <option value="${c._id}">${c.name}</option>
-                            </#list>
-                            </select>
-
-                            <select name="operator" class="form-control" style='float:left;border-radius:0;width:20%'>
-                                <option value="$eq">equal to</option>
-                                <option value="$lt">less than</option>
-                                <option value="$lte">less than or equal to</option>
-                                <option value="$gt">greater than</option>
-                                <option value="$gte">greater than or equal to</option>
-                                <option value="$ne">not equal to</option>
-                            </select>
-
-                            <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>
-
-                            <select name="join" class="form-control"
-                                    style='display:none;float:left;border-radius:0;width:10%'>
-                                <option value="and">and</option>
-                                <option value="or">or</option>
-                            </select>
-
-                            <div class='removeFilter btn btn-default btn-danger'
-                                 style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span
-                                    style='padding:10px' class="fa fa-times"></span></div>
-                            <div style='clear:both'></div>
-
-                        </div>
+            <#if !paper.gridData?has_content> <#-- default dashboard layout -->
+                <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="columns">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
-                </form>
-            </li>
-            <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
-
-                <h4 style='margin:0;padding:10px;background:#043B4E'>
-                <#if json?has_content>
-                    Search results (${results?size})
-                <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
-                <#else>
-                    Students: ${results?size}
-                </#if>
-                    <span class='fa fa-times deletePanel' style='float:right'></span>
-                </h4>
-
-                <div class='topPanel'>
-                <#if results?has_content>
-                    <span class="btn btn-default btn-primary emailStudents"
-                          style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span
-                            class='fa fa-envelope'></span> Email selected students</span>
-                    <button class="btn btn-default btn-primary"
-                            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                        <span class='fa fa-mobile-phone'></span> SMS selected students
-                    </button>
-                    <button class="btn btn-default btn-primary"
-                            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                        <span class='fa fa-pencil'></span> Edit selected students
-                    </button>
-                </#if>
-                </div>
-
-                <div style='position:absolute;top:80px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
-                <#if results?has_content>
-                    <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
-                        <input name="id" type="hidden" value="${id}"/>
-                        <table id="studentList" width=100%>
-                            <thead>
-                            <th style='text-align:center;border-left:none'><input type="checkbox" name="usernameAll"/>
-                            </th>
-                                <#list studentFields as f>
-                                <th style='text-align:left;'>${f?html}</th>
-                                </#list>
-                                <#list columns as c>
-                                <th class="${c._id}"
-                                    style='color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
-                                </#list>
-                            </thead>
-                            <tbody>
-                                <#list results as r>
-                                <tr>
-                                    <td style='text-align:center;border-left:none'>
-                                        <input type="checkbox" value="${r._id}" name="usernames"/>
-                                    </td>
-                                    <#list studentFields as f>
-                                        <td style='text-align:left;' data-value="${f?html}">${r.userInfo[f]}</td>
-                                    </#list>
-                                    <#list columns as c>
-                                        <#if r[c._id]?has_content>
-                                            <#assign ud = r[c._id]/>
-                                            <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}"
-                                                data-columnid="${ud.colref}"
-                                                data-value="${ud.data[0].value?html}"> ${ud.data[0].value?html}</td>
-                                        <#else>
-                                            <td class="${c._id}" data-userid="${r._id}" data-columnid="${c._id}"></td>
-                                        </#if>
-                                    </#list>
-                                </tr>
-                                </#list>
-                            </tbody>
-                        </table>
-                    </form>
-                <#else>
-                    <div style="padding:20px">
-                        No students found.
+                </li>
+                <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="filters">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
-                </#if>
-                </div>
-            </li>
+                </li>
+                <li id='panel3' class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2" data-paneltype="studentData">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                    </div>
+                </li>
+                <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="2" data-paneltype="paperInfo">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                    </div>
+                </li>
 
-            <li class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span
-                        class='fa fa-times deletePanel' style='float:right'></span></h4>
+                <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1"
+                    style='background:white;overflow:hidden' data-paneltype="dataOverview">
+                    <div class='innerContent'>
+                        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+                    <#--      <#list columns as c>
+                                <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
+                            </#list> -->
+                    </div>
+                </li>
 
-                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;font-size:24px;padding:10px;font-weight:300;'>
-                    ${ICN_C} code: ${paper.code!}<br/>
-                    ${ICN_C} name: ${paper.name!}<br/>
-                    Year : ${paper.year!}<br/>
-                    Semester: ${paper.semester!}<br/>
-                    Students: ${paper.studentCount!0}
-                </div>
-            </li>
+                <li id='panel6' class='sres_panel' data-row="4" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="interventions">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                    </div>
 
-            <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1"
-                style='background:white;overflow:hidden'>
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel'
-                                                                                         style='float:right'></span>
-                </h4>
-            <#list columns as c>
-                <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
-            </#list>
-            </li>
-
-            <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1">
-                <h4 style='margin:0;padding:10px;background:#043B4E'>Intervention log <span
-                        class='fa fa-times deletePanel' style='float:right'></span></h4>
-
-                <table style='width:100%' id='intervention_table'>
-                    <tr>
-                        <th>Type</th>
-                        <th>Status</th>
-                        <th>Students</th>
-                        <th>Created</th>
-                    </tr>
-                    <#if interventions?has_content>
-                        <#list interventions as i>
-                            <tr>
-                                <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
-                                <td style=''>${i.status!}</td>
-                                <td style=''>${i.studentList?size}</td>
-                                <td style=''><#if i.created?has_content>${i.created?datetime}</#if></td>
-                            </tr>
-                        </#list>
-                    <#else>
-                        <tr>
-                            <td style='padding:20px;text-align:left'>No interventions found.</td>
-                        </tr>
-                    </#if>
-                </table>
-            </li>
+                </li>
+            </#if>
         </ul>
     </div>
 
@@ -264,7 +96,6 @@
 <script type="text/javascript">
 
 $(function () {
-
 
     var third = 1 / 3;
     var quarter = 1 / 4;
@@ -278,12 +109,94 @@ $(function () {
         widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
         max_cols: 3,
         resize: {
-            enabled: true
+            enabled: true,
+            stop : function(){
+                saveGridData();
+            }
+        },
+        serialize_params: function($w, wgd) {
+            return {
+                id: $w.attr('id'),
+                col: wgd.col,
+                row: wgd.row,
+                size_x: wgd.size_x,
+                size_y: wgd.size_y,
+                paneltype: $w.data('paneltype')
+            };
+        },
+        draggable : {
+            stop : function(){
+                //save grid layout here
+                saveGridData();
+            }
         }
     }).data('gridster') ;
 
+    <#if paper.gridData?has_content>
+        var gridData = JSON.parse("${paper.gridData?js_string}");
+        gridData = Gridster.sort_by_row_and_col_asc(gridData);
+        $.each(gridData, function(i,e){
+            gridster.add_widget("<li id='" + this.id + "' data-paneltype='" + this.paneltype + "' class='sres_panel'><div class='innerContent'><img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' /></div></li>", this.size_x, this.size_y, this.col, this.row);
+        });
+    </#if>
 
-    $('input[name=usernameAll]').on('click', function () {
+    function saveGridData(){
+        var gridData = JSON.stringify(gridster.serialize());
+        $.post("${baseUrl}/user/saveDashboardLayout",
+                {gridData:gridData,paperId:"${paper._id}"},
+                function(response){
+
+                });
+    }
+
+    //async loading of panels-------------------------------------------------
+
+    $('.sres_panel').each(function(i,e){
+        var self = $(this);
+        var id = self.attr('id');
+        var pt = self.data("paneltype");
+        if(pt == "columns"){
+            $.get("${baseUrl}/user/getColumns/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+            });
+        } else if (pt == "filters"){
+            $.get("${baseUrl}/user/getFilters/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+                filterList = $('#filterList');
+                filterDivHtml = $('.filterDiv').html();
+            });
+        } else if (pt == "studentData"){
+            $.get("${baseUrl}/user/getStudentData/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+
+                self.find('th').each(function () {
+                    var slf = $(this);
+                    if (slf.find("input").length == 0) {
+                        var text = slf.text();
+                        slf.shortText(text, 20);
+                    }
+                });
+            });
+        } else if (pt == "paperInfo"){
+            $.get("${baseUrl}/user/getPaperInfo/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+            });
+        } else if (pt == "interventions") {
+            $.get("${baseUrl}/user/getInterventions/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+            });
+        }
+    });
+
+    //-------------------------------------------------------------------------
+
+
+    $(document).on('click', 'input[name=usernameAll]', function () {
         if ($(this).is(':checked')) {
             $('input[name=usernames]').prop('checked', true);
             $('input[name=usernames]').next('.sres_checkbox').addClass('fa-check-circle').removeClass('fa-circle-thin');
@@ -294,7 +207,7 @@ $(function () {
         }
     });
 
-    $('input[name=columnsAll]').on('click', function () {
+    $(document).on('click', 'input[name=columnsAll]', function () {
         $('input[name=columns]').each(function () {
             var self = $(this);
             self.click();
@@ -311,27 +224,27 @@ $(function () {
         });
     });
 
-    $('input[name=usernameAll]').click();
-
     $(document).on('click', '.deletePanel', function () {
         var self = $(this);
         var parent = self.parents('.sres_panel');
         gridster.remove_widget(parent);
-        //parent.prev('.placeHolder').show();
-        //parent.hide();
+        saveGridData();
     });
 
-    $('input[type=checkbox]').each(function (i, e) {
-        var self = $(this);
-        var newCheckbox = "";
-        if (self.is(":checked")) {
-            newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
-        } else {
-            newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
-        }
-        self.after(newCheckbox);
-        self.css('display', 'none');
-    });
+    function replaceCheckboxes(div_id){
+        $('input[type=checkbox]','#'+div_id).each(function (i, e) {
+            var self = $(this);
+            var newCheckbox = "";
+            if (self.is(":checked")) {
+                newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
+            } else {
+                newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
+            }
+            self.after(newCheckbox);
+            self.css('display', 'none');
+        });
+    }
+
 
     $(document).on('click', '.sres_checkbox', function () {
         var self = $(this);
@@ -347,7 +260,6 @@ $(function () {
 
     var filterList = $('#filterList');
     var filterDivHtml = $('.filterDiv').html();
-    //   $('div.removeFilter').remove();
     $('.operatorDiv').remove();
 
     $.fn.shortText = function (str, length) {
@@ -358,23 +270,16 @@ $(function () {
         item.text(toset).attr('title', str);
     };
 
-    $('th').each(function () {
-        var self = $(this);
-        if (self.find("input").length == 0) {
-            var text = self.text();
-            self.shortText(text, 20);
-        }
-    });
-
+   /*
     $('.colourPicker').on('click', function(){
         var self = $(this);
         var column = self.data('column');
         console.log('colour');
         //TODO: change colours
-    });
+    });  */
 
 
-    $('span.newFilter').on('click', function () {
+    $(document).on('click', 'span.newFilter', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         div.prev('.filterDiv').find('input[name=value]').css('width', '25%');
         div.prev('.filterDiv').find('select[name=join]').css('display', 'inline-block');
@@ -439,41 +344,40 @@ $(function () {
         }).popup_simple("show").popup_simple("centre");
     });
 
-
-<#if json?has_content>
-    {
-        var jsonString = "${json?js_string}";
-        if (jsonString) {
-            var array = $.parseJSON(jsonString);
-            console.log('array', array);
-            for (var i = 0; i < array.length; i++) {
-                var join = array[i].join;
-                var colref = array[i].colref;
-                var operator = array[i].operator;
-                var value = array[i].value;
-                if (i == 0) {
-                    var filterDiv = $('.filterDiv');
-                    $('[name=colref]', filterDiv).val(colref);
-                    $('[name=operator]', filterDiv).val(operator);
-                    $('[name=value]', filterDiv).val(value);
-                } else {
-                    $('span.newFilter').click();
-                    var filterDiv = $('.filterDiv:last');
-                    $('[name=join]', filterDiv).val(join);
-                    $('[name=colref]', filterDiv).val(colref);
-                    $('[name=operator]', filterDiv).val(operator);
-                    $('[name=value]', filterDiv).val(value);
+    <#if json?has_content>
+        {
+            var jsonString = "${json?js_string}";
+            if (jsonString) {
+                var array = $.parseJSON(jsonString);
+                console.log('array', array);
+                for (var i = 0; i < array.length; i++) {
+                    var join = array[i].join;
+                    var colref = array[i].colref;
+                    var operator = array[i].operator;
+                    var value = array[i].value;
+                    if (i == 0) {
+                        var filterDiv = $('.filterDiv');
+                        $('[name=colref]', filterDiv).val(colref);
+                        $('[name=operator]', filterDiv).val(operator);
+                        $('[name=value]', filterDiv).val(value);
+                    } else {
+                        $('span.newFilter').click();
+                        var filterDiv = $('.filterDiv:last');
+                        $('[name=join]', filterDiv).val(join);
+                        $('[name=colref]', filterDiv).val(colref);
+                        $('[name=operator]', filterDiv).val(operator);
+                        $('[name=value]', filterDiv).val(value);
+                    }
                 }
             }
         }
-    }
-</#if>
+    </#if>
 
     $(document).on('click', 'div.removeFilter', function () {
         $(this).parent().remove();
     });
 
-    $('button.submit').on('click', function () {
+    $(document).on('click', 'button.submit', function () {
         var id = $('[name=id]').val();
         var array = [];
         $('.filterDiv').each(function (i, e) {
@@ -491,7 +395,7 @@ $(function () {
         $('[name=filterForm]').submit();
     });
 
-    $('td', '#studentList').on("dblclick", function () {
+    $(document).on("dblclick", '#studentList td', function () {
         var slf = $(this);
         var id = slf.data('id');
         var userId = slf.data("userid");
@@ -521,7 +425,7 @@ $(function () {
         }
     });
 
-    $('input.columnCheckbox').on('change', function () {
+    $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
         if (slf.is(':checked')) {
@@ -551,8 +455,6 @@ $(function () {
                     });
         } else
             changeInputBackToText(td, input, value);
-
-
     }
 
     function changeInputBackToText(td, input, value) {
@@ -568,131 +470,114 @@ $(function () {
         ["#C71A1A", "#E32626", "#E84A4A", "#EC6F6F", "#F19393", "#360707", "#5A0C0C", "#7E1010", "#A21515"]
     ];
 
+   // google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
+ <#--
+    function drawCharts() {
 
-    google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
+    <#list columns as c>
+        var column = {};
+        column.name = "${c.name?js_string}";
+        column.id = "${c._id}";
+        column.data = {};
+        $('td.' + column.id).each(function (i, e) {
+            var value = $(e).data('value');
+            if ((value == null) || (value == ""))
+                value = "[blank]";
+            if (!column.data[value])
+                column.data[value] = 1;
+            else
+                column.data[value] += 1;
+        });
+        console.log('column.data', column.data);
 
-function drawCharts() {
+        var arrayOfArray = [
+            ['Task', 'sdd']
+        ];
+        $.each(column.data, function (i, e) {
+            arrayOfArray.push([i, e]);
+        });
 
-<#list columns as c>
-    var column = {};
-    column.name = "${c.name?js_string}";
-    column.id = "${c._id}";
-    column.data = {};
-    $('td.' + column.id).each(function (i, e) {
-        var value = $(e).data('value');
-        if ((value == null) || (value == ""))
-            value = "[blank]";
-        if (!column.data[value])
-            column.data[value] = 1;
+        var data = google.visualization.arrayToDataTable(arrayOfArray);
+
+        var options = {
+            title: column.name,
+            backgroundColor: 'transparent',
+            legend: {textStyle: {color: '#000'}, position: "labeled"},
+            pieSliceTextStyle: {
+                color: 'transparent'
+            },
+            colors: arrayOfColours[${c_index}% arrayOfColours.length
+    ],
+        chartArea: {
+            width:"100%", left:20, right:20
+        }
+    };
+
+        var chart = new google.visualization.PieChart(document.getElementById(column.id));
+        chart.draw(data, options);
+    </#list>
+    }
+      -->
+    $(document).on('click', '.emailStudents', function () {
+        $('#resultsForm').submit();
+        return false;
+    });
+
+    var $paperButtons = $('.paper_buttons');
+    var $layoutButtons = $('.layout_buttons');
+    $('html').on('click', function () {
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
+    });
+
+    $('#paperMenu').on('click', function (event) {
+        if ($paperButtons.is(':hidden'))
+            $paperButtons.show();
         else
-            column.data[value] += 1;
-    });
-    console.log('column.data', column.data);
-
-    var arrayOfArray = [
-        ['Task', 'sdd']
-    ];
-    $.each(column.data, function (i, e) {
-        arrayOfArray.push([i, e]);
+            $paperButtons.hide();
+        if ($layoutButtons.is(":visible"))
+            $layoutButtons.hide();
+        event.stopPropagation();
     });
 
-    var data = google.visualization.arrayToDataTable(arrayOfArray);
+  <#--  var colTotal = ${columns?size};
+    var colCount = 0;
 
-    var options = {
-        title: column.name,
-        backgroundColor: 'transparent',
-        legend: {textStyle: {color: '#000'}, position: "labeled"},
-        pieSliceTextStyle: {
-            color: 'transparent'
-        },
-        colors: arrayOfColours[${c_index}% arrayOfColours.length
-],
-    chartArea: {
-        width:"100%", left
-    :
-        20, right
-    :
-        20
-    }
-};
+    var interval = setInterval(function () {
+        $('.chart_' + (colCount % colTotal)).css('display', 'none');
+        colCount++;
+        $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
+    }, 5000);       -->
 
-    var chart = new google.visualization.PieChart(document.getElementById(column.id));
-    chart.draw(data, options);
-</#list>
-}
-
-$('.emailStudents').on('click', function () {
-    $('#resultsForm').submit();
-    return false;
-});
-
-var $paperButtons = $('.paper_buttons');
-var $layoutButtons = $('.layout_buttons');
-$('html').on('click', function () {
-    if ($paperButtons.is(":visible"))
-        $paperButtons.hide();
-    if ($layoutButtons.is(":visible"))
-        $layoutButtons.hide();
-});
-
-$('#paperMenu').on('click', function (event) {
-    if ($paperButtons.is(':hidden'))
-        $paperButtons.show();
-    else
-        $paperButtons.hide();
-    if ($layoutButtons.is(":visible"))
-        $layoutButtons.hide();
-    event.stopPropagation();
-});
-
-$('#layoutButton').on('click', function (event) {
-    if ($layoutButtons.is(':hidden'))
-        $layoutButtons.show();
-    else
-        $layoutButtons.hide();
-    if ($paperButtons.is(":visible"))
-        $paperButtons.hide();
-    event.stopPropagation();
-});
-
-var colTotal = ${columns?size};
-var colCount = 0;
-
-var interval = setInterval(function () {
-    $('.chart_' + (colCount % colTotal)).css('display', 'none');
-    colCount++;
-    $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
-}, 5000);
-
-$('td.userCheck').on("mouseover", function () {
-    var slf = $(this);
-    slf.find('span').show();
-});
-
-$('td.userCheck').on("mouseout", function () {
-    var slf = $(this);
-    slf.find('span').hide();
-});
-
-$('span.deleteUser').on('click', function () {
-    if (confirm("Are you sure you want to remove this user from current paper?")) {
+    $('td.userCheck').on("mouseover", function () {
         var slf = $(this);
-        var id = slf.data('id');
-        console.log('delete user here', id);
-        var paperId = "${id}";
-        $.post('${baseUrl}/user/removeUser',
-                {id: id, paperId: paperId},
-                function (json) {
-                    if (json.success) {
-                        console.log('removed user', id, 'from', paperId);
-                        slf.closest('tr').remove();
-                    }
-                });
-    }
+        slf.find('span').show();
+    });
+
+    $('td.userCheck').on("mouseout", function () {
+        var slf = $(this);
+        slf.find('span').hide();
+    });
+
+    $('span.deleteUser').on('click', function () {
+        if (confirm("Are you sure you want to remove this user from current paper?")) {
+            var slf = $(this);
+            var id = slf.data('id');
+            console.log('delete user here', id);
+            var paperId = "${id}";
+            $.post('${baseUrl}/user/removeUser',
+                    {id: id, paperId: paperId},
+                    function (json) {
+                        if (json.success) {
+                            console.log('removed user', id, 'from', paperId);
+                            slf.closest('tr').remove();
+                        }
+                    });
+        }
+    });
+
 });
-
-})
-;
-
 
 </script>
