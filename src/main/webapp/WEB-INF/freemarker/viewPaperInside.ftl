@@ -25,10 +25,9 @@
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
         </div>
 
-    <#--<div id='layoutButton' style='float:right;margin:0 0 0 20px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>-->
+    <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
-        <div class='layout_buttons'
-             style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
+        <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
             <div class='menuButton'>
                 <div class='layout1 layout'></div>
                 <div style='float:left;margin-left:5px'>Layout 1</div>

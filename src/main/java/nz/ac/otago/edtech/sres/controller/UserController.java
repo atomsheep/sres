@@ -878,30 +878,7 @@ public class UserController {
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
         model.put("paper", paper);
         model.put("studentFields", paper.get("studentFields"));
-    /*
-        List<ModelMap> results = new ArrayList<ModelMap>();
-
-        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
-        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
-            new Document("$match", new Document("paperref", paperId)),
-            new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
-
-        for (Document u : iterable) {
-            ModelMap result = new ModelMap();
-            result.put("_id", u.get("_id"));
-            result.put("userInfo", u.get("userInfo"));
-            @SuppressWarnings("unchecked")
-            List<Document> userdata = (List<Document>) u.get("userdata");
-            for (Document ud : userdata) {
-                String colref = ud.get("colref").toString();
-                result.put(colref, ud);
-            }
-            results.add(result);
-        }
-                                  */
         model.put("id", id);
-    //    model.put("results", results);
-    //    model.put("columns", columns);
         model.put("pageName", "viewPaper");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
@@ -915,6 +892,25 @@ public class UserController {
 
         ObjectId pId = new ObjectId(paperId);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
+        paper.put("gridData",gridData);
+
+        // update existing column
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
+                .updateOne(eq("_id", pId), new Document("$set", new Document(paper)));
+
+        return OtherUtil.outputJSON("", true, "");
+    }
+
+    @RequestMapping(value = "/addRemoveColumn", method = RequestMethod.POST)
+    public ResponseEntity<String> addRemoveColumn(
+            @RequestParam(value = "paperId", required = false) String paperId,
+            @RequestParam(value = "columnId", required = false) String columnId,
+            HttpServletRequest request) {
+
+        ObjectId pId = new ObjectId(paperId);
+        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
+
+        //add to unchecked list here
         paper.put("gridData",gridData);
 
         // update existing column

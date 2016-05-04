@@ -196,6 +196,8 @@
             theme: 'snow'
         };
 
+        var editorArray = [];
+
         $('.quillField').each(function(){
             var self = $(this);
             var tb = "#"+self.data("toolbar");
@@ -203,6 +205,7 @@
             quill.addModule('toolbar',{
                 container : tb
             });
+            editorArray.push(quill);
         });
 
         $('.shortcode').on('keydown', function(){
@@ -268,8 +271,9 @@
         });
 
         $('#previewEmail').on('click',function(e){
+
             var subject = $('input[name=subject]').val();
-            var val = $('textarea[name=body]').val().replace(/(?:\r\n|\r|\n)/g, '<br />');
+            /*var val = $('textarea[name=body]').val().replace(/(?:\r\n|\r|\n)/g, '<br />');
             var body = "<p>" + val + "</p>";
 
             $('textarea','tr.paragraph').each(function(){
@@ -284,7 +288,16 @@
             var myWindow = window.open("","Email preview","width=500");
             myWindow.document.write(subject + "<br/><br/>");
             myWindow.document.write(body);
-            return false;
+            return false;     */
+            var body = subject + "<br/><br/>";
+
+            $.each(editorArray, function(i,e){
+                body += e.getHTML();
+                body += "<br/>";
+            });
+
+            var myWindow = window.open("","Email preview","width=500");
+            myWindow.document.write(body);
         });
 
         var $paperButtons = $('.paper_buttons');
