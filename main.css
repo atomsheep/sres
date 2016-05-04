@@ -7,3 +7,5 @@ body { margin:0;font-family:"Roboto", sans-serif; }
 .navigation{ list-style:none;background:#0886AF;text-align:center;padding:0;margin:0; }
 .navigation li { display:inline-block; padding:20px; background:#0886AF;color:white;border-right:1px solid #021E27; }
 .navigation li:first-child { border-left:1px solid #021E27; }
+
+.mainContent{ max-width:1200px; margin:auto; }
