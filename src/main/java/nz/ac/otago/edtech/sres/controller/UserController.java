@@ -190,7 +190,7 @@ public class UserController {
         paper.put("extra", extra);
 
         db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
-                .updateOne(eq("_id", id),new Document("$set", new Document(paper)),
+                .updateOne(eq("_id", id), new Document("$set", new Document(paper)),
                         new UpdateOptions().upsert(true));
 
         return "redirect:/user/addStudentList/" + id.toString();
@@ -210,9 +210,7 @@ public class UserController {
     // upload student list, redirect to fields mapping page
     @RequestMapping(value = "/addStudentList", method = RequestMethod.POST)
     public String editStudentList(@RequestParam("files") MultipartFile file,
-                                  @RequestParam("id") String id,
-                                  HttpServletRequest request,
-                                  ModelMap model) {
+                                  @RequestParam("id") String id) {
         // when no file uploaded, go to view paper page
         if (file.getSize() == 0)
             return "redirect:/user/viewPaper/" + id;
@@ -298,7 +296,6 @@ public class UserController {
         for (int ii : identifiers) {
             String fieldName = request.getParameter("key" + ii);
             log.debug("ii = {} field name = {}", ii, fieldName);
-            // TODO: save identifiers;
             identifierList.add(fieldName);
         }
 
@@ -455,7 +452,7 @@ public class UserController {
                                                  @RequestParam("size") int size) {
 
         String action = "importUserData";
-        boolean success = false;
+        boolean success;
         String detail = null;
         String userName = AuthUtil.getUserName(request);
         Document user = MongoUtil.getUser(db, userName);
@@ -539,13 +536,13 @@ public class UserController {
         success = true;
         ModelMap extra = new ModelMap();
         extra.put("userCount", userCount);
+        extra.put("studentCount", paper.get("studentCount"));
         extra.put("paperId", id);
         return OtherUtil.outputJSON(action, success, detail, extra);
     }
 
     @RequestMapping(value = "/addRemoveUser", method = RequestMethod.POST)
-    public ResponseEntity<String> addRemoveUser(HttpServletRequest request,
-                                                @RequestParam("emailId") String emailId,
+    public ResponseEntity<String> addRemoveUser(@RequestParam("emailId") String emailId,
                                                 @RequestParam("userId") String userId,
                                                 @RequestParam("remove") boolean remove) {
 
@@ -565,22 +562,33 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/saveEmail", method = RequestMethod.POST)
+    public ResponseEntity<String> saveEmail(@RequestParam("emailId") String emailId,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("value") String value) {
+
+        String action = "saveEmail";
+        boolean success = true;
+        String detail = null;
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(value)) {
+            db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
+                    new Document("$set", new Document(name, value))
+            );
+        }
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
-                                @RequestParam("usernames") String[] userIds,
-                                ModelMap model) {
+                                @RequestParam("usernames") String[] userIds) {
         ObjectId paperId = new ObjectId(id);
-        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
-        model.put("paper", paper);
-        List<Document> users = new ArrayList<Document>();
-        for (String uid : userIds) {
-            FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
-                    .find(eq("_id", new ObjectId(uid)));
-            for (Document u : iterable)
-                users.add(u);
-        }
-
+        Document paper = MongoUtil.getPaper(db, paperId);
+        String studentName = null;
+        @SuppressWarnings("unchecked")
+        List<String> identifiers = (List<String>) paper.get("identifiers");
+        if (identifiers != null)
+            studentName = identifiers.get(0);
         String userName = AuthUtil.getUserName(request);
         Document user = MongoUtil.getUser(db, userName);
         Document email = new Document();
@@ -593,11 +601,13 @@ public class UserController {
         email.put("status", "draft");
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
-        email.put("introductoryParagraph", "Dear student");
-        email.put("concludingParagraph", "Regards,\n\n{{user.firstName}}");
+        if (StringUtils.isBlank(studentName))
+            email.put("introductoryParagraph", "Dear student,");
+        else
+            email.put("introductoryParagraph", "Dear {{student." + studentName + "}},");
 
+        email.put("concludingParagraph", "Regards,\n\n{{user.firstName}}");
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
-        MongoUtil.putCommonIntoModel(db, request, model);
         return "redirect:/user/emailStudents/" + eid.toString();
     }
 
@@ -610,6 +620,7 @@ public class UserController {
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
         model.put("email", email);
 
+        @SuppressWarnings("unchecked")
         List<String> userIds = (List<String>) email.get("studentList");
 
         List<Document> users = new ArrayList<Document>();
@@ -634,8 +645,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/runConditional", method = RequestMethod.POST)
-    public ResponseEntity<List<Document>> runConditional(HttpServletRequest request,
-                                                         @RequestParam("colref") String colref,
+    public ResponseEntity<List<Document>> runConditional(@RequestParam("colref") String colref,
                                                          @RequestParam("operator") String operator,
                                                          @RequestParam("value") String value) {
 
@@ -672,33 +682,49 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sendEmails", method = RequestMethod.POST)
-    public String sendEmails(HttpServletRequest request,
-                             @RequestParam("emailId") String emailId,
-                             ModelMap model) {
+    public ResponseEntity<String> sendEmails(HttpServletRequest request,
+                                             @RequestParam("emailId") String emailId,
+                                             @Value("${email.smtp.server}") String smtpServer,
+                                             @Value("${email.from.address}") String fromEmail,
+                                             @Value("${in.development.mode}") boolean inDevelopmentMode,
+                                             ModelMap model) {
+
+        String action = "sendEmails";
+        boolean success = true;
+        String detail = null;
+
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
         @SuppressWarnings("unchecked")
         List<String> studentList = (List<String>) email.get("studentList");
         @SuppressWarnings("unchecked")
         List<String> uncheckedList = (List<String>) email.get("uncheckedList");
         String emailField = (String) email.get("emailField");
-        List<String> userList = ListUtils.subtract(studentList, uncheckedList);
-        for (String u : userList) {
-            Document uu = MongoUtil.getUser(db, u);
+        if (uncheckedList != null) {
+            //@SuppressWarnings("unchecked")
+            List<String> userList = ListUtils.subtract(studentList, uncheckedList);
+            studentList = userList;
+        }
+        for (String u : studentList) {
+            Document uu = MongoUtil.getUser(db, new ObjectId(u));
             @SuppressWarnings("unchecked")
             Document userInfo = (Document) uu.get("userInfo");
-            String address = (String) uu.get(emailField);
+            String address = (String) userInfo.get(emailField);
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
                 // send email
                 String subject = (String) email.get("subject");
                 String body = (String) email.get("introductoryParagraph");
-                body += "\n" +  (String) email.get("concludingParagraph");
+                body += "\n" + email.get("concludingParagraph");
+                subject = MongoUtil.replaceEmailTemplate(subject, userInfo);
+                body = MongoUtil.replaceEmailTemplate(body, userInfo);
                 log.debug("send email to {} with subject {} and body {}", address, subject, body);
+                if (inDevelopmentMode) {
+                    address = fromEmail;
+                }
+                OtherUtil.sendEmail(smtpServer, fromEmail, address, subject, body);
 
             }
         }
-        model.put("pageName", "emailStudents");
-        MongoUtil.putCommonIntoModel(db, request, model);
-        return Common.DEFAULT_VIEW_NAME;
+        return OtherUtil.outputJSON(action, success, detail);
     }
 
     @RequestMapping(value = "/addColumn/{id}", method = RequestMethod.GET)
@@ -775,8 +801,8 @@ public class UserController {
 
     @RequestMapping(value = "/editColumnRestrictions/{id}", method = RequestMethod.GET)
     public String editColumnRestrictions(@PathVariable String id,
-                             HttpServletRequest request,
-                             ModelMap model) {
+                                         HttpServletRequest request,
+                                         ModelMap model) {
 
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
         Document extra = (Document) column.get("extra");
@@ -790,10 +816,9 @@ public class UserController {
 
     @RequestMapping(value = "/saveColumnRestrictions", method = RequestMethod.POST)
     public String saveColumnRestrictions(
-                             @RequestParam(value = "_id", required = false) String _id,
-                             @RequestParam(value = "activeFrom", required = false) Date activeFrom,
-                             @RequestParam(value = "activeTo", required = false) Date activeTo,
-                             HttpServletRequest request) {
+            @RequestParam(value = "_id", required = false) String _id,
+            @RequestParam(value = "activeFrom", required = false) Date activeFrom,
+            @RequestParam(value = "activeTo", required = false) Date activeTo) {
 
         Date now = new Date();
         ObjectId cId = new ObjectId(_id);
@@ -805,7 +830,7 @@ public class UserController {
         column.put("lastModified", now);
         // update existing column
         db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS)
-            .updateOne(eq("_id", cId), new Document("$set", new Document(column)));
+                .updateOne(eq("_id", cId), new Document("$set", new Document(column)));
 
         return "redirect:/user/editScanningInformation/" + cId.toString();
     }
@@ -814,8 +839,7 @@ public class UserController {
     // remove given user (id) from paper (paperId)
     @RequestMapping(value = "/removeUser", method = RequestMethod.POST)
     public ResponseEntity<String> removeUser(@RequestParam("id") String id,
-                                             @RequestParam("paperId") String paperId,
-                                             HttpServletRequest request) {
+                                             @RequestParam("paperId") String paperId) {
         String action = "removeUser";
         boolean success = false;
         String detail = null;

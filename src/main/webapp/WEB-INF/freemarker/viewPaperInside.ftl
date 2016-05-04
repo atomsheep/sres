@@ -243,8 +243,8 @@
                             <tr>
                                 <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
                                 <td style=''>${i.status!}</td>
-                                <td style=''>${i.studentlist?size}</td>
-                                <td style=''><#if i.datecreated?has_content>${i.datecreated?datetime}</#if></td>
+                                <td style=''>${i.studentList?size}</td>
+                                <td style=''><#if i.created?has_content>${i.created?datetime}</#if></td>
                             </tr>
                         </#list>
                     <#else>

@@ -358,10 +358,11 @@ public class MongoUtil {
         return papers;
     }
 
-    public static String replaceEmailTemplate(String message, ModelMap map) {
+    public static String replaceEmailTemplate(String message, Map map) {
         String result = message;
-        for (String key : map.keySet()) {
+        for (String key : (Set<String>) map.keySet()) {
             // replace here
+            result = result.replace("{{student." + key + "}}", (String) map.get(key));
         }
         return result;
 
