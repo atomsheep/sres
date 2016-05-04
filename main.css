@@ -3,6 +3,7 @@ body { margin:0;font-family:"Roboto", sans-serif; }
 h3 { font-size:24px; font-weight:300; }
 
 .mainHeading { background:#021E27;padding:50px; }
+.mainHeading .inner{ max-width:1200px;margin:auto; }
 .mainTitle { font-size:100px; }
 .mainTitle, .subTitle { text-align:center;color:white;margin:0; }
 
