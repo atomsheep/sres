@@ -24,7 +24,7 @@
             class='fa fa-envelope'></span> Email selected students</span>
     <button class="btn btn-default btn-primary"
             style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-        <span class='fa fa-mobile-phone'></span> SMS selected students
+        <span class='fa fa-comments'></span> SMS selected students
     </button>
     <button class="btn btn-default btn-primary"
             style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>

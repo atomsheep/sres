@@ -26,6 +26,10 @@
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery.gridster.js"></script>
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/css/jquery.gridster.css" />
 
+    <script type="text/javascript" src="${baseUrl}/assets/js/quill/quill.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/quill/quill.base.css" />
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/quill/quill.snow.css" />
+
     <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/datatables.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/FixedHeader-3.1.1/js/dataTables.fixedHeader.js"></script>
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/DataTables/datatables.css" />

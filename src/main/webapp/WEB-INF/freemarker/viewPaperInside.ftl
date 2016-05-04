@@ -97,7 +97,6 @@
 
 $(function () {
 
-
     var third = 1 / 3;
     var quarter = 1 / 4;
     var gap = 10;

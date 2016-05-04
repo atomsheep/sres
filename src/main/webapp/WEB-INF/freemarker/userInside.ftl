@@ -6,9 +6,9 @@
                 ${SRES_INTRO_TEXT}
             </li>
 
-            <li class='sres_panel' data-row="1" data-col="2" data-sizex="2" data-sizey="1">
+            <li class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1">
                 <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>User profile</h4>
-                <div style='padding:20px'>
+                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;padding:5px'>
                     <div class='input-group input-group1' style="width:100%;margin-bottom:5px" disabled='disabled'>
                         <span class='input-group-addon sres_name' style='width:150px'>Username:</span>
                         <input type="text" class="form-control userName" value="${user.username!}" disabled='disabled'/>
@@ -24,6 +24,10 @@
                     <div class='input-group input-group4' style="width:100%;margin-bottom:5px">
                         <span class='input-group-addon sres_name' style='width:150px'>Email:</span>
                         <input type="text" class="form-control email" value=""/>
+                    </div>
+                    <div class='input-group input-group5' style="width:100%;margin-bottom:5px">
+                        <span class='input-group-addon sres_name' style='width:150px'>Phone:</span>
+                        <input type="text" class="form-control phone" value=""/>
                     </div>
                 </div>
             </li>
@@ -75,7 +79,6 @@
                     </table>
                 </div>
             </li>
-
 
             <li class='sres_panel' data-row="4" data-col="1" data-sizex="3" data-sizey="1">
                 <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Search for ${ICN_C}s</h4>

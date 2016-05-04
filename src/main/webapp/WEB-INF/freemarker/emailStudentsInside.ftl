@@ -97,15 +97,43 @@
                             <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">Introductory paragraph (for <span class='totalStudents'>${users?size}</span> students)</h4></th>
                         </tr>
                         <tr>
-                            <td style='padding-bottom:10px'><textarea style='border-radius:0;min-height:100px' placeholder="Dear [givenNames]," name="body" class="form-control"></textarea></td>
+                            <td style='padding:10px 0'>
+                                <div id="intro-toolbar" class='quill-toolbar'>
+                                    <div class="ql-format-group">
+                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
+                                    </div>
+                                    <div class="ql-format-group">
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <select title="Text Alignment" class="ql-align">
+                                            <option value="left" label="Left" selected=""></option>
+                                            <option value="center" label="Center"></option>
+                                            <option value="right" label="Right"></option>
+                                            <option value="justify" label="Justify"></option>
+                                        </select>
+                                    </div>
+                                    <div class="ql-format-group">
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+                                    </div>
+                                </div>
+                                <div id="introductoryParagraphEditor" class='quillField' data-toolbar='intro-toolbar'>
+                                    <div></div>
+                                </div>
+                            </td>
                         </tr>
                         <tr id='addParagraphs'>
                             <td style='padding:0'>
                                 <table width='100%'>
                                     <tr>
                                         <td colspan='5' style="vertical-align:bottom;position:relative"><h4 style='cursor:default;position: absolute;bottom:10px'>Additional/conditional paragraphs</h4>
-                                            <div id='paperMenu' style='float:right;margin:0 0 10px;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-plus'></span></div>
-                                            <div class='paper_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;color:#0886AF'>
+                                            <div id='paperMenu' style='float:right;margin:10px 0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><span class='fa fa-plus'></span></div>
+                                            <div class='paper_buttons' style='z-index:1000;margin-left:20px;display:none;position:absolute;top:50px;right:0;background:white;color:#0886AF'>
                                                 <div class='menuButton addAdditional'><div class='conditional1 layout'></div> <div style='float:left;margin-left:5px'>Add additional paragraph</div><div style='clear:both'></div></div>
                                                 <div class='menuButton addConditional'><div class='conditional2 layout'></div> <div style='float:left;margin-left:5px'>Add conditional paragraph</div><div style='clear:both'></div></div>
                                             </div>
@@ -119,7 +147,35 @@
                             <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">Concluding paragraph (for <span class='totalStudents'>${users?size}</span> students)</h4></th>
                         </tr>
                         <tr>
-                            <td><textarea style='border-radius:0;min-height:100px' name="end" class="form-control" placeholder="Regards, [staff name]"></textarea></td>
+                            <td style='padding:10px 0'>
+                                <div id="concluding-toolbar" class='quill-toolbar'>
+                                    <div class="ql-format-group">
+                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
+                                    </div>
+                                    <div class="ql-format-group">
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+                                        <span class="ql-format-separator"></span>
+                                        <select title="Text Alignment" class="ql-align">
+                                            <option value="left" label="Left" selected=""></option>
+                                            <option value="center" label="Center"></option>
+                                            <option value="right" label="Right"></option>
+                                            <option value="justify" label="Justify"></option>
+                                        </select>
+                                    </div>
+                                    <div class="ql-format-group">
+                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+                                    </div>
+                                </div>
+                                <div id="concludingParagraphEditor" class='quillField' data-toolbar='concluding-toolbar'>
+                                    <div></div>
+                                </div>
+                            </td>
                         </tr>
                     </table>
                 </div>
@@ -135,6 +191,19 @@
                -->
 <script type="text/javascript">
     $(function(){
+
+        var configs = {
+            theme: 'snow'
+        };
+
+        $('.quillField').each(function(){
+            var self = $(this);
+            var tb = "#"+self.data("toolbar");
+            var quill = new Quill(self[0],configs);
+            quill.addModule('toolbar',{
+                container : tb
+            });
+        });
 
         $('.shortcode').on('keydown', function(){
             return false;

@@ -183,3 +183,9 @@ table.dataTable tbody tr { background: none !important }
 .input-group[disabled] .sres_name { background:#ccc;color:#777; }
 
 .datepicker table tr td.active.active { background: #0886AF !important; }
+
+
+/*quill*/
+.quill-toolbar { background:white;border:1px solid #066888  }
+.quillField{ background:white;min-height: 150px;color:black;resize:vertical;border:1px solid #066888 }
+.btn-quill { border:none;background:white;padding:8px }
