@@ -4,5 +4,6 @@ body { margin:0;font-family:"Roboto", sans-serif; }
 .mainTitle { font-size:100px; }
 .mainTitle, .subTitle { text-align:center;color:white;margin:0; }
 
-.navigation{ list-style:none;background:#0886AF; }
-.navigation li { display:inline-block; padding:5px; background:#0886AF;color:white;border-right:1px solid #021E27; }
+.navigation{ list-style:none;background:#0886AF;text-align:center;padding:0;margin:0; }
+.navigation li { display:inline-block; padding:20px; background:#0886AF;color:white;border-right:1px solid #021E27; }
+.navigation li:first-child { border-left:1px solid #021E27; }
