@@ -6,6 +6,7 @@ h3 { font-size:24px; font-weight:300; }
 .mainHeading .inner{ max-width:1200px;margin:auto; }
 .mainTitle { font-size:100px; }
 .mainTitle, .subTitle { text-align:center;color:white;margin:0; }
+.subTitle { margin-top:-20px; }
 
 .navigation{ list-style:none;background:#0886AF;text-align:center;padding:0;margin:0; }
 .navigation li { display:inline-block; padding:20px; background:#0886AF;color:white;border-right:1px solid #021E27; }
