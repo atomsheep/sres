@@ -15,3 +15,5 @@ h3 { font-size:24px; font-weight:300; }
 .navigation li:first-child { border-left:1px solid #021E27; }
 
 .mainContent{ max-width:1200px; margin:auto; }
+
+.imgWrapper { text-align: center;padding: 30px; }
