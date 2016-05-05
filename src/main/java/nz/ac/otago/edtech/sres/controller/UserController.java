@@ -271,7 +271,7 @@ public class UserController {
     @RequestMapping(value = "/importUser", method = RequestMethod.POST)
     public String importUser(HttpServletRequest request,
                              @RequestParam("id") String id,
-                             @RequestParam("identifiers") int[] identifiers,
+                             @RequestParam(value = "identifiers", required = false) int[] identifiers,
                              @RequestParam("size") int size) {
         boolean hasHeader = false;
         if (request.getParameter("hasHeader") != null)
@@ -291,11 +291,12 @@ public class UserController {
             }
         }
         List<String> identifierList = new ArrayList<String>();
-        for (int ii : identifiers) {
-            String fieldName = request.getParameter("key" + ii);
-            log.debug("ii = {} field name = {}", ii, fieldName);
-            identifierList.add(fieldName);
-        }
+        if (identifiers != null)
+            for (int ii : identifiers) {
+                String fieldName = request.getParameter("key" + ii);
+                log.debug("ii = {} field name = {}", ii, fieldName);
+                identifierList.add(fieldName);
+            }
 
         // TODO: get old student fields first, then combine with new fields
         // update studentFields in paper
@@ -576,6 +577,26 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/saveEmailParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> saveEmail(@RequestParam("emailId") String emailId,
+                                            @RequestParam("name") String name,
+                                            @RequestParam("text") String text,
+                                            @RequestParam("html") String html) {
+
+        String action = "saveEmail";
+        boolean success = true;
+        String detail = null;
+        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(text)) {
+            ModelMap map = new ModelMap();
+            map.put("text", text);
+            map.put("html", html);
+            db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
+                    new Document("$set", new Document(name, new Document(map)))
+            );
+        }
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
@@ -706,17 +727,22 @@ public class UserController {
             Document userInfo = (Document) uu.get("userInfo");
             String address = (String) userInfo.get(emailField);
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
+                Document introductoryParagraph = (Document) email.get("introductoryParagraph");
+                Document concludingParagraph = (Document) email.get("concludingParagraph");
                 // send email
                 String subject = (String) email.get("subject");
-                String body = (String) email.get("introductoryParagraph");
-                body += "\n" + email.get("concludingParagraph");
+                String textBody = introductoryParagraph.get("text").toString();
+                String htmlBody = introductoryParagraph.get("html").toString();
+                textBody += "\n\n" + concludingParagraph.get("text").toString();
+                htmlBody += concludingParagraph.get("html").toString();
                 subject = MongoUtil.replaceEmailTemplate(subject, userInfo);
-                body = MongoUtil.replaceEmailTemplate(body, userInfo);
-                log.debug("send email to {} with subject {} and body {}", address, subject, body);
+                textBody = MongoUtil.replaceEmailTemplate(textBody, userInfo);
+                htmlBody = MongoUtil.replaceEmailTemplate(htmlBody, userInfo);
+                log.debug("send email to {} with subject {} text body {} html body {}", address, subject, textBody, htmlBody);
                 if (inDevelopmentMode) {
                     address = fromEmail;
                 }
-                OtherUtil.sendEmail(smtpServer, fromEmail, address, subject, body);
+                OtherUtil.sendEmail(smtpServer, fromEmail, null, address, subject, textBody, htmlBody);
 
             }
         }
@@ -955,6 +981,7 @@ public class UserController {
         ObjectId pId = new ObjectId(paperId);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
 
+        // TODO: not finished yet
 
         // update existing column
         db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)

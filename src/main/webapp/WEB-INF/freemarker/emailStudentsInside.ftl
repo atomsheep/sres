@@ -16,210 +16,208 @@
 
 
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow: hidden'>
-    <div class="gridster">
-        <ul>
-            <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
-                        class='totalStudents'>${users?size}</span> / ${users?size}</h4>
+<div class="gridster">
+<ul>
+    <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
+        <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
+                class='totalStudents'>${users?size}</span> / ${users?size}</h4>
 
-                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                    <#list users as u>
-                        <tr>
-                            <td style='padding:5px'>
-                                <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
-                                       checked="checked"/>
-                            </td>
-                            <#list u.userInfo?keys as k>
-                                <td>
-                                ${u.userInfo[k]}
-                                </td>
-                            </#list>
-                        </tr>
+        <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+            <table style='width:100%'>
+            <#list users as u>
+                <tr>
+                    <td style='padding:5px'>
+                        <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
+                               checked="checked"/>
+                    </td>
+                    <#list u.userInfo?keys as k>
+                        <td>
+                        ${u.userInfo[k]}
+                        </td>
                     </#list>
-                    </table>
-                </div>
-            </li>
+                </tr>
+            </#list>
+            </table>
+        </div>
+    </li>
 
-            <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Attribute shortcodes</h4>
+    <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
+        <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Attribute shortcodes</h4>
 
-                <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                    <#list studentFields as f>
-                        <tr>
-                            <td style='padding:5px 5px 0'>
-                                <div class='input-group input-group1' style="width:100%">
+        <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+            <table style='width:100%'>
+            <#list studentFields as f>
+                <tr>
+                    <td style='padding:5px 5px 0'>
+                        <div class='input-group input-group1' style="width:100%">
                                     <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}
                                         :</span>
-                                    <input type="text" class="form-control shortcode" value="{{student.${f}}}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </#list>
-                    <#list columns as c>
-                        <tr>
-                            <td style='padding:5px 5px 0'>
-                                <div class='input-group input-group1' style="width:100%">
+                            <input type="text" class="form-control shortcode" value="{{student.${f}}}"/>
+                        </div>
+                    </td>
+                </tr>
+            </#list>
+            <#list columns as c>
+                <tr>
+                    <td style='padding:5px 5px 0'>
+                        <div class='input-group input-group1' style="width:100%">
                                     <span class='input-group-addon sres_name shortcode_name'
                                           style='width:35%'>${c.name!}:</span>
-                                    <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </#list>
-                    </table>
-                </div>
-            </li>
+                            <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
+                        </div>
+                    </td>
+                </tr>
+            </#list>
+            </table>
+        </div>
+    </li>
 
-            <li class='sres_panel' data-row="4" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Something else</h4>
-                Third
-            </li>
+    <li class='sres_panel' data-row="4" data-col="1" data-sizex="1" data-sizey="1">
+        <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Something else</h4>
+        Third
+    </li>
 
-            <li class='sres_panel' data-row="1" data-col="2" data-sizex="2" data-sizey="4">
-                <h4 style='margin:0;padding:10px;background:#043B4E;cursor:default'>Email panel</h4>
+    <li class='sres_panel' data-row="1" data-col="2" data-sizex="2" data-sizey="4">
+        <h4 style='margin:0;padding:10px;background:#043B4E;cursor:default'>Email panel</h4>
 
-                <div style='padding:20px;overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0'>
-                    <div class='info_text' style="margin:0 0 20px">
-                        Construct your email to students here. First select the user field that SRES should use to email
-                        the students.
-                    </div>
+        <div style='padding:20px;overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0'>
+            <div class='info_text' style="margin:0 0 20px">
+                Construct your email to students here. First select the user field that SRES should use to email
+                the students.
+            </div>
 
-                    <table style='width:100%'>
-                        <tr>
-                            <td style='padding:0 0 20px 0'>
-                                <div class='input-group input-group1'>
-                                    <span class='input-group-addon sres_name'>Student email field:</span>
-                                    <select class='form-control' name="emailField"
-                                            <#if email.emailField?has_content>data-value="${email.emailField}"</#if>>
-                                    <#list studentFields as f>
-                                        <option value="${f}">${f}</option>
-                                    </#list>
-                                    </select>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <div class='input-group input-group1'>
-                                    <span class='input-group-addon sres_name'>Subject:</span>
-                                    <input style='width:100%' type="text" name="subject" class="form-control"
-                                           value="${email.subject!}" data-value="${email.subject!}"/>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">
-                                Introductory paragraph (for <span class='totalStudents'>${users?size}</span> students)
-                            </h4></th>
-                        </tr>
-                        <tr>
-                            <td style='padding:10px 0'>
-                                <div id="intro-toolbar" class='quill-toolbar'>
-                                    <div class="ql-format-group">
-                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
+            <table style='width:100%'>
+                <tr>
+                    <td style='padding:0 0 20px 0'>
+                        <div class='input-group input-group1'>
+                            <span class='input-group-addon sres_name'>Student email field:</span>
+                            <select class='form-control' name="emailField"
+                                    <#if email.emailField?has_content>data-value="${email.emailField}"</#if>>
+                            <#list studentFields as f>
+                                <option value="${f}">${f}</option>
+                            </#list>
+                            </select>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class='input-group input-group1'>
+                            <span class='input-group-addon sres_name'>Subject:</span>
+                            <input style='width:100%' type="text" name="subject" class="form-control"
+                                   value="${email.subject!}" data-value="${email.subject!}"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">
+                        Introductory paragraph (for <span class='totalStudents'>${users?size}</span> students)
+                    </h4></th>
+                </tr>
+                <tr>
+                    <td style='padding:10px 0'>
+                        <div id="intro-toolbar" class='quill-toolbar'>
+                            <div class="ql-format-group">
+                                <button class="btn btn-quill ql-bold ql-format-button"></button>
+                                <span class="ql-format-separator"></span>
+                                <button class="btn btn-quill ql-italic ql-format-button"></button>
+                                <span class="ql-format-separator"></span>
+                                <button class="btn btn-quill ql-underline ql-format-button"></button>
+                            </div>
+                            <div class="ql-format-group">
+                                <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+                                <span class="ql-format-separator"></span>
+                                <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+                                <span class="ql-format-separator"></span>
+                                <select title="Text Alignment" class="ql-align">
+                                    <option value="left" label="Left" selected=""></option>
+                                    <option value="center" label="Center"></option>
+                                    <option value="right" label="Right"></option>
+                                    <option value="justify" label="Justify"></option>
+                                </select>
+                            </div>
+                            <div class="ql-format-group">
+                                <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+                            </div>
+                        </div>
+                        <div id="introductoryParagraph" class='quillField' data-toolbar='intro-toolbar'>
+                        </div>
+                    </td>
+                </tr>
+                <tr id='addParagraphs'>
+                    <td style='padding:0'>
+                        <table width='100%'>
+                            <tr>
+                                <td colspan='5' style="vertical-align:bottom;position:relative"><h4
+                                        style='cursor:default;position: absolute;bottom:10px'>
+                                    Additional/conditional paragraphs</h4>
+
+                                    <div id='paperMenu'
+                                         style='float:right;margin:10px 0;font-size:20px;border-radius:0'
+                                         class='btn btn-default btn-primary'><span class='fa fa-plus'></span>
                                     </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <select title="Text Alignment" class="ql-align">
-                                            <option value="left" label="Left" selected=""></option>
-                                            <option value="center" label="Center"></option>
-                                            <option value="right" label="Right"></option>
-                                            <option value="justify" label="Justify"></option>
-                                        </select>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
-                                    </div>
-                                </div>
-                                <div id="introductoryParagraphEditor" class='quillField' data-toolbar='intro-toolbar'>
-                                ${email.introductoryParagraph!}
-                                </div>
-                            </td>
-                        </tr>
-                        <tr id='addParagraphs'>
-                            <td style='padding:0'>
-                                <table width='100%'>
-                                    <tr>
-                                        <td colspan='5' style="vertical-align:bottom;position:relative"><h4
-                                                style='cursor:default;position: absolute;bottom:10px'>
-                                            Additional/conditional paragraphs</h4>
-
-                                            <div id='paperMenu'
-                                                 style='float:right;margin:10px 0;font-size:20px;border-radius:0'
-                                                 class='btn btn-default btn-primary'><span class='fa fa-plus'></span>
+                                    <div class='paper_buttons'
+                                         style='z-index:1000;margin-left:20px;display:none;position:absolute;top:50px;right:0;background:white;color:#0886AF'>
+                                        <div class='menuButton addAdditional'>
+                                            <div class='conditional1 layout'></div>
+                                            <div style='float:left;margin-left:5px'>Add additional paragraph
                                             </div>
-                                            <div class='paper_buttons'
-                                                 style='z-index:1000;margin-left:20px;display:none;position:absolute;top:50px;right:0;background:white;color:#0886AF'>
-                                                <div class='menuButton addAdditional'>
-                                                    <div class='conditional1 layout'></div>
-                                                    <div style='float:left;margin-left:5px'>Add additional paragraph
-                                                    </div>
-                                                    <div style='clear:both'></div>
-                                                </div>
-                                                <div class='menuButton addConditional'>
-                                                    <div class='conditional2 layout'></div>
-                                                    <div style='float:left;margin-left:5px'>Add conditional paragraph
-                                                    </div>
-                                                    <div style='clear:both'></div>
-                                                </div>
+                                            <div style='clear:both'></div>
+                                        </div>
+                                        <div class='menuButton addConditional'>
+                                            <div class='conditional2 layout'></div>
+                                            <div style='float:left;margin-left:5px'>Add conditional paragraph
                                             </div>
-                                        </td>
-                                    </tr>
-                                    <tr id='additionalParagraphs'></tr>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr id='concludingParagraph'>
-                            <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">
-                                Concluding paragraph (for <span class='totalStudents'>${users?size}</span> students)
-                            </h4></th>
-                        </tr>
-                        <tr>
-                            <td style='padding:10px 0'>
-                                <div id="concluding-toolbar" class='quill-toolbar'>
-                                    <div class="ql-format-group">
-                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
+                                            <div style='clear:both'></div>
+                                        </div>
                                     </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <select title="Text Alignment" class="ql-align">
-                                            <option value="left" label="Left" selected=""></option>
-                                            <option value="center" label="Center"></option>
-                                            <option value="right" label="Right"></option>
-                                            <option value="justify" label="Justify"></option>
-                                        </select>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
-                                    </div>
-                                </div>
-                                <div id="concludingParagraphEditor" class='quillField'
-                                     data-toolbar='concluding-toolbar'>
-                                ${email.concludingParagraph!}
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-            </li>
-        </ul>
-    </div>
+                                </td>
+                            </tr>
+                            <tr id='additionalParagraphs'></tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr id='concludingParagraph'>
+                    <th style='padding-top:20px'><h4 style="margin: 0;padding-bottom: 5px;cursor:default;">
+                        Concluding paragraph (for <span class='totalStudents'>${users?size}</span> students)
+                    </h4></th>
+                </tr>
+                <tr>
+                    <td style='padding:10px 0'>
+                        <div id="concluding-toolbar" class='quill-toolbar'>
+                            <div class="ql-format-group">
+                                <button class="btn btn-quill ql-bold ql-format-button"></button>
+                                <span class="ql-format-separator"></span>
+                                <button class="btn btn-quill ql-italic ql-format-button"></button>
+                                <span class="ql-format-separator"></span>
+                                <button class="btn btn-quill ql-underline ql-format-button"></button>
+                            </div>
+                            <div class="ql-format-group">
+                                <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+                                <span class="ql-format-separator"></span>
+                                <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+                                <span class="ql-format-separator"></span>
+                                <select title="Text Alignment" class="ql-align">
+                                    <option value="left" label="Left" selected=""></option>
+                                    <option value="center" label="Center"></option>
+                                    <option value="right" label="Right"></option>
+                                    <option value="justify" label="Justify"></option>
+                                </select>
+                            </div>
+                            <div class="ql-format-group">
+                                <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+                            </div>
+                        </div>
+                        <div id="concludingParagraph" class='quillField'
+                             data-toolbar='concluding-toolbar'>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </li>
+</ul>
+</div>
 </div>
 <#--
 <form action="${baseUrl}/user/sendEmails" method="post">
@@ -231,7 +229,8 @@
 $(function () {
 
     var configs = {
-        theme: 'snow'
+        theme: 'snow',
+        pollInterval: 500
     };
 
     var editorArray = [];
@@ -242,6 +241,35 @@ $(function () {
         var quill = new Quill(self[0], configs);
         quill.addModule('toolbar', {
             container: tb
+        });
+    <#if (email.introductoryParagraph.text)?has_content>
+        if (self.attr('id') == 'introductoryParagraph')
+            quill.setText("${email.introductoryParagraph.text?j_string}");
+    </#if>
+    <#if (email.introductoryParagraph.html)?has_content>
+        if (self.attr('id') == 'introductoryParagraph')
+            quill.setHTML("${email.introductoryParagraph.html?j_string}");
+    </#if>
+    <#if (email.concludingParagraph.text)?has_content>
+        if (self.attr('id') == 'concludingParagraph')
+            quill.setText("${email.concludingParagraph.text?j_string}");
+    </#if>
+    <#if (email.concludingParagraph.html)?has_content>
+        if (self.attr('id') == 'concludingParagraph')
+            quill.setHTML("${email.concludingParagraph.html?j_string}");
+    </#if>
+        quill.on('text-change', function (delta, source) {
+            console.log('text change', quill, quill.container.id);
+            var fieldName = quill.container.id;
+            var text = quill.getText();
+            var html = quill.getHTML();
+            $.post("${baseUrl}/user/saveEmailParagraph",
+                    {emailId: '${email._id}', name: fieldName, text: text, html: html },
+                    function (json) {
+                        if (json.success) {
+                            console.log("update field successfully.");
+                        }
+                    });
         });
         editorArray.push(quill);
     });
@@ -435,6 +463,7 @@ $(function () {
         }
     });
 
+
     $('[name=introductoryParagraph]').on("blur", function () {
         var slf = $(this);
         var fieldName = slf[0].name;
@@ -462,6 +491,7 @@ $(function () {
     });
 
     $('button.sendEmail').on('click', function () {
+        console.log("sending email");
         $.post("${baseUrl}/user/sendEmails",
                 {emailId: '${email._id}'},
                 function (json) {
