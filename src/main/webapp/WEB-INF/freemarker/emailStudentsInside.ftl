@@ -144,7 +144,7 @@
                                     </div>
                                 </div>
                                 <div id="introductoryParagraphEditor" class='quillField' data-toolbar='intro-toolbar'>
-                                ${email.introductoryParagraph!}
+                                    ${email.introductoryParagraph!}
                                 </div>
                             </td>
                         </tr>
@@ -152,9 +152,7 @@
                             <td style='padding:0'>
                                 <table width='100%'>
                                     <tr>
-                                        <td colspan='5' style="vertical-align:bottom;position:relative"><h4
-                                                style='cursor:default;position: absolute;bottom:10px'>
-                                            Additional/conditional paragraphs</h4>
+                                        <td colspan='5' style="vertical-align:bottom;position:relative"><h4 style='cursor:default;position: absolute;bottom:10px'>Additional/conditional paragraphs</h4>
 
                                             <div id='paperMenu'
                                                  style='float:right;margin:10px 0;font-size:20px;border-radius:0'
@@ -212,9 +210,8 @@
                                         <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
                                     </div>
                                 </div>
-                                <div id="concludingParagraphEditor" class='quillField'
-                                     data-toolbar='concluding-toolbar'>
-                                ${email.concludingParagraph!}
+                                <div id="concludingParagraphEditor" class='quillField' data-toolbar='concluding-toolbar'>
+                                    ${email.concludingParagraph!}
                                 </div>
                             </td>
                         </tr>

@@ -258,6 +258,14 @@ public class UserController {
                     }
                     model.put("record", columns);
                 }
+                record = records.iterator().next();
+                if (record != null) {
+                    List<String> values = new ArrayList<String>();
+                    for (String s : record) {
+                        values.add(s);
+                    }
+                    model.put("values", values);
+                }
                 model.put("id", id);
             } catch (IOException e) {
                 log.error("Exception", e);
@@ -417,8 +425,11 @@ public class UserController {
         Set<String> set = new LinkedHashSet<String>();
         set.addAll(identifiers);
         set.addAll(studentFields);
-
         model.put("studentFields", set);
+
+        Document oneUser = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_USERS,"paperref",new ObjectId(id));
+        model.put("userInfo",oneUser.get("userInfo"));
+
         File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
         File upload = new File(paperDir, filename);
         if (upload.exists()) {
@@ -433,6 +444,14 @@ public class UserController {
                         columns[i] = record.get(i);
                     }
                     model.put("record", columns);
+                }
+                record = records.iterator().next();
+                if (record != null) {
+                    String[] values = new String[record.size()];
+                    for (int i = 0; i < record.size(); i++) {
+                        values[i] = record.get(i);
+                    }
+                    model.put("values", values);
                 }
                 model.put("id", id);
             } catch (IOException e) {

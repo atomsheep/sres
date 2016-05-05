@@ -78,8 +78,14 @@
                             <select name="value${r_index?c}" class="form-control"
                                     <#if (r_index < fields?size)>disabled="disabled"</#if>>
                                 <#list record as rr>
-                                    <option value="${rr_index}"
-                                            <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
+                                    <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if> >
+                                        ${rr}
+                                        <#if values?has_content>
+                                            <#if values[rr_index]?has_content>
+                                                (e.g. ${values[rr_index]})
+                                            </#if>
+                                        </#if>
+                                    </option>
                                 </#list>
                             </select>
                         </td>
