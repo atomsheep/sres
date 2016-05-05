@@ -149,8 +149,6 @@
                             <td style='padding:0'>
                                 <table width='100%'>
                                     <tr>
-
-
                                         <td colspan='5' style="vertical-align:bottom;position:relative"><h4
                                                 style='cursor:default;position: absolute;bottom:10px'>
                                             Additional/conditional paragraphs</h4>

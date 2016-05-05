@@ -166,16 +166,14 @@ public class UserController {
             paper.put("status", "active");
             paper.put("created", now);
             log.debug("new paper id {}", id);
-            if (user != null) {
-                // paper info
-                Document pp = new Document();
-                pp.put("paperref", id);
-                List<String> roles = new ArrayList<String>();
-                roles.add("owner");
-                pp.put("roles", roles);
-                db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq("_id", user.get("_id")),
-                        new Document("$addToSet", new Document("papers", pp)));
-            }
+            // paper info
+            Document pp = new Document();
+            pp.put("paperref", id);
+            List<String> roles = new ArrayList<String>();
+            roles.add("owner");
+            pp.put("roles", roles);
+            db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq("_id", user.get("_id")),
+                    new Document("$addToSet", new Document("papers", pp)));
             log.debug("new paper id {}", id);
         } else {
             paper = MongoUtil.getPaper(db, _id);
@@ -517,7 +515,7 @@ public class UserController {
                             String un = record.get(unIndex);
                             Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("paperref", paperId), eq("userInfo." + fieldName, un));
                             log.debug("find user.");
-                            if ((uu != null) && (uu.get("_id") != null)){
+                            if ((uu != null) && (uu.get("_id") != null)) {
                                 userCount++;
                                 for (ModelMap m : columnFields) {
                                     ObjectId colref = (ObjectId) m.get("_id");
@@ -682,12 +680,10 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sendEmails", method = RequestMethod.POST)
-    public ResponseEntity<String> sendEmails(HttpServletRequest request,
-                                             @RequestParam("emailId") String emailId,
+    public ResponseEntity<String> sendEmails(@RequestParam("emailId") String emailId,
                                              @Value("${email.smtp.server}") String smtpServer,
                                              @Value("${email.from.address}") String fromEmail,
-                                             @Value("${in.development.mode}") boolean inDevelopmentMode,
-                                             ModelMap model) {
+                                             @Value("${in.development.mode}") boolean inDevelopmentMode) {
 
         String action = "sendEmails";
         boolean success = true;
@@ -700,7 +696,7 @@ public class UserController {
         List<String> uncheckedList = (List<String>) email.get("uncheckedList");
         String emailField = (String) email.get("emailField");
         if (uncheckedList != null) {
-            //@SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
             List<String> userList = ListUtils.subtract(studentList, uncheckedList);
             studentList = userList;
         }
@@ -837,14 +833,14 @@ public class UserController {
 
     @RequestMapping(value = "/editScanningInformation/{id}", method = RequestMethod.GET)
     public String editScanningInformation(@PathVariable String id,
-                                         HttpServletRequest request,
-                                         ModelMap model) {
+                                          HttpServletRequest request,
+                                          ModelMap model) {
 
         Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
         ObjectId pId = new ObjectId(column.get("paperref").toString());
         Document paper = MongoUtil.getPaper(db, pId);
         Document extra = (Document) column.get("extra");
-        List<Document> columns = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_COLUMNS,"paperref",pId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", pId);
         model.put("column", column);
         model.put("columns", columns);
         model.put("extra", extra);
@@ -858,8 +854,7 @@ public class UserController {
     @RequestMapping(value = "/saveScanningInformation", method = RequestMethod.POST)
     public String saveScanningInformation(
             @RequestParam(value = "_id", required = false) String _id,
-            @RequestParam(value = "customDisplay", required = false) String customDisplay,
-            HttpServletRequest request) {
+            @RequestParam(value = "customDisplay", required = false) String customDisplay) {
 
         Date now = new Date();
         ObjectId cId = new ObjectId(_id);
@@ -938,12 +933,11 @@ public class UserController {
     @RequestMapping(value = "/saveDashboardLayout", method = RequestMethod.POST)
     public ResponseEntity<String> saveDashboardLayout(
             @RequestParam(value = "paperId", required = false) String paperId,
-            @RequestParam(value = "gridData", required = false) String gridData,
-            HttpServletRequest request) {
+            @RequestParam(value = "gridData", required = false) String gridData) {
 
         ObjectId pId = new ObjectId(paperId);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
-        paper.put("gridData",gridData);
+        paper.put("gridData", gridData);
 
         // update existing column
         db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
@@ -961,8 +955,6 @@ public class UserController {
         ObjectId pId = new ObjectId(paperId);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
 
-        //add to unchecked list here
-        //paper.put("gridData",gridData);
 
         // update existing column
         db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
@@ -1094,8 +1086,8 @@ public class UserController {
     //async loading
     @RequestMapping(value = "/getColumns/{id}", method = RequestMethod.GET)
     public String getColumns(@PathVariable String id,
-                                 HttpServletRequest request,
-                                 ModelMap model) {
+                             HttpServletRequest request,
+                             ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
@@ -1119,8 +1111,8 @@ public class UserController {
 
     @RequestMapping(value = "/getPaperInfo/{id}", method = RequestMethod.GET)
     public String getPaperInfo(@PathVariable String id,
-                             HttpServletRequest request,
-                             ModelMap model) {
+                               HttpServletRequest request,
+                               ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         Document paper = MongoUtil.getPaper(db, paperId);
         model.put("paper", paper);
@@ -1132,9 +1124,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/getInterventions/{id}", method = RequestMethod.GET)
-         public String getInterventions(@PathVariable String id,
-                                        HttpServletRequest request,
-                                        ModelMap model) {
+    public String getInterventions(@PathVariable String id,
+                                   HttpServletRequest request,
+                                   ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
@@ -1144,8 +1136,8 @@ public class UserController {
 
     @RequestMapping(value = "/getStudentData/{id}", method = RequestMethod.GET)
     public String getStudentData(@PathVariable String id,
-                                   HttpServletRequest request,
-                                   ModelMap model) {
+                                 HttpServletRequest request,
+                                 ModelMap model) {
         ObjectId paperId = new ObjectId(id);
         Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, paperId);
         model.put("paper", paper);
@@ -1174,7 +1166,7 @@ public class UserController {
         model.put("results", results);
         model.put("columns", columns);
         model.put("pageName", "viewPaper");
-        model.put("baseUrl",ServletUtil.getContextURL(request));
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/studentDataPanel";
     }

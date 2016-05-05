@@ -9,6 +9,7 @@ import nz.ac.otago.edtech.util.CommonUtil;
 import nz.ac.otago.edtech.util.JSONUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONObject;
@@ -164,9 +165,11 @@ public class ApiController {
             if ((column != null) && (column.get("customDisplay") != null)) {
                 String customDisplay = column.get("customDisplay").toString();
                 Document user = MongoUtil.getUser(db, userid);
-                if (user != null) {
-                    // TODO: replace value in customDisplay with real user value
-
+                if ((user != null) && (user.get("userInfo") != null)) {
+                    Document userInfo = (Document) user.get("userInfo");
+                    for (String key : userInfo.keySet()) {
+                        customDisplay = customDisplay.replace("{" + key + "}", userInfo.get(key).toString());
+                    }
                     output.put("html", customDisplay);
                 }
             }
@@ -229,10 +232,10 @@ public class ApiController {
             String username = (String) doc.get("username");
             Document paper = MongoUtil.getPaper(db, paperId);
             @SuppressWarnings("unchecked")
-            List<String> identifiers = (List<String>)paper.get("identifiers");
+            List<String> studentFields = (List<String>) paper.get("studentFields");
             Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
             Set<Document> set = new HashSet<Document>();
-            for (String field : identifiers) {
+            for (String field : studentFields) {
                 FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
                         .find(new Document("userInfo." + field, regex)
                                 .append("paperref", paper.get("_id"))
@@ -246,48 +249,48 @@ public class ApiController {
                 MongoUtil.changeUserObjectId2String(u);
             return new ResponseEntity<List<Document>>(users, HttpStatus.OK);
 
-            /*
-            // all papers this user has access to
-            List<Document> papers = MongoUtil.getPapers(db, username);
-            if (paperIds != null) {
-                List<String> list = new ArrayList<String>();
-                for (String id : paperIds) {
-                    for (Document pp : papers) {
-                        if (pp.get("_id").toString().equals(id)) {
-                            list.add(id);
-                            break;
-                        }
-                    }
-                }
-                papers = new ArrayList<Document>();
-                for (String id : list) {
-                    Document pp = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, id);
-                    papers.add(pp);
-                }
-            }
-            List<ObjectId> oids = new ArrayList<ObjectId>();
-            for (Document pp : papers)
-                oids.add((ObjectId) pp.get("_id"));
+        } else
+            return new ResponseEntity<List<Document>>(users, HttpStatus.UNAUTHORIZED);
+    }
 
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public ResponseEntity<Document> userSearch(@RequestParam("token") String token,
+                                               @RequestParam("paperid") String paperId,
+                                               @RequestParam("term") String term,
+                                               @RequestParam(value = "field", required = false) String fieldName) {
+        Document user = null;
+        List<Document> users = new ArrayList<Document>();
+        Document doc = validateToken(token);
+        if (doc != null) {
+            String username = (String) doc.get("username");
+            Document paper = MongoUtil.getPaper(db, paperId);
+            @SuppressWarnings("unchecked")
+            List<String> identifiers = (List<String>) paper.get("identifiers");
+            if (StringUtils.isNotBlank(fieldName)) {
+                identifiers.clear();
+                identifiers.add(fieldName);
+            }
             Document regex = new Document("$regex", ".*" + term + ".*").append("$options", "i");
             Set<Document> set = new HashSet<Document>();
-            String[] fields = {"Student ID", "Family name", "Institutional email", "Given name(s)"};
-            for (String field : fields) {
+            for (String field : identifiers) {
                 FindIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
                         .find(new Document("userInfo." + field, regex)
-                                .append("paperref", new Document("$in", oids))
+                                .append("paperref", paper.get("_id"))
                         );
                 for (Document document : iterable) {
                     set.add(document);
                 }
             }
             users.addAll(set);
-            for (Document u : users)
+            for (Document u : users) {
                 MongoUtil.changeUserObjectId2String(u);
-            return new ResponseEntity<List<Document>>(users, HttpStatus.OK);
-            */
+                user = u;
+                break;
+            }
+            return new ResponseEntity<Document>(user, HttpStatus.OK);
+
         } else
-            return new ResponseEntity<List<Document>>(users, HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<Document>(user, HttpStatus.UNAUTHORIZED);
     }
 
     @RequestMapping(value = "/user/{id}", method = RequestMethod.GET)
