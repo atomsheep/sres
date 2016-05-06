@@ -16,30 +16,30 @@
 
 
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow: hidden'>
-    <div class="gridster">
-        <ul>
-            <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
-                        class='totalStudents'>${users?size}</span> / ${users?size}</h4>
+<div class="gridster">
+<ul>
+    <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
+        <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
+                class='totalStudents'>${users?size}</span> / ${users?size}</h4>
 
-                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                    <#list users as u>
-                        <tr>
-                            <td style='padding:5px'>
-                                <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
-                                       checked="checked"/>
-                            </td>
-                            <#list u.userInfo?keys as k>
-                                <td>
-                                ${u.userInfo[k]}
-                                </td>
-                            </#list>
-                        </tr>
+        <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+            <table style='width:100%'>
+            <#list users as u>
+                <tr>
+                    <td style='padding:5px'>
+                        <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
+                               checked="checked"/>
+                    </td>
+                    <#list u.userInfo?keys as k>
+                        <td>
+                        ${u.userInfo[k]}
+                        </td>
                     </#list>
-                    </table>
-                </div>
-            </li>
+                    </tr>
+            </#list>
+            </table>
+        </div>
+    </li>
 
             <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
                 <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Student fields shortcodes</h4>
@@ -143,8 +143,7 @@
                                         <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
                                     </div>
                                 </div>
-                                <div id="introductoryParagraphEditor" class='quillField' data-toolbar='intro-toolbar'>
-                                    ${email.introductoryParagraph!}
+                                <div id="introductoryParagraph" class='quillField' data-toolbar='intro-toolbar'>
                                 </div>
                             </td>
                         </tr>
@@ -210,8 +209,7 @@
                                         <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
                                     </div>
                                 </div>
-                                <div id="concludingParagraphEditor" class='quillField' data-toolbar='concluding-toolbar'>
-                                    ${email.concludingParagraph!}
+                                <div id="concludingParagraph" class='quillField' data-toolbar='concluding-toolbar'>
                                 </div>
                             </td>
                         </tr>
@@ -231,7 +229,8 @@
 $(function () {
 
     var configs = {
-        theme: 'snow'
+        theme: 'snow',
+        pollInterval: 500
     };
 
     var editorArray = [];
@@ -242,6 +241,36 @@ $(function () {
         var quill = new Quill(self[0], configs);
         quill.addModule('toolbar', {
             container: tb
+        });
+
+    <#if (email.introductoryParagraph.text)?has_content>
+        if (self.attr('id') == 'introductoryParagraph')
+            quill.setText("${email.introductoryParagraph.text?j_string}");
+    </#if>
+    <#if (email.introductoryParagraph.html)?has_content>
+        if (self.attr('id') == 'introductoryParagraph')
+            quill.setHTML("${email.introductoryParagraph.html?j_string}");
+    </#if>
+    <#if (email.concludingParagraph.text)?has_content>
+        if (self.attr('id') == 'concludingParagraph')
+            quill.setText("${email.concludingParagraph.text?j_string}");
+    </#if>
+    <#if (email.concludingParagraph.html)?has_content>
+        if (self.attr('id') == 'concludingParagraph')
+            quill.setHTML("${email.concludingParagraph.html?j_string}");
+    </#if>
+        quill.on('text-change', function (delta, source) {
+            console.log('text change', quill, quill.container.id);
+            var fieldName = quill.container.id;
+            var text = quill.getText();
+            var html = quill.getHTML();
+            $.post("${baseUrl}/user/saveEmailParagraph",
+                    {emailId: '${email._id}', name: fieldName, text: text, html: html },
+                    function (json) {
+                        if (json.success) {
+                            console.log("update field successfully.");
+                        }
+                    });
         });
         editorArray.push(quill);
     });
@@ -435,6 +464,7 @@ $(function () {
         }
     });
 
+
     $('[name=introductoryParagraph]').on("blur", function () {
         var slf = $(this);
         var fieldName = slf[0].name;
@@ -462,6 +492,7 @@ $(function () {
     });
 
     $('button.sendEmail').on('click', function () {
+        console.log("sending email");
         $.post("${baseUrl}/user/sendEmails",
                 {emailId: '${email._id}'},
                 function (json) {

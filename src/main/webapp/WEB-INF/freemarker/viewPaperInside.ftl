@@ -295,13 +295,13 @@ $(function () {
         $('span.removeFilter').show();
     });
 
-    var columns = $('.topLeftPanel:last').html();
+   /* var columns = $('.topLeftPanel:last').html();
     var filters = $('.midLeftPanel:last').html();
     var studentList = $('.bottomLeftPanel:last').html();
     var paperInfo = $('.topRightPanel:last').html();
-    var dataOverview = $('.midRightPanel:last').html();
+    var dataOverview = $('.midRightPanel:last').html(); */
 
-    var p;
+  /*  var p;
 
     $(document).on('click', '.addPanel', function () {
         var self = $(this);
@@ -319,8 +319,8 @@ $(function () {
             div.html(paperInfo).show();
         else if (self.hasClass("addDataOverview"))
             div.html(dataOverview).show();
-    });
-
+    });     */
+     /*
     $('.placeHolder').on('click', function () {
         var self = $(this);
         p = $("<div></div>").appendTo("body");
@@ -352,7 +352,7 @@ $(function () {
             cancel: true
         }).popup_simple("show").popup_simple("centre");
     });
-
+                 */
     <#if json?has_content>
         {
             var jsonString = "${json?js_string}";
@@ -437,11 +437,21 @@ $(function () {
     $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
-        if (slf.is(':checked')) {
-            $('.' + value).show();
-        } else {
+        var remove = !slf.is(":checked");
+        if (remove) {
             $('.' + value).hide();
+        } else {
+            $('.' + value).show();
         }
+
+        $.post("${baseUrl}/user/addRemoveColumn",
+            {
+                paperId:"${paper._id}",
+                columnId:value,
+                remove: remove
+            },
+            function(){ }
+        );
     });
 
     function saveChanges(td, input, oldValue) {
