@@ -16,30 +16,36 @@
 
 
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow: hidden'>
-<div class="gridster">
-<ul>
-    <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
-        <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
-                class='totalStudents'>${users?size}</span> / ${users?size}</h4>
+    <div class="gridster">
+        <ul>
+            <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
+                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
+                        class='totalStudents'>${users?size}</span> / ${users?size}</h4>
 
-        <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-            <table style='width:100%'>
-            <#list users as u>
-                <tr>
-                    <td style='padding:5px'>
-                        <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
-                               checked="checked"/>
-                    </td>
-                    <#list u.userInfo?keys as k>
-                        <td>
-                        ${u.userInfo[k]}
-                        </td>
+                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+                    <table style='width:100%'>
+                    <#list users as u>
+                        <tr>
+                            <td style='padding:5px'>
+                                <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
+                                       checked="checked"/>
+                            </td>
+                            <td>
+                                <#if email.emailField?has_content>
+                                ${u.userInfo[email.emailField]}
+                                </#if>
+                            <#list u.userInfo?keys as k>
+                                <#if !email.emailField?has_content || (email.emailField != k)>
+                                ${u.userInfo[k]}
+                                </#if>
+                            </#list>
+                            </td>
+
+                        </tr>
                     </#list>
-                    </tr>
-            </#list>
-            </table>
-        </div>
-    </li>
+                    </table>
+                </div>
+            </li>
 
             <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
                 <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Student fields shortcodes</h4>
@@ -96,9 +102,9 @@
                                     <span class='input-group-addon sres_name'>Student email field:</span>
                                     <select class='form-control' name="emailField"
                                             <#if email.emailField?has_content>data-value="${email.emailField}"</#if>>
-                                                <#list studentFields as f>
-                                                    <option value="${f}">${f}</option>
-                                                </#list>
+                                    <#list studentFields as f>
+                                        <option value="${f}">${f}</option>
+                                    </#list>
                                     </select>
                                 </div>
                             </td>
@@ -118,40 +124,16 @@
                             </h4></th>
                         </tr>
                         <tr>
-                            <td style='padding:10px 0'>
-                                <div id="intro-toolbar" class='quill-toolbar'>
-                                    <div class="ql-format-group">
-                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <select title="Text Alignment" class="ql-align">
-                                            <option value="left" label="Left" selected=""></option>
-                                            <option value="center" label="Center"></option>
-                                            <option value="right" label="Right"></option>
-                                            <option value="justify" label="Justify"></option>
-                                        </select>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
-                                    </div>
-                                </div>
-                                <div id="introductoryParagraph" class='quillField' data-toolbar='intro-toolbar'>
-                                </div>
+                            <td style='padding:10px 0' id="introEditor">
                             </td>
                         </tr>
                         <tr id='addParagraphs'>
                             <td style='padding:0'>
                                 <table width='100%'>
                                     <tr>
-                                        <td colspan='5' style="vertical-align:bottom;position:relative"><h4 style='cursor:default;position: absolute;bottom:10px'>Additional/conditional paragraphs</h4>
+                                        <td colspan='5' style="vertical-align:bottom;position:relative">
+                                            <h4 style='cursor:default;position: absolute;bottom:10px'>
+                                            Additional/conditional paragraphs</h4>
 
                                             <div id='paperMenu'
                                                  style='float:right;margin:10px 0;font-size:20px;border-radius:0'
@@ -184,33 +166,8 @@
                             </h4></th>
                         </tr>
                         <tr>
-                            <td style='padding:10px 0'>
-                                <div id="concluding-toolbar" class='quill-toolbar'>
-                                    <div class="ql-format-group">
-                                        <button class="btn btn-quill ql-bold ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-italic ql-format-button"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button class="btn btn-quill ql-underline ql-format-button"></button>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
-                                        <span class="ql-format-separator"></span>
-                                        <select title="Text Alignment" class="ql-align">
-                                            <option value="left" label="Left" selected=""></option>
-                                            <option value="center" label="Center"></option>
-                                            <option value="right" label="Right"></option>
-                                            <option value="justify" label="Justify"></option>
-                                        </select>
-                                    </div>
-                                    <div class="ql-format-group">
-                                        <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
-                                    </div>
-                                </div>
-                                <div id="concludingParagraph" class='quillField' data-toolbar='concluding-toolbar'>
-                                </div>
+                            <td style='padding:10px 0' id="concludingEditor">
+
                             </td>
                         </tr>
                     </table>
@@ -219,14 +176,131 @@
         </ul>
     </div>
 </div>
-<#--
-<form action="${baseUrl}/user/sendEmails" method="post">
-    <input type="hidden" name="id" value="${paper._id}"/>
 
-</form>
-               -->
+
+<div id="elementTemplate" style="display: none">
+    <div class='quill-toolbar'>
+        <div class="ql-format-group">
+            <button class="btn btn-quill ql-bold ql-format-button"></button>
+            <span class="ql-format-separator"></span>
+            <button class="btn btn-quill ql-italic ql-format-button"></button>
+            <span class="ql-format-separator"></span>
+            <button class="btn btn-quill ql-underline ql-format-button"></button>
+        </div>
+        <div class="ql-format-group">
+            <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+            <span class="ql-format-separator"></span>
+            <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+            <span class="ql-format-separator"></span>
+            <select title="Text Alignment" class="ql-align">
+                <option value="left" label="Left" selected=""></option>
+                <option value="center" label="Center"></option>
+                <option value="right" label="Right"></option>
+                <option value="justify" label="Justify"></option>
+            </select>
+        </div>
+        <div class="ql-format-group">
+            <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+        </div>
+    </div>
+    <div class='quill-field'>
+    </div>
+
+    <table class="additionalParagraphTemplate">
+        <tr class='paragraph paragraph_{num}'>
+            <th colspan='5' style='background:#0886AF'>
+                <h4 style='cursor:default;padding:10px;margin:0'>
+                    Additional paragraph
+                    (for <span class='totalStudents'>{totalStudents}</span> students)
+                    <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph'
+                          data-num='{num}'></span></h4>
+            </th>
+        </tr>
+        <tr class='paragraph_{num}'>
+            <td colspan='5' class="inputArea"
+                style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'>
+
+            </td>
+        </tr>
+
+    </table>
+
+    <table class="conditionalParagraphTemplate">
+
+        <tr class='paragraph paragraph_{num}'>
+            <th style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;background:#AF0808' colspan='5'>
+                <h4 style='cursor:default;padding:10px;margin:0'>
+                    Conditional paragraph
+                    (for <span class='conditionalStudentCount'>0</span> students)
+                    <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph'
+                          data-num='{num}'></span>
+                </h4>
+            </th>
+        </tr>
+        <tr class='paragraph_{num}'>
+            <td class='input-group-addon'
+                style='border-radius:0;border-left:1px solid #AF0808;text-align:center;border-right:1px solid #043B4E;width:5%;'>
+                if
+            </td>
+            <td style='padding:0;width:30%'>
+                <select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'
+                        name='conditionalColref' class='conditionalElement form-control'>
+                <#list columns as c>
+                    <option value='${c._id}'>${c.name?js_string}</option>
+                </#list>
+                </select>
+            </td>
+            <td style='width:30%;'>
+                <select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'
+                        name='conditionalOperator' class='conditionalElement form-control'>
+                    <option value='$eq'>equal to</option>
+                    <option value='$lt'>less than</option>
+                    <option value='$lte'>less than or equal to</option>
+                    <option value='$gt'>greater than</option>
+                    <option value='$gte'>greater than or equal to</option>
+                    <option value='$ne'>not equal to</option>
+                </select>
+            </td>
+            <td style='width:30%;padding:0'>
+                <input type='text' name='conditionalValue' class='conditionalElement form-control'
+                       placeholder='enter a value here, e.g. 10'
+                       style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'/>
+            </td>
+            <td class='input-group-addon'
+                style='border-right:1px solid #AF0808;text-align:center;width:5%;border-radius:0'>then
+            </td>
+        </tr>
+        <tr class='paragraph_{num}'>
+            <td colspan='5' class="inputArea"
+                style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:0'>
+
+            </td>
+        </tr>
+    </table>
+
+</div>
+
 <script type="text/javascript">
 $(function () {
+
+    var quillToolbar = $('#elementTemplate').find('.quill-toolbar');
+    var quillField = $('#elementTemplate').find('.quill-field');
+    var additionalParagraph = $('#elementTemplate').find('.additionalParagraphTemplate');
+    var conditionalParagraph = $('#elementTemplate').find('.conditionalParagraphTemplate');
+
+    addQuillEditor($('td#introEditor'), 'intro-toolbar', 'introductoryParagraph');
+    addQuillEditor($('td#concludingEditor'), 'concluding-toolbar', 'concludingParagraph');
+
+    function addQuillEditor(container, toolbarId, fieldId) {
+        console.log('add quill editor', toolbarId, fieldId);
+        container.append(quillToolbar.clone());
+        container.append(quillField.clone());
+        $('.quill-toolbar', container).attr('id', toolbarId);
+        $('.quill-field', container)
+                .attr('id', fieldId)
+                .addClass("quillField")
+                .data('toolbar', toolbarId);
+    }
 
     var configs = {
         theme: 'snow',
@@ -242,33 +316,23 @@ $(function () {
         quill.addModule('toolbar', {
             container: tb
         });
-
-    <#if (email.introductoryParagraph.text)?has_content>
+    <#if (email.introductoryParagraph)?has_content>
         if (self.attr('id') == 'introductoryParagraph')
-            quill.setText("${email.introductoryParagraph.text?j_string}");
+            quill.setHTML("${email.introductoryParagraph?j_string}");
     </#if>
-    <#if (email.introductoryParagraph.html)?has_content>
-        if (self.attr('id') == 'introductoryParagraph')
-            quill.setHTML("${email.introductoryParagraph.html?j_string}");
-    </#if>
-    <#if (email.concludingParagraph.text)?has_content>
+    <#if (email.concludingParagraph)?has_content>
         if (self.attr('id') == 'concludingParagraph')
-            quill.setText("${email.concludingParagraph.text?j_string}");
-    </#if>
-    <#if (email.concludingParagraph.html)?has_content>
-        if (self.attr('id') == 'concludingParagraph')
-            quill.setHTML("${email.concludingParagraph.html?j_string}");
+            quill.setHTML("${email.concludingParagraph?j_string}");
     </#if>
         quill.on('text-change', function (delta, source) {
             console.log('text change', quill, quill.container.id);
             var fieldName = quill.container.id;
-            var text = quill.getText();
-            var html = quill.getHTML();
-            $.post("${baseUrl}/user/saveEmailParagraph",
-                    {emailId: '${email._id}', name: fieldName, text: text, html: html },
+            var value = quill.getHTML();
+            $.post("${baseUrl}/user/saveEmail",
+                    {emailId: '${email._id}', name: fieldName, value: value},
                     function (json) {
                         if (json.success) {
-                            console.log("update field successfully.");
+                            console.log("update field", fieldName, "successfully.");
                         }
                     });
         });
@@ -338,17 +402,8 @@ $(function () {
     });
 
     $('#previewEmail').on('click', function (e) {
-
-        var subject = $('input[name=subject]').val();
-        var body = subject + "<br/><br/>";
-
-        $.each(editorArray, function (i, e) {
-            body += e.getHTML();
-            body += "<br/>";
-        });
-
-        var myWindow = window.open("", "Email preview", "width=500");
-        myWindow.document.write(body);
+        var options = "height=600, location=no, menubar=no, toolbar=no, width=600";
+        var myWindow = window.open("${baseUrl}/user/emailPreview?emailId=${email._id}", "Email preview", options);
     });
 
 
@@ -366,16 +421,39 @@ $(function () {
         event.stopPropagation();
     });
 
-    $('.addAdditional').on('click', function () {
-        var num = $('.paragraph').length;
-        var newParagraph = "<tr class='paragraph paragraph_" + num + "'><th colspan='5' style='background:#0886AF'><h4 style='cursor:default;padding:10px;margin:0'>Additional paragraph (for <span class='totalStudents'>" + totalStudents + "</span> students) <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph' data-num='" + num + "'></span></h4></th></tr><tr class='paragraph paragraph_" + num + "'><td colspan='5' style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'><textarea style='border-radius:0;min-height:100px' placeholder='Add some text to include in the email for all students' class='form-control'></textarea></td></tr>";
-        $('#additionalParagraphs').before(newParagraph);
-    });
+    var numRegEx = new RegExp('{num}', 'g')
 
     var totalStudents = ${users?size};
 
-    $('.addConditional').on('click', function () {
+    $('.addAdditional').on('click', function () {
+        console.log('additional', additionalParagraph);
         var num = $('.paragraph').length;
+        // var newParagraph = "<tr class='paragraph paragraph_" + num + "'><th colspan='5' style='background:#0886AF'><h4 style='cursor:default;padding:10px;margin:0'>Additional paragraph (for <span class='totalStudents'>" + totalStudents + "</span> students) <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph' data-num='" + num + "'></span></h4></th></tr><tr class='paragraph paragraph_" + num + "'><td colspan='5' style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'><textarea style='border-radius:0;min-height:100px' placeholder='Add some text to include in the email for all students' class='form-control'></textarea></td></tr>";
+        var html = additionalParagraph.html();
+        console.log('html', html);
+        html = html.replace(numRegEx, num);
+        html = html.replace('{totalStudents}', totalStudents);
+        console.log('html', html);
+        var newParagraph = $(html).find('tr');
+        var td = $('td.inputArea', newParagraph);
+        td.attr('id', '__paragraph_' + num);
+        addQuillEditor(td, '__toolbar_'+num, '__filed_' + num);
+
+        $('#additionalParagraphs').before(newParagraph);
+        var self = $('#__filed_' + num);
+        var tb = "#" + self.data("toolbar");
+        var quill = new Quill(self[0], configs);
+        quill.addModule('toolbar', {
+            container: tb
+        });
+        // TODO: add paragraph to db
+    });
+
+
+    $('.addConditional').on('click', function () {
+        console.log('conditional', conditionalParagraph);
+        var num = $('.paragraph').length;
+        <#--
         var newParagraph = "<tr class='paragraph paragraph_" + num + "'><th style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;background:#AF0808' colspan='5'><h4 style='cursor:default;padding:10px;margin:0'>Conditional paragraph (for <span class='conditionalStudentCount'>0</span> students) <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph' data-num='" + num + "'></span></h4></th></tr><tr class='paragraph_" + num + "' ><td class='input-group-addon' style='border-radius:0;border-left:1px solid #AF0808;text-align:center;border-right:1px solid #043B4E;width:5%;'>if</td><td style='padding:0;width:30%'><select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;' name='conditionalColref' class='conditionalElement form-control'>"
         <#list columns as c>
                 + "<option value='${c._id}'>${c.name?js_string}</option>"
@@ -394,14 +472,32 @@ $(function () {
                 + "<td style='width:30%;padding:0'><input type='text' name='conditionalValue' class='conditionalElement form-control' placeholder='enter a value here, e.g. 10'  style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'/>"
 
                 + "</td><td class='input-group-addon' style='border-right:1px solid #AF0808;text-align:center;width:5%;border-radius:0'>then</td></tr><tr class='paragraph paragraph_" + num + "'><td colspan='5' style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:0'><textarea style='border-radius:0;min-height:100px' class='form-control' placeholder='Add some text to include in the email to students matching the above condition'></textarea></td></tr>";
+
+        -->
+        var html = conditionalParagraph.html();
+        console.log('html', html);
+        html = html.replace(numRegEx, num);
+        html = html.replace('{totalStudents}', totalStudents);
+        console.log('html', html);
+        var newParagraph = $(html).find('tr');
+        var td = $('td.inputArea', newParagraph);
+        td.attr('id', '__paragraph_' + num);
+        addQuillEditor(td, '__toolbar_'+num, '__filed_' + num);
+
         $('#additionalParagraphs').before(newParagraph);
+        var self = $('#__filed_' + num);
+        var tb = "#" + self.data("toolbar");
+        var quill = new Quill(self[0], configs);
+        quill.addModule('toolbar', {
+            container: tb
+        });
+
     });
 
     $('input[name=usernames]').on('click', function () {
         var self = $(this);
-
         $.post('${baseUrl}/user/addRemoveUser',
-                {emailId: '${email._id}', userId: self.val(), remove: self.is(":checked")},
+                {emailId: '${email._id}', userId: self.val(), remove: !self.is(":checked")},
                 function (json) {
                     totalStudents = $('input[name=usernames]:checked').length;
                     $('.totalStudents').text(totalStudents);
@@ -430,6 +526,12 @@ $(function () {
         $('tr.paragraph_' + num).remove();
     });
 
+    // set email field if available
+    var emailField = $('[name=emailField]');
+    if (emailField.data('value')) {
+        emailField.val(emailField.data('value'));
+    }
+
     $('[name=emailField]').on("change", function () {
         var slf = $(this);
         var fieldName = slf[0].name;
@@ -440,7 +542,7 @@ $(function () {
                     {emailId: '${email._id}', name: fieldName, value: newValue },
                     function (json) {
                         if (json.success) {
-                            console.log("update field successfully.");
+                            console.log("update field", fieldName, "successfully.");
                             slf.data("value", newValue);
                         }
                     });
@@ -457,39 +559,13 @@ $(function () {
                     {emailId: '${email._id}', name: fieldName, value: newValue },
                     function (json) {
                         if (json.success) {
-                            console.log("update field successfully.");
+                            console.log("update field", fieldName, "successfully.");
                             slf.data("value", newValue);
                         }
                     });
         }
     });
 
-
-    $('[name=introductoryParagraph]').on("blur", function () {
-        var slf = $(this);
-        var fieldName = slf[0].name;
-        var newValue = slf.val();
-        $.post("${baseUrl}/user/saveEmail",
-                {emailId: '${email._id}', name: fieldName, value: newValue },
-                function (json) {
-                    if (json.success) {
-                        console.log("update field successfully.");
-                    }
-                });
-    });
-
-    $('[name=concludingParagraph]').on("blur", function () {
-        var slf = $(this);
-        var fieldName = slf[0].name;
-        var newValue = slf.val();
-        $.post("${baseUrl}/user/saveEmail",
-                {emailId: '${email._id}', name: fieldName, value: newValue },
-                function (json) {
-                    if (json.success) {
-                        console.log("update field successfully.");
-                    }
-                });
-    });
 
     $('button.sendEmail').on('click', function () {
         console.log("sending email");
@@ -500,10 +576,15 @@ $(function () {
                         console.log("Emails sent.");
 
                     }
-
                 });
     });
 
+    <#if email.uncheckedList?has_content>
+        <#list email.uncheckedList as u>
+        console.log('set checked to false', $('#user_${u}'));
+             $('#user_${u}').next().click();
+        </#list>
+    </#if>
 
 });
 </script>

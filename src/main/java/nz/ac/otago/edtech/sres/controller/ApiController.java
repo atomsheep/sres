@@ -164,7 +164,7 @@ public class ApiController {
             Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, id);
             if ((column != null) && (column.get("customDisplay") != null)) {
                 String customDisplay = column.get("customDisplay").toString();
-                Document user = MongoUtil.getUser(db, userid);
+                Document user = MongoUtil.getUserByUsername(db, userid);
                 if ((user != null) && (user.get("userInfo") != null)) {
                     Document userInfo = (Document) user.get("userInfo");
                     for (String key : userInfo.keySet()) {
@@ -209,7 +209,7 @@ public class ApiController {
         Document doc = validateToken(token);
         if (doc != null) {
             String username = (String) doc.get("username");
-            Document user = MongoUtil.getUser(db, username);
+            Document user = MongoUtil.getUserByUsername(db, username);
             ObjectId colref = new ObjectId(columnId);
             for (String uid : userId) {
                 ObjectId userref = new ObjectId(uid);

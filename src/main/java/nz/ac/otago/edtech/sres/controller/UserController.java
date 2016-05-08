@@ -90,7 +90,7 @@ public class UserController {
     public String home(HttpServletRequest request, ModelMap model) {
 
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
+        Document user = MongoUtil.getUserByUsername(db, userName);
         if (user == null) {
             ModelMap userMap = new ModelMap();
             userMap.put(MongoUtil.USERNAME, userName);
@@ -150,7 +150,8 @@ public class UserController {
             if ((request.getParameter("key" + i) != null) && (request.getParameter("value" + i) != null)) {
                 String key = request.getParameter("key" + i).trim();
                 String value = request.getParameter("value" + i).trim();
-                extra.put(key, value);
+                if (StringUtils.isNotBlank(key))
+                    extra.put(key, value);
             }
         }
         Date now = new Date();
@@ -160,7 +161,7 @@ public class UserController {
             id = new ObjectId();
             paper = new Document();
             String userName = AuthUtil.getUserName(request);
-            Document user = MongoUtil.getUser(db, userName);
+            Document user = MongoUtil.getUserByUsername(db, userName);
             paper.put("_id", id);
             paper.put("owner", user.get("_id"));
             paper.put("status", "active");
@@ -473,7 +474,7 @@ public class UserController {
         boolean success;
         String detail = null;
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
+        Document user = MongoUtil.getUserByUsername(db, userName);
         boolean hasHeader = false;
         if (request.getParameter("hasHeader") != null)
             hasHeader = true;
@@ -591,26 +592,6 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
-    @RequestMapping(value = "/saveEmailParagraph", method = RequestMethod.POST)
-    public ResponseEntity<String> saveEmail(@RequestParam("emailId") String emailId,
-                                            @RequestParam("name") String name,
-                                            @RequestParam("text") String text,
-                                            @RequestParam("html") String html) {
-
-        String action = "saveEmail";
-        boolean success = true;
-        String detail = null;
-        if (StringUtils.isNotBlank(name) && StringUtils.isNotBlank(text)) {
-            ModelMap map = new ModelMap();
-            map.put("text", text);
-            map.put("html", html);
-            db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
-                    new Document("$set", new Document(name, new Document(map)))
-            );
-        }
-        return OtherUtil.outputJSON(action, success, detail);
-    }
-
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
@@ -623,7 +604,7 @@ public class UserController {
         if (identifiers != null)
             studentName = identifiers.get(0);
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
+        Document user = MongoUtil.getUserByUsername(db, userName);
         Document email = new Document();
         ObjectId eid = new ObjectId();
         email.put("_id", eid);
@@ -722,6 +703,73 @@ public class UserController {
         return new ResponseEntity<List<Document>>(results, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/emailPreview", method = RequestMethod.GET)
+    public String emailPreview(@RequestParam("emailId") String emailId,
+
+                               HttpServletRequest request,
+                               ModelMap model) {
+
+        Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
+        List<String> studentList = MongoUtil.getStudentList(email);
+        int size = 0;
+        int index = 0;
+        if (studentList != null)
+            size = studentList.size();
+        if (index < size) {
+            String id = studentList.get(index);
+            Document user = MongoUtil.getUser(db, id);
+            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            String address = map.get("address");
+            String subject = map.get("subject");
+            String body = map.get("body");
+            model.put("emailAddress", address);
+            model.put("subject", subject);
+            model.put("body", body);
+            model.put("user", user);
+            model.put("size", size);
+            model.put("index", index);
+        }
+        model.put("emailId", emailId);
+        model.put("pageName", "emailPreview");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
+    @RequestMapping(value = "/emailPreview/{index}", method = RequestMethod.GET)
+    public String emailPreview(@PathVariable int index,
+                               @RequestParam("emailId") String emailId,
+                               HttpServletRequest request,
+                               ModelMap model) {
+
+        Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
+        List<String> studentList = MongoUtil.getStudentList(email);
+        int size = 0;
+        if (studentList != null)
+            size = studentList.size();
+        // if index is too big or too small, set to 0
+        if ((size > 0) && ((index >= size) || (index < 0)))
+            index = 0;
+        if (index < size) {
+            String id = studentList.get(index);
+            Document user = MongoUtil.getUser(db, id);
+            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            String address = map.get("address");
+            String subject = map.get("subject");
+            String body = map.get("body");
+            model.put("emailAddress", address);
+            model.put("subject", subject);
+            model.put("body", body);
+            model.put("user", user);
+            model.put("size", size);
+            model.put("index", index);
+        }
+        model.put("emailId", emailId);
+        model.put("pageName", "emailPreview");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
+
     @RequestMapping(value = "/sendEmails", method = RequestMethod.POST)
     public ResponseEntity<String> sendEmails(@RequestParam("emailId") String emailId,
                                              @Value("${email.smtp.server}") String smtpServer,
@@ -745,27 +793,16 @@ public class UserController {
         }
         for (String u : studentList) {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
-            @SuppressWarnings("unchecked")
-            Document userInfo = (Document) uu.get("userInfo");
-            String address = (String) userInfo.get(emailField);
+            Map<String, String> map = MongoUtil.getEmailInformation(uu, email);
+            String address = map.get("address");
+            String subject = map.get("subject");
+            String body = map.get("body");
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
-                Document introductoryParagraph = (Document) email.get("introductoryParagraph");
-                Document concludingParagraph = (Document) email.get("concludingParagraph");
-                // send email
-                String subject = (String) email.get("subject");
-                String textBody = introductoryParagraph.get("text").toString();
-                String htmlBody = introductoryParagraph.get("html").toString();
-                textBody += "\n\n" + concludingParagraph.get("text").toString();
-                htmlBody += concludingParagraph.get("html").toString();
-                subject = MongoUtil.replaceEmailTemplate(subject, userInfo);
-                textBody = MongoUtil.replaceEmailTemplate(textBody, userInfo);
-                htmlBody = MongoUtil.replaceEmailTemplate(htmlBody, userInfo);
-                log.debug("send email to {} with subject {} text body {} html body {}", address, subject, textBody, htmlBody);
+                log.debug("send email to {} with subject {} body {}", address, subject, body);
                 if (inDevelopmentMode) {
                     address = fromEmail;
                 }
-            //    OtherUtil.sendEmail(smtpServer, fromEmail, null, address, subject, textBody, htmlBody);
-
+                OtherUtil.sendEmail(smtpServer, fromEmail, null, address, subject, null, body);
             }
         }
         return OtherUtil.outputJSON(action, success, detail);
@@ -951,7 +988,7 @@ public class UserController {
         String detail = null;
         ObjectId paperId = new ObjectId(id);
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
+        Document user = MongoUtil.getUserByUsername(db, userName);
         UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
                 and(eq("_id", paperId), eq("owner", user.get("_id"))),
                 new Document("$set", new Document("status", "deleted")));
@@ -1113,7 +1150,7 @@ public class UserController {
                                                   HttpServletRequest request) {
         String action = "saveColumnValue";
         String userName = AuthUtil.getUserName(request);
-        Document user = MongoUtil.getUser(db, userName);
+        Document user = MongoUtil.getUserByUsername(db, userName);
         boolean success = false;
         String detail = null;
         if (id != null) {
