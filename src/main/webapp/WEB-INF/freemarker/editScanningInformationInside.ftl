@@ -66,8 +66,35 @@ Edit column restrictions
 
         <table style='width:100%;margin-top:20px'>
             <tr>
-                <td style='padding:0 20px'>
-                    <textarea class='form-control' name="customDisplay" style='border-radius:0;resize:vertical;min-height:200px'><#if (column.customDisplay)?has_content>${column.customDisplay}</#if></textarea>
+                <td style='padding:10px 20px'>
+                    <div id="customDisplay-toolbar" class='quill-toolbar'>
+                        <div class="ql-format-group">
+                            <button class="btn btn-quill ql-bold ql-format-button"></button>
+                            <span class="ql-format-separator"></span>
+                            <button class="btn btn-quill ql-italic ql-format-button"></button>
+                            <span class="ql-format-separator"></span>
+                            <button class="btn btn-quill ql-underline ql-format-button"></button>
+                        </div>
+                        <div class="ql-format-group">
+                            <button title="Link" class="btn btn-quill ql-format-button ql-list"></button>
+                            <span class="ql-format-separator"></span>
+                            <button title="Link" class="btn btn-quill ql-format-button ql-bullet"></button>
+                            <span class="ql-format-separator"></span>
+                            <select title="Text Alignment" class="ql-align">
+                                <option value="left" label="Left" selected=""></option>
+                                <option value="center" label="Center"></option>
+                                <option value="right" label="Right"></option>
+                                <option value="justify" label="Justify"></option>
+                            </select>
+                        </div>
+                        <div class="ql-format-group">
+                            <button title="Link" class="btn btn-quill ql-format-button ql-link"></button>
+                        </div>
+                    </div>
+                    <div id="customDisplay" class='quillField'
+                         data-toolbar='customDisplay-toolbar'>
+
+                    </div>
                 </td>
             </tr>
         </table>
@@ -78,18 +105,20 @@ Edit column restrictions
             Student fields shortcodes
         </h4>
 
-        <table style='width:100%;'>
-            <#list paper.studentFields as f>
-                <tr>
-                    <td style='padding:5px 5px 0'>
-                        <div class='input-group input-group1' style="width:100%">
-                            <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
-                            <input type="text" class="form-control shortcode" value="{{user.${f}}}"/>
-                        </div>
-                    </td>
-                </tr>
-            </#list>
-        </table>
+        <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+            <table style='width:100%;'>
+                <#list paper.studentFields as f>
+                    <tr>
+                        <td style='padding:5px 5px 0'>
+                            <div class='input-group input-group1' style="width:100%">
+                                <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
+                                <input type="text" class="form-control shortcode" value="{{user.${f}}}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </#list>
+            </table>
+        </div>
     </div>
 
     <div class="box info_text side2" style='position:relative;padding:0;margin:0 20px 20px 10px;width:calc(33% - 25px);float:left'>
@@ -97,24 +126,42 @@ Edit column restrictions
             Column shortcodes
         </h4>
 
-        <table style='width:100%;'>
-            <#list columns as c>
-                <tr>
-                    <td style='padding:5px 5px 0'>
-                        <div class='input-group input-group1' style="width:100%">
-                            <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${c.name!}:</span>
-                            <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
-                        </div>
-                    </td>
-                </tr>
-            </#list>
-        </table>
+        <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+            <table style='width:100%;'>
+                <#list columns as c>
+                    <tr>
+                        <td style='padding:5px 5px 0'>
+                            <div class='input-group input-group1' style="width:100%">
+                                <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${c.name!}:</span>
+                                <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </#list>
+            </table>
+        </div>
     </div>
 </form>
 
 
 <script type="text/javascript">
     $(function () {
+
+        var configs = {
+            theme: 'snow'
+        };
+
+        var editorArray = [];
+
+        $('.quillField').each(function () {
+            var self = $(this);
+            var tb = "#" + self.data("toolbar");
+            var quill = new Quill(self[0], configs);
+            quill.addModule('toolbar', {
+                container: tb
+            });
+            editorArray.push(quill);
+        });
 
         var top = $('.side1').offset().top;
         var height = $(window).height();

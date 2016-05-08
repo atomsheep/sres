@@ -257,6 +257,14 @@ public class UserController {
                     }
                     model.put("record", columns);
                 }
+                record = records.iterator().next();
+                if (record != null) {
+                    List<String> values = new ArrayList<String>();
+                    for (String s : record) {
+                        values.add(s);
+                    }
+                    model.put("values", values);
+                }
                 model.put("id", id);
             } catch (IOException e) {
                 log.error("Exception", e);
@@ -417,8 +425,11 @@ public class UserController {
         Set<String> set = new LinkedHashSet<String>();
         set.addAll(identifiers);
         set.addAll(studentFields);
-
         model.put("studentFields", set);
+
+        Document oneUser = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_USERS,"paperref",new ObjectId(id));
+        model.put("userInfo",oneUser.get("userInfo"));
+
         File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
         File upload = new File(paperDir, filename);
         if (upload.exists()) {
@@ -433,6 +444,14 @@ public class UserController {
                         columns[i] = record.get(i);
                     }
                     model.put("record", columns);
+                }
+                record = records.iterator().next();
+                if (record != null) {
+                    String[] values = new String[record.size()];
+                    for (int i = 0; i < record.size(); i++) {
+                        values[i] = record.get(i);
+                    }
+                    model.put("values", values);
                 }
                 model.put("id", id);
             } catch (IOException e) {
@@ -549,16 +568,11 @@ public class UserController {
         String action = "addRemoveUser";
         boolean success = true;
         String detail = null;
-        if (remove) {
-            db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
-                    new Document("$addToSet", new Document("uncheckedList", userId))
-            );
-        } else {
-            db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
-                    new Document("$pull", new Document("uncheckedList", userId))
-            );
+        String operation = remove ? "$addToSet" : "$pull";
 
-        }
+        db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
+            new Document(operation, new Document("uncheckedList", userId))
+        );
         return OtherUtil.outputJSON(action, success, detail);
     }
 
@@ -601,12 +615,20 @@ public class UserController {
         email.put("status", "draft");
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
-        if (StringUtils.isBlank(studentName))
-            email.put("introductoryParagraph", "Dear student,");
-        else
-            email.put("introductoryParagraph", "Dear {{student." + studentName + "}},");
 
-        email.put("concludingParagraph", "Regards,\n\n{{user.firstName}}");
+        Document introparagraph = new Document();
+        if (StringUtils.isBlank(studentName))
+            introparagraph.put("text","Dear student,");
+        else
+            introparagraph.put("text","Dear {{student." + studentName + "}},");
+        introparagraph.put("html","");
+
+        email.put("introductoryParagraph", introparagraph);
+
+        Document concludingparagraph = new Document();
+        concludingparagraph.put("text","Regards,\n\n{{user.firstName}}");
+        concludingparagraph.put("html","");
+        email.put("concludingParagraph", concludingparagraph);
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
         return "redirect:/user/emailStudents/" + eid.toString();
     }
@@ -1013,16 +1035,15 @@ public class UserController {
     public ResponseEntity<String> addRemoveColumn(
             @RequestParam(value = "paperId", required = false) String paperId,
             @RequestParam(value = "columnId", required = false) String columnId,
+            @RequestParam(value = "remove", required = false) boolean remove,
             HttpServletRequest request) {
 
         ObjectId pId = new ObjectId(paperId);
-        Document paper = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PAPERS, pId);
+        String operation = remove ? "$addToSet" : "$pull";
 
-        // TODO: not finished yet
-
-        // update existing column
-        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS)
-                .updateOne(eq("_id", pId), new Document("$set", new Document(paper)));
+        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(eq("_id", pId),
+            new Document(operation, new Document("uncheckedList", columnId))
+        );
 
         return OtherUtil.outputJSON("", true, "");
     }
@@ -1153,8 +1174,10 @@ public class UserController {
                              HttpServletRequest request,
                              ModelMap model) {
         ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db,paperId);
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
+        model.put("paper",paper);
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/columnPanel";
     }
@@ -1192,8 +1215,8 @@ public class UserController {
                                    HttpServletRequest request,
                                    ModelMap model) {
         ObjectId paperId = new ObjectId(id);
-        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
-        model.put("columns", columns);
+        List<Document> interventions = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, "paperref", paperId);
+        model.put("interventions", interventions);
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/interventionPanel";
     }

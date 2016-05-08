@@ -27,15 +27,15 @@
 
     <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
-        <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:100px;right:81px;background:white;color:#0886AF'>
+        <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:40px;background:white;color:#0886AF;z-index:100'>
             <div class='menuButton'>
-                <div class='layout1 layout'></div>
-                <div style='float:left;margin-left:5px'>Layout 1</div>
+                <span class='fa fa-plus'></span>
+                <div style='display:inline;margin-left:5px'>Add dashboard panel</div>
                 <div style='clear:both'></div>
             </div>
-            <div class='menuButton'>
+            <div class='menuButton restoreLayout'>
                 <div class='layout2 layout'></div>
-                <div style='float:left;margin-left:5px'>Layout 2</div>
+                <div style='float:left;margin-left:5px'>Restore default layout</div>
                 <div style='clear:both'></div>
             </div>
         </div>
@@ -132,6 +132,12 @@ $(function () {
         }
     }).data('gridster') ;
 
+    $('.restoreLayout').on('click', function(){
+        saveGridData(true, function(){
+            location.reload();
+        });
+    });
+
     <#if paper.gridData?has_content>
         var gridData = JSON.parse("${paper.gridData?js_string}");
         gridData = Gridster.sort_by_row_and_col_asc(gridData);
@@ -140,12 +146,15 @@ $(function () {
         });
     </#if>
 
-    function saveGridData(){
-        var gridData = JSON.stringify(gridster.serialize());
+    function saveGridData(nullData,callback){
+        var gridData = null;
+        if(!nullData)
+            gridData = JSON.stringify(gridster.serialize());
         $.post("${baseUrl}/user/saveDashboardLayout",
                 {gridData:gridData,paperId:"${paper._id}"},
                 function(response){
-
+                    if(callback)
+                        callback();
                 });
     }
 
@@ -286,13 +295,13 @@ $(function () {
         $('span.removeFilter').show();
     });
 
-    var columns = $('.topLeftPanel:last').html();
+   /* var columns = $('.topLeftPanel:last').html();
     var filters = $('.midLeftPanel:last').html();
     var studentList = $('.bottomLeftPanel:last').html();
     var paperInfo = $('.topRightPanel:last').html();
-    var dataOverview = $('.midRightPanel:last').html();
+    var dataOverview = $('.midRightPanel:last').html(); */
 
-    var p;
+  /*  var p;
 
     $(document).on('click', '.addPanel', function () {
         var self = $(this);
@@ -310,8 +319,8 @@ $(function () {
             div.html(paperInfo).show();
         else if (self.hasClass("addDataOverview"))
             div.html(dataOverview).show();
-    });
-
+    });     */
+     /*
     $('.placeHolder').on('click', function () {
         var self = $(this);
         p = $("<div></div>").appendTo("body");
@@ -343,7 +352,7 @@ $(function () {
             cancel: true
         }).popup_simple("show").popup_simple("centre");
     });
-
+                 */
     <#if json?has_content>
         {
             var jsonString = "${json?js_string}";
@@ -428,11 +437,21 @@ $(function () {
     $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
-        if (slf.is(':checked')) {
-            $('.' + value).show();
-        } else {
+        var remove = !slf.is(":checked");
+        if (remove) {
             $('.' + value).hide();
+        } else {
+            $('.' + value).show();
         }
+
+        $.post("${baseUrl}/user/addRemoveColumn",
+            {
+                paperId:"${paper._id}",
+                columnId:value,
+                remove: remove
+            },
+            function(){ }
+        );
     });
 
     function saveChanges(td, input, oldValue) {
@@ -539,6 +558,16 @@ $(function () {
             $paperButtons.hide();
         if ($layoutButtons.is(":visible"))
             $layoutButtons.hide();
+        event.stopPropagation();
+    });
+
+    $('#layoutButton').on('click', function (event) {
+        if ($layoutButtons.is(':hidden'))
+            $layoutButtons.show();
+        else
+            $layoutButtons.hide();
+        if ($paperButtons.is(":visible"))
+            $paperButtons.hide();
         event.stopPropagation();
     });
 

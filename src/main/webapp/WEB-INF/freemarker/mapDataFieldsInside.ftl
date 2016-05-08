@@ -58,7 +58,14 @@
                 <span class='input-group-addon sres_identifier'>SRES identifier field:</span>
                 <select name="sres_id" class="form-control">
                 <#list studentFields as f>
-                    <option value="${f?html}"> ${f?html}</option>
+                    <option value="${f?html}">
+                        ${f?html}
+                        <#if userInfo?has_content>
+                            <#if userInfo[f?html]?has_content>
+                                (e.g. ${userInfo[f?html]})
+                            </#if>
+                        </#if>
+                    </option>
                 </#list>
                 </select>
             </div>
@@ -67,7 +74,14 @@
                 <span class='input-group-addon sres_identifier'>Data file identifier field:</span>
                 <select name="csv_id" class="form-control">
                 <#list record as r>
-                    <option value="${r_index}"> ${r?html}</option>
+                    <option value="${r_index}">
+                        ${r?html}
+                            <#if values?has_content>
+                                <#if values[r_index]?has_content>
+                                    (e.g. ${values[r_index]})
+                                </#if>
+                            </#if>
+                    </option>
                 </#list>
                 </select>
             </div>
@@ -103,8 +117,14 @@
                             <select name="value${r_index?c}" class="form-control">
                                 <option value="-1"></option>
                                 <#list record as rr>
-                                    <option value="${rr_index}"
-                                            <#if r_index == rr_index>selected="selected"</#if>  > ${rr}</option>
+                                    <option value="${rr_index}" <#if r_index == rr_index>selected="selected"</#if> >
+                                        ${rr}
+                                            <#if values?has_content>
+                                                <#if values[r_index]?has_content>
+                                                    (e.g. ${values[r_index]})
+                                                </#if>
+                                            </#if>
+                                    </option>
                                 </#list>
                             </select>
                         </td>

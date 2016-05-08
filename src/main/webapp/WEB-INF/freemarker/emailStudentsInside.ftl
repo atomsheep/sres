@@ -48,39 +48,42 @@
             </li>
 
             <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Attribute shortcodes</h4>
+                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Student fields shortcodes</h4>
 
                 <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
                     <table style='width:100%'>
-                    <#list studentFields as f>
-                        <tr>
-                            <td style='padding:5px 5px 0'>
-                                <div class='input-group input-group1' style="width:100%">
-                                    <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}
-                                        :</span>
-                                    <input type="text" class="form-control shortcode" value="{{student.${f}}}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </#list>
-                    <#list columns as c>
-                        <tr>
-                            <td style='padding:5px 5px 0'>
-                                <div class='input-group input-group1' style="width:100%">
-                                    <span class='input-group-addon sres_name shortcode_name'
-                                          style='width:35%'>${c.name!}:</span>
-                                    <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
-                                </div>
-                            </td>
-                        </tr>
-                    </#list>
+                        <#list studentFields as f>
+                            <tr>
+                                <td style='padding:5px 5px 0'>
+                                    <div class='input-group input-group1' style="width:100%">
+                                        <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
+                                        <input type="text" class="form-control shortcode" value="{{student.${f}}}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </#list>
                     </table>
                 </div>
             </li>
 
             <li class='sres_panel' data-row="4" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Something else</h4>
-                Third
+                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Column shortcodes</h4>
+
+                <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+                    <table style='width:100%'>
+                        <#list columns as c>
+                            <tr>
+                                <td style='padding:5px 5px 0'>
+                                    <div class='input-group input-group1' style="width:100%">
+                                                <span class='input-group-addon sres_name shortcode_name'
+                                                      style='width:35%'>${c.name!}:</span>
+                                        <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </#list>
+                    </table>
+                </div>
             </li>
 
             <li class='sres_panel' data-row="1" data-col="2" data-sizex="2" data-sizey="4">
@@ -128,8 +131,8 @@
                             <td style='padding:0'>
                                 <table width='100%'>
                                     <tr>
-                                        <td colspan='5' style="vertical-align:bottom;position:relative"><h4
-                                                style='cursor:default;position: absolute;bottom:10px'>
+                                        <td colspan='5' style="vertical-align:bottom;position:relative">
+                                            <h4 style='cursor:default;position: absolute;bottom:10px'>
                                             Additional/conditional paragraphs</h4>
 
                                             <div id='paperMenu'
