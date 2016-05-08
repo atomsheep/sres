@@ -11,8 +11,9 @@ h3 { font-size:24px; font-weight:300; }
 
 .navigationWrapper { background:#0886AF; }
 .navigation{ list-style:none;padding:0;text-align:left;max-width:1200px;margin:auto; }
-.navigation li { display:inline-block; padding:20px; background:#0886AF;color:white;border-right:1px solid #021E27;text-align:center; }
+.navigation li { display:inline-block; padding:20px 0; background:#0886AF;color:white;border-right:1px solid #021E27;text-align:center; }
 .navigation li:first-child { border-left:1px solid #021E27; }
+.navigation li a { padding:20px;text-decoration:none;color:white; }
 
 .mainContent{ max-width:1200px; margin:auto; }
 
