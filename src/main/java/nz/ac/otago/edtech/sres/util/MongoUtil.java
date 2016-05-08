@@ -6,6 +6,7 @@ import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.bson.Document;
@@ -37,6 +38,7 @@ public class MongoUtil {
     public static final String COLLECTION_NAME_USERDATA = "userdata";
     public static final String COLLECTION_NAME_TOKENS = "tokens";
     public static final String COLLECTION_NAME_INTERVENTIONS = "interventions";
+    public static final String COLLECTION_NAME_LOGS = "logs";
 
     public static final String USERNAME = "username";
     public static final String[] USER_FIELDS = {USERNAME, "givenNames", "surname", "preferredName", "email", "phone"};
@@ -48,7 +50,7 @@ public class MongoUtil {
     public static void putCommonIntoModel(MongoDatabase db, HttpServletRequest request, ModelMap model) {
         if (model.get("user") == null) {
             String userName = AuthUtil.getUserName(request);
-            Document user = MongoUtil.getUser(db, userName);
+            Document user = MongoUtil.getUserByUsername(db, userName);
             model.put("user", user);
         }
     }
@@ -203,8 +205,13 @@ public class MongoUtil {
         return doc;
     }
 
-    public static Document getUser(MongoDatabase db, String username) {
+    public static Document getUserByUsername(MongoDatabase db, String username) {
         return MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
+    }
+
+    public static Document getUser(MongoDatabase db, String _id) {
+        ObjectId oId = new ObjectId(_id);
+        return getUser(db, oId);
     }
 
     public static Document getUser(MongoDatabase db, ObjectId id) {
@@ -357,6 +364,50 @@ public class MongoUtil {
         }
         return papers;
     }
+
+    public static List<String> getStudentList(Document email) {
+        @SuppressWarnings("unchecked")
+        List<String> studentList = (List<String>) email.get("studentList");
+        @SuppressWarnings("unchecked")
+        List<String> uncheckedList = (List<String>) email.get("uncheckedList");
+        if ((studentList != null) && (uncheckedList != null)) {
+            @SuppressWarnings("unchecked")
+            List<String> userList = ListUtils.subtract(studentList, uncheckedList);
+            studentList = userList;
+        }
+        return studentList;
+    }
+
+
+    /**
+     * Get email information for given user and email
+     *
+     * @param user  user
+     * @param email email
+     * @return email information, including email address, subject, body
+     */
+    public static Map<String, String> getEmailInformation(Document user, Document email) {
+        if ((user == null) || (email == null))
+            throw new IllegalArgumentException("User or emailis null");
+        @SuppressWarnings("unchecked")
+        Document userInfo = (Document) user.get("userInfo");
+        String emailField = (String) email.get("emailField");
+        String address = (String) userInfo.get(emailField);
+        String introductoryParagraph = (String) email.get("introductoryParagraph");
+        String concludingParagraph = (String) email.get("concludingParagraph");
+        // send email
+        String subject = (String) email.get("subject");
+        String body = introductoryParagraph;
+        body += concludingParagraph;
+        subject = MongoUtil.replaceEmailTemplate(subject, userInfo);
+        body = MongoUtil.replaceEmailTemplate(body, userInfo);
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("address", address);
+        result.put("subject", subject);
+        result.put("body", body);
+        return result;
+    }
+
 
     public static String replaceEmailTemplate(String message, Map map) {
         String result = message;
