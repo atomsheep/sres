@@ -1120,8 +1120,9 @@ public class UserController {
         model.put("results", results);
         model.put("columns", columns);
         model.put("pageName", "viewPaper");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
-        return Common.DEFAULT_VIEW_NAME;
+        return "dashboard/studentDataPanel";
     }
 
 
@@ -1190,8 +1191,7 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
         model.put("id", id);
-        //TODO: add baseurl here
-        model.put("baseUrl", "");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/filterPanel";
     }

@@ -24,9 +24,13 @@
                 <#list cc as c>
                     <td>
                         <input id='check_${c._id}' type="checkbox" value="${c._id}"
-                               <#if !paper.uncheckedList?seq_contains(c._id)>
+                                <#if paper.uncheckedList?has_content>
+                                    <#if !paper.uncheckedList?seq_contains(c._id)>
+                                        checked="checked"
+                                    </#if>
+                                <#else>
                                     checked="checked"
-                               </#if> class="columnCheckbox" name="columns"/>
+                                </#if> class="columnCheckbox" name="columns"/>
                     </td>
                     <td style='text-align:left'>${c.name}</td>
                     <td style='text-align:left'>${c.description!}</td>
