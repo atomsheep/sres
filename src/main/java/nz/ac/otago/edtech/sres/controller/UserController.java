@@ -1,5 +1,6 @@
 package nz.ac.otago.edtech.sres.controller;
 
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
@@ -616,18 +617,10 @@ public class UserController {
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
 
-        Document introparagraph = new Document();
-        if (StringUtils.isBlank(studentName))
-            introparagraph.put("text","Dear student,");
-        else
-            introparagraph.put("text","Dear {{student." + studentName + "}},");
-        introparagraph.put("html","");
-
+        String introparagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
         email.put("introductoryParagraph", introparagraph);
 
-        Document concludingparagraph = new Document();
-        concludingparagraph.put("text","Regards,\n\n{{user.firstName}}");
-        concludingparagraph.put("html","");
+        String concludingparagraph = "Regards,\n\n{{user.firstName}}";
         email.put("concludingParagraph", concludingparagraph);
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
         return "redirect:/user/emailStudents/" + eid.toString();
@@ -718,7 +711,8 @@ public class UserController {
         if (index < size) {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
-            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -752,7 +746,8 @@ public class UserController {
         if (index < size) {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
-            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -793,7 +788,8 @@ public class UserController {
         }
         for (String u : studentList) {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
-            Map<String, String> map = MongoUtil.getEmailInformation(uu, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata, email);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");

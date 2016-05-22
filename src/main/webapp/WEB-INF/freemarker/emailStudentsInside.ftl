@@ -218,7 +218,7 @@
         </tr>
         <tr class='paragraph_{num}'>
             <td colspan='5' class="inputArea"
-                style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'>
+                style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:8px 0'>
 
             </td>
         </tr>
@@ -272,7 +272,7 @@
         </tr>
         <tr class='paragraph_{num}'>
             <td colspan='5' class="inputArea"
-                style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:0'>
+                style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:8px 0'>
 
             </td>
         </tr>
@@ -339,8 +339,26 @@ $(function () {
         editorArray.push(quill);
     });
 
-    $('.shortcode').on('keydown', function () {
-        return false;
+    var ctrlDown = false;
+    var ctrlKey = 17, vKey = 86, cKey = 67;
+
+    $(document).on('keydown',function(e){
+        if(e.keyCode == ctrlKey)
+            ctrlDown = true;
+    }).on('keyup',function(e){
+              if (e.keyCode == ctrlKey)
+                  ctrlDown = false;
+          });
+
+    $('.shortcode').on('keydown', function (e) {
+        if(e.keyCode == ctrlKey)
+            ctrlDown = true;
+
+        if (ctrlDown && e.keyCode == cKey) {
+            //do the copy
+        }else{
+            return false;
+        }
     });
 
     $('.shortcode').on('click', function () {
