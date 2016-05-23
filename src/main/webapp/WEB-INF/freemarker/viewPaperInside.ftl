@@ -399,9 +399,29 @@ $(function () {
             array.push(obj);
         });
         var jsonString = JSON.stringify(array);
-        console.log('json string', jsonString);
-        $('[name=json]').val(jsonString);
-        $('[name=filterForm]').submit();
+
+        $.post("${baseUrl}/user/filterStudentList",
+            {id:id, json:jsonString},
+            function(data){
+                $('.sres_panel').each(function(i,e){
+                    var self = $(this);
+                    var id = self.attr('id');
+                    var pt = self.data("paneltype");
+                    if (pt == "studentData"){
+                        self.find('.innerContent').html(data);
+                        replaceCheckboxes(id);
+
+                        self.find('th').each(function () {
+                            var slf = $(this);
+                            if (slf.find("input").length == 0) {
+                                var text = slf.text();
+                                slf.shortText(text, 20);
+                            }
+                        });
+                    }
+                });
+            }
+        );
     });
 
     $(document).on("dblclick", '#studentList td', function () {

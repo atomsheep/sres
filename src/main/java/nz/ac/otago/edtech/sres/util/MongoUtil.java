@@ -38,6 +38,7 @@ public class MongoUtil {
     public static final String COLLECTION_NAME_USERDATA = "userdata";
     public static final String COLLECTION_NAME_TOKENS = "tokens";
     public static final String COLLECTION_NAME_INTERVENTIONS = "interventions";
+    public static final String COLLECTION_NAME_PARAGRAPHS = "paragraphs";
     public static final String COLLECTION_NAME_LOGS = "logs";
 
     public static final String USERNAME = "username";
@@ -386,9 +387,9 @@ public class MongoUtil {
      * @param email email
      * @return email information, including email address, subject, body
      */
-    public static Map<String, String> getEmailInformation(Document user, Document email) {
+    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document email) {
         if ((user == null) || (email == null))
-            throw new IllegalArgumentException("User or emailis null");
+            throw new IllegalArgumentException("User or emails null");
         @SuppressWarnings("unchecked")
         Document userInfo = (Document) user.get("userInfo");
         String emailField = (String) email.get("emailField");
@@ -399,8 +400,8 @@ public class MongoUtil {
         String subject = (String) email.get("subject");
         String body = introductoryParagraph;
         body += concludingParagraph;
-        subject = MongoUtil.replaceEmailTemplate(subject, userInfo);
-        body = MongoUtil.replaceEmailTemplate(body, userInfo);
+        subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata);
+        body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata);
         Map<String, String> result = new HashMap<String, String>();
         result.put("address", address);
         result.put("subject", subject);
@@ -409,12 +410,18 @@ public class MongoUtil {
     }
 
 
-    public static String replaceEmailTemplate(String message, Map map) {
+    public static String replaceEmailTemplate(String message, Map map, List<Document> userdata) {
         String result = message;
         for (String key : (Set<String>) map.keySet()) {
             // replace here
             result = result.replace("{{student." + key + "}}", (String) map.get(key));
         }
+        for(Document d : userdata){
+            List data = (ArrayList)d.get("data");
+            Document dd = (Document)data.get(0);
+            result = result.replace("{{data." + d.get("colref") + "}}", dd.get("value").toString());
+        }
+
         return result;
 
     }
