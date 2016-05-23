@@ -1191,7 +1191,7 @@ public class UserController {
         model.put("columns", columns);
         model.put("id", id);
         //TODO: add baseurl here
-        model.put("baseUrl", "");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/filterPanel";
     }
