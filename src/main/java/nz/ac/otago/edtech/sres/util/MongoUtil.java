@@ -38,6 +38,7 @@ public class MongoUtil {
     public static final String COLLECTION_NAME_USERDATA = "userdata";
     public static final String COLLECTION_NAME_TOKENS = "tokens";
     public static final String COLLECTION_NAME_INTERVENTIONS = "interventions";
+    public static final String COLLECTION_NAME_PARAGRAPHS = "paragraphs";
     public static final String COLLECTION_NAME_LOGS = "logs";
 
     public static final String USERNAME = "username";
