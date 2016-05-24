@@ -13,5 +13,6 @@
             style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:8px 0'>
         </td>
     </tr>
-
 </table>
+
+<div id='paragraphText'><#if paragraph.text?has_content>${paragraph.text}</#if></div>

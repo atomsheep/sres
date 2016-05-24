@@ -2,6 +2,7 @@ package nz.ac.otago.edtech.sres.util;
 
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
@@ -204,6 +205,16 @@ public class MongoUtil {
                 log.warn("There is more than one document with filters");
         }
         return doc;
+    }
+
+    public static DeleteResult removeDocument(MongoDatabase db, String collection, Bson... filters) {
+        DeleteResult dr = db.getCollection(collection).deleteOne(and(filters));
+        return dr;
+    }
+
+    public static DeleteResult removeDocument(MongoDatabase db, String collection, String key, Object value) {
+        DeleteResult dr = db.getCollection(collection).deleteOne(eq(key,value));
+        return dr;
     }
 
     public static Document getUserByUsername(MongoDatabase db, String username) {

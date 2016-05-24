@@ -6,6 +6,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
@@ -593,6 +594,21 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/saveParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> saveParagraph(@RequestParam("id") String id,
+                                            @RequestParam("value") String value) {
+
+        String action = "saveParagraph";
+        boolean success = true;
+        String detail = null;
+        if (StringUtils.isNotBlank(value)) {
+            db.getCollection(MongoUtil.COLLECTION_NAME_PARAGRAPHS).updateOne(eq("_id", new ObjectId(id)),
+                    new Document("$set", new Document("text", value))
+            );
+        }
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
@@ -721,6 +737,16 @@ public class UserController {
         model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return type+"Paragraph";
+    }
+
+    @RequestMapping(value = "/removeParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> removeParagraph(@RequestParam("id") String id,
+                                HttpServletRequest request,
+                                ModelMap model) {
+        ObjectId paragraphId = new ObjectId(id);
+        DeleteResult dr = MongoUtil.removeDocument(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,"_id",paragraphId);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        return OtherUtil.outputJSON("removeParagraph", true, "");
     }
 
     @RequestMapping(value = "/getParagraph/{id}", method = RequestMethod.GET)
