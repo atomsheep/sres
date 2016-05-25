@@ -204,6 +204,9 @@ $(function () {
 
     //-------------------------------------------------------------------------
 
+    $(document).on('click', 'input[name=usernames]', function() {
+        //TODO: change studentCount
+    });
 
     $(document).on('click', 'input[name=usernameAll]', function () {
         if ($(this).is(':checked')) {

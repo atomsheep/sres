@@ -12,13 +12,8 @@
 <form name="mapDataFieldsForm" action="${baseUrl}/user/importUserData" method="post">
 
     <h1 style='margin:0 20px'>Step 5: map data fields
-        <button type="submit" class="btn btn-default btn-primary submit"
-                style='float:right;border-radius:0;padding:10px 10px 9px;'>Finish
-        </button>
-        <button type="button" class="btn btn-default btn-primary"
-                style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span
-                class='fa fa-caret-left'></span> Previous step
-        </button>
+        <button type="submit" class="btn btn-default btn-primary submit btn-square right">Finish</button>
+        <button type="button" class="btn btn-default btn-primary btn-square right" style='margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</button>
     </h1>
 
     <div style='overflow:hidden'>
@@ -35,7 +30,7 @@
         <input type="hidden" name="size" value="${record?size}"/>
 
         <div class='info_text' style='clear:both;margin-top:20px'>
-            <span class="fa-stack " style="font-size: 11px;margin-right: 5px;">
+            <span class="fa-stack" style="font-size:11px;margin-right: 5px;">
                 <i class="fa fa-circle fa-stack-2x" style="color: #fff;"></i>
                 <i class="fa fa-stack-1x"
                    style="font-family:Roboto, sans-serif;color:#033141;font-weight: bold;font-size: 14px;">1</i>
@@ -229,11 +224,9 @@
         var p = $("<div></div>").appendTo("body");
 
         function beforeSubmit() {
-          console.log("before submit");
-
             p.popup_simple('init', {
                 content: "<img src='${baseUrl}/assets/img/saving.gif' /><br/>Thinking",
-                extraClasses: ["loadingPopup"],
+                extraClasses: ["sresPopup loadingPopup"],
                 confirm: false,
                 cancel: false
             }).popup_simple("show").popup_simple("centre");
@@ -250,15 +243,11 @@
                         location.href = '${baseUrl}/user/viewPaper/' + responseText.paperId;
                     })
                     .popup_simple('setCancel',true);
-            $('.popup_simple_confirm').addClass('btn btn-default btn-primary').css({
-                borderRadius:0,
-                padding:"10px 10px 9px",
+            $('.popup_simple_confirm').addClass('btn btn-default btn-primary btn-square').css({
                 marginTop: "10px",
                 marginRight: "10px"
             }).text("View ${ICN}");
-            $('.popup_simple_cancel').addClass('btn btn-default btn-danger').css({
-                borderRadius:0,
-                padding:"10px 10px 9px",
+            $('.popup_simple_cancel').addClass('btn btn-default btn-danger btn-square').css({
                 marginTop: "10px",
                 marginLeft: "10px"
             });

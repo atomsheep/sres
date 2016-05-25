@@ -12,24 +12,16 @@
     Search results (${results?size})
 <#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
 <#else>
-    Students: ${results?size}
+    Students <span class='studentCount'>${results?size}</span> / ${results?size}
 </#if>
     <span class='fa fa-times deletePanel' style='float:right'></span>
 </h4>
 
 <div class='topPanel'>
 <#if results?has_content>
-    <span class="btn btn-default btn-primary emailStudents"
-          style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span
-            class='fa fa-envelope'></span> Email selected students</span>
-    <button class="btn btn-default btn-primary"
-            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-        <span class='fa fa-comments'></span> SMS selected students
-    </button>
-    <button class="btn btn-default btn-primary"
-            style='float:left;border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-        <span class='fa fa-pencil'></span> Edit selected students
-    </button>
+    <button class="btn btn-default btn-primary emailStudents btn-square left"><span class='fa fa-envelope'></span> Email selected students</button>
+    <button class="btn btn-default btn-primary btn-square left"><span class='fa fa-comments'></span> SMS selected students</button>
+    <button class="btn btn-default btn-primary btn-square left"><span class='fa fa-pencil'></span> Edit selected students</button>
 </#if>
 </div>
 
@@ -45,8 +37,12 @@
                 <th style='text-align:left;'>${f?html}</th>
                 </#list>
                 <#list columns as c>
-                <th class="${c._id}"
-                    style='color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>'>${c.name}</th>
+                        <th class="${c._id}"
+                            style="
+                                <#if paper.uncheckedList?has_content && paper.uncheckedList?seq_contains(c._id)>
+                                    display:none;
+                                </#if>
+                        color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>">${c.name}</th>
                 </#list>
             </thead>
             <tbody>
@@ -59,14 +55,17 @@
                         <td style='text-align:left;' data-value="${f?html}">${r.userInfo[f]}</td>
                     </#list>
                     <#list columns as c>
-                        <#if r[c._id]?has_content>
-                            <#assign ud = r[c._id]/>
-                            <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}"
-                                data-columnid="${ud.colref}"
-                                data-value="${ud.data[0].value?html}"> ${ud.data[0].value?html}</td>
-                        <#else>
-                            <td class="${c._id}" data-userid="${r._id}" data-columnid="${c._id}"></td>
-                        </#if>
+                            <#if r[c._id]?has_content>
+                                <#assign ud = r[c._id]/>
+                                <td class="${ud.colref}" data-id="${ud._id}" data-userid="${ud.userref}"
+                                    data-columnid="${ud.colref}"
+                                    <#if paper.uncheckedList?has_content && paper.uncheckedList?seq_contains(c._id)>
+                                        style="display:none"
+                                    </#if>
+                                    data-value="${ud.data[0].value?html}"> ${ud.data[0].value?html}</td>
+                            <#else>
+                                <td class="${c._id}" data-userid="${r._id}" data-columnid="${c._id}"></td>
+                            </#if>
                     </#list>
                 </tr>
                 </#list>

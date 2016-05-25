@@ -6,12 +6,8 @@
         Email students
     </span>
 
-    <button type="button" class="btn btn-default btn-primary sendEmail"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Send to students
-    </button>
-    <button type="button" id='previewEmail' class="btn btn-default btn-primary"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Preview email
-    </button>
+    <button type="button" class="btn btn-default btn-primary btn-square right sendEmail">Send to students</button>
+    <button type="button" id='previewEmail' class="btn btn-default btn-primary btn-square right">Preview email</button>
 </div>
 
 
