@@ -398,7 +398,7 @@ public class MongoUtil {
      * @param email email
      * @return email information, including email address, subject, body
      */
-    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document email) {
+    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document email, List<Document> paragraphs) {
         if ((user == null) || (email == null))
             throw new IllegalArgumentException("User or emails null");
         @SuppressWarnings("unchecked")
@@ -410,6 +410,12 @@ public class MongoUtil {
         // send email
         String subject = (String) email.get("subject");
         String body = introductoryParagraph;
+
+        for(Document p : paragraphs)
+        {
+            body += p.get("text");
+        }
+
         body += concludingParagraph;
         subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata);
         body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata);

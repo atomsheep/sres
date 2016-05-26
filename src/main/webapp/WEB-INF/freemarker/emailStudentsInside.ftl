@@ -1,7 +1,7 @@
 <div id='topBar' class='topPanel' style='top:50px'>
     <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">View ${ICN}
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/viewPaper/${paper._id}">View ${ICN}
             (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})</a> >
         Email students
     </span>
