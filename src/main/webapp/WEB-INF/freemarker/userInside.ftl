@@ -36,8 +36,8 @@
                 <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>My ${ICN} list (${list?size})</h4>
 
                 <div class='topPanel'>
-                    <a class='btn btn-default btn-primary' id="addList" href="${baseUrl}/user/editPaper" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                        Add a new ${ICN}</a>
+                    <a class='btn btn-default btn-primary btn-square left' id="addList" href="${baseUrl}/user/editPaper">
+                        <span class='fa fa-plus'></span> Add a new ${ICN}</a>
                 </div>
 
                 <div style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll'>
@@ -61,16 +61,16 @@
                                     ${l.studentCount!0}
                                 </td>
                                 <td style='text-align:center;padding:0'>
-                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">View paper</a>
+                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">View paper</a>
                                 </td>
                                 <td style='text-align:center;padding:0'>
-                                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Edit paper info</a>
+                                    <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Edit paper info</a>
                                 </td>
                                 <td style='text-align:center;padding:0'>
-                                    <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Edit columns</a>
+                                    <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Edit columns</a>
                                 </td>
                                 <td style='text-align:center;border-right:none;padding:0'>
-                                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger" style="border-radius: 0;padding: 10px 10px 9px;border-right: 1px solid #043B4E;width:100%;display:block">Delete ${ICN}</button>
+                                    <button data-id='${l._id}' class="deleteList btn btn-default btn-danger btn-square" style="width:100%;display:block">Delete ${ICN}</button>
                                 </td>
                             </tr>
                         </#list>

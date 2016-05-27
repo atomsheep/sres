@@ -21,13 +21,6 @@ h2, h3{
     font-weight:400;
 }
 
-/**  in bootstrap.css
-.page-header {
-  padding-bottom: 9px;
-  margin: 20px 0 30px;
-  border-bottom: 1px solid #eeeeee;
-}  */
-
 
 .container-fluid{ padding:0 }
 
@@ -62,6 +55,9 @@ h4 { font-weight:300 }
 .label-info { background-color: #0886AF; }
 
 
+.btn-square { border-radius:0;padding:10px 10px 9px; }
+.btn-square.left { float:left;border-right:1px solid #043B4E }
+.btn-square.right { float:right;border-left:1px solid #043B4E }
 
 .btn-primary{ background:#0886AF; border:none; }
 .btn-primary:hover { background: #066888; }
@@ -160,8 +156,11 @@ a { color: #0886AF }
 
 textarea { resize: vertical }
 
-.sres_checkbox, .star_checkbox { color:#fff;cursor:pointer;font-size:16px;width:18px;text-align:center }
-.sres_checkbox:hover, .star_checkbox:hover { color:#aaa }
+.sres_checkbox, .star_checkbox { cursor:pointer;font-size:16px;width:18px;text-align:center }
+.sres_checkbox { color:#66ff66 }
+.star_checkbox { color:#ffff66 }
+.sres_checkbox:hover { color:#47b247 }
+.star_checkbox:hover { color:#b2b247 }
 th .sres_checkbox { color:#021E27 }
 
 .mainPopup { width:40% }
@@ -182,7 +181,8 @@ table.dataTable tbody tr { background: none !important }
 .sres_name, .sres_identifier { background:#0886AF;color:white;border:none }
 .input-group[disabled] .sres_name { background:#ccc;color:#777; }
 
-.loadingPopup{ top:70px !important;font-weight:300;font-size:24px !important;width:300px;background: #021E27 !important;border:1px solid #0886AF !important; }
+.sresPopup{ top:70px !important;font-weight:300;font-size:24px !important;background: #021E27 !important;border:1px solid #0886AF !important; }
+.loadingPopup{ width:300px; }
 .loadingPopup img { margin-bottom:10px }
 .datepicker table tr td.active.active { background: #0886AF !important; }
 

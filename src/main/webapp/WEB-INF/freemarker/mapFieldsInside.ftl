@@ -11,12 +11,8 @@
 <form name="mapFieldsForm" action="${baseUrl}/user/importUser" method="post">
 
     <h1 style='margin:0 20px'>Step 3: map student fields
-        <button type="submit" class="btn btn-default btn-primary"
-                style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span
-                class='fa fa-caret-right'></span></button>
-        <a href="${baseUrl}/user/addStudentList/${id}" class="btn btn-default btn-primary"
-           style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span
-                class='fa fa-caret-left'></span> Previous step</a>
+        <button id="nextStep" type="button" class="btn btn-default btn-primary btn-square right">Next step <span class='fa fa-caret-right'></span></button>
+        <a href="${baseUrl}/user/addStudentList/${id}" class="btn btn-default btn-primary btn-square right" style='margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
     </h1>
 
     <div style='overflow:hidden'>
@@ -190,6 +186,29 @@
 
         $('.checkField').change();
 
+        $('#nextStep').on('click', function(){
+            if($('.starField:checked').length == 0){
+                var p = $("<div></div>").appendTo("body");
+                p.popup_simple('init', {
+                    content: "You have not selected any identifiers. Do you want to continue?<br/>(Note: you can still select identifiers later when uploading student data)",
+                    extraClasses: ["sresPopup"],
+                    confirm: true,
+                    cancel: true,
+                    confirmCallback: function(){
+                        $('[name=mapFieldsForm]').submit();
+                    }
+                }).popup_simple("show").popup_simple("centre");
+
+                $('.popup_simple_confirm').addClass('btn btn-default btn-primary btn-square').css({
+                    marginTop: "10px",
+                    marginRight: "10px"
+                }).text("Continue");
+                $('.popup_simple_cancel').addClass('btn btn-default btn-danger btn-square').css({
+                    marginTop: "10px",
+                    marginLeft: "10px"
+                });
+            }
+        });
 
         var top = $('.side2').offset().top;
         var height = $(window).height();

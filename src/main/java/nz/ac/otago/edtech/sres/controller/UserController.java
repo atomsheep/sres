@@ -6,6 +6,7 @@ import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
@@ -593,6 +594,21 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/saveParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> saveParagraph(@RequestParam("id") String id,
+                                            @RequestParam("value") String value) {
+
+        String action = "saveParagraph";
+        boolean success = true;
+        String detail = null;
+        if (StringUtils.isNotBlank(value)) {
+            db.getCollection(MongoUtil.COLLECTION_NAME_PARAGRAPHS).updateOne(eq("_id", new ObjectId(id)),
+                    new Document("$set", new Document("text", value))
+            );
+        }
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
@@ -723,6 +739,16 @@ public class UserController {
         return type+"Paragraph";
     }
 
+    @RequestMapping(value = "/removeParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> removeParagraph(@RequestParam("id") String id,
+                                HttpServletRequest request,
+                                ModelMap model) {
+        ObjectId paragraphId = new ObjectId(id);
+        DeleteResult dr = MongoUtil.removeDocument(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,"_id",paragraphId);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        return OtherUtil.outputJSON("removeParagraph", true, "");
+    }
+
     @RequestMapping(value = "/getParagraph/{id}", method = RequestMethod.GET)
     public String getParagraph(@PathVariable String id,
                                HttpServletRequest request,
@@ -756,7 +782,8 @@ public class UserController {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email);
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -791,7 +818,8 @@ public class UserController {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email);
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -833,7 +861,8 @@ public class UserController {
         for (String u : studentList) {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata, email);
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -1221,6 +1250,18 @@ public class UserController {
         model.put("paper",paper);
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/columnPanel";
+    }
+
+    @RequestMapping(value = "/getUserFields/{id}", method = RequestMethod.GET)
+    public String getUserFields(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db,paperId);
+        model.put("studentFields", paper.get("studentFields"));
+        model.put("paper",paper);
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "dashboard/userFieldsPanel";
     }
 
     @RequestMapping(value = "/getFilters/{id}", method = RequestMethod.GET)

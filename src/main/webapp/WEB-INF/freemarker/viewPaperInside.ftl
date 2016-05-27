@@ -63,7 +63,13 @@
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
                 </li>
-                <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="2" data-paneltype="paperInfo">
+                <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="paperInfo">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                    </div>
+                </li>
+
+                <li id='panel8' class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="userFields">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
@@ -199,11 +205,20 @@ $(function () {
                 self.find('.innerContent').html(data);
                 replaceCheckboxes(id);
             });
+        } else if (pt == "userFields") {
+            $.get("${baseUrl}/user/getUserFields/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(id);
+            });
         }
     });
 
     //-------------------------------------------------------------------------
 
+    $(document).on('click', 'input[name=usernames]', function() {
+        var count = $('input[name=usernames]:checked').length;
+        $('.studentCount').text(count);
+    });
 
     $(document).on('click', 'input[name=usernameAll]', function () {
         if ($(this).is(':checked')) {

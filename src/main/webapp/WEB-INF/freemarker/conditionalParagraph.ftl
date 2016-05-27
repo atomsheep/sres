@@ -48,3 +48,5 @@
          </td>
     </tr>
 </table>
+
+<div id='paragraphText'><#if paragraph.text?has_content>${paragraph.text}</#if></div>

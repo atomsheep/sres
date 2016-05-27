@@ -1,17 +1,13 @@
 <div id='topBar' class='topPanel' style='top:50px'>
     <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">View ${ICN}
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/viewPaper/${paper._id}">View ${ICN}
             (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})</a> >
         Email students
     </span>
 
-    <button type="button" class="btn btn-default btn-primary sendEmail"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Send to students
-    </button>
-    <button type="button" id='previewEmail' class="btn btn-default btn-primary"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Preview email
-    </button>
+    <button type="button" class="btn btn-default btn-primary btn-square right sendEmail">Send to students</button>
+    <button type="button" id='previewEmail' class="btn btn-default btn-primary btn-square right">Preview email</button>
 </div>
 
 
@@ -132,7 +128,7 @@
                                 <table width='100%'>
                                     <tr>
                                         <td colspan='5' style="vertical-align:bottom;position:relative">
-                                            <h4 style='cursor:default;position: absolute;bottom:10px'>
+                                            <h4 style='cursor:default;position: absolute;bottom:0'>
                                             Additional/conditional paragraphs</h4>
 
                                             <div id='paperMenu'
@@ -371,6 +367,7 @@ $(function () {
     var totalStudents = ${users?size};
 
     function loadParagraph(result){
+        var paragraphText = $(result).filter('#paragraphText').html();
         var html = result.replace("{totalStudents}",totalStudents);
         var newParagraph = $(html).find('tr');
         var paragraphId = newParagraph.data("id");
@@ -382,6 +379,23 @@ $(function () {
         var quill = new Quill(self[0], configs);
         quill.addModule('toolbar', {
             container: tb
+        });
+
+        quill.setHTML(paragraphText);
+
+        quill.on('text-change', function (delta, source) {
+            console.log('text change', quill, quill.container.id);
+            var pId = quill.container.id;
+            pId = pId.replace("__field_","");
+            var value = quill.getHTML();
+            $.post("${baseUrl}/user/saveParagraph",
+                {id: pId, value: value},
+                function (json) {
+                    if (json.success) {
+                        console.log("update field", fieldName, "successfully.");
+                    }
+                }
+            );
         });
     }
 
@@ -430,8 +444,12 @@ $(function () {
 
     $(document).on('click', '.removeParagraph', function () {
         var self = $(this);
-        var num = self.data('num');
-        $('tr.paragraph_' + num).remove();
+        var id = self.data('id');
+        $.post("${baseUrl}/user/removeParagraph",
+            {id:id},
+            function(){
+                $.when($('tr.paragraph_' + id).fadeOut()).then(function(){$('tr.paragraph_' + id).remove()});
+            });
     });
 
     // set email field if available

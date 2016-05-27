@@ -1,8 +1,8 @@
 <h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
 
 <div class='topPanel'>
-    <span class="btn btn-default btn-primary newFilter" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-plus'></span> New filter</span>
-    <button class="btn btn-default btn-primary submit" style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'><span class='fa fa-check'></span> Apply filters</button>
+    <span class="btn btn-default btn-primary newFilter btn-square left"><span class='fa fa-plus'></span> New filter</span>
+    <button class="btn btn-default btn-primary submit btn-square right"><span class='fa fa-check'></span> Apply filters</button>
 </div>
 <div style="clear:both"></div>
 
