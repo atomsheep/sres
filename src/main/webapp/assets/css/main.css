@@ -110,7 +110,9 @@ tr.fieldRow { height: 30px; }
 #paperList tr:nth-child(odd) td, #studentList tr:nth-child(odd) td,
 #column_table tr:nth-child(odd) td, #intervention_table tr:nth-child(odd) { background: #043B4E }
 
-#studentList td:hover{ background:#066888 !important;cursor:pointer; }
+#studentList td:hover, #column_table td:hover{ cursor:pointer; }
+#studentList tr:hover .editControls, #column_table tr:hover .editControls{ opacity:1 }
+.editControls { position:absolute;top:0;right:0;opacity:0 }
 
 .filterDiv { padding:0; border-bottom:1px solid #021E27 }
 .filterDiv input, .filterDiv select { border:none;border-right:1px solid #043B4E }

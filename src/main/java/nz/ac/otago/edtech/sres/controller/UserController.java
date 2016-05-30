@@ -1007,7 +1007,7 @@ public class UserController {
 
     @RequestMapping(value = "/saveScanningInformation", method = RequestMethod.POST)
     public String saveScanningInformation(
-            @RequestParam(value = "_id", required = false) String _id,
+            @RequestParam(value = "id", required = false) String _id,
             @RequestParam(value = "customDisplay", required = false) String customDisplay) {
 
         Date now = new Date();
@@ -1238,7 +1238,69 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/changeColour", method = RequestMethod.POST)
+    public ResponseEntity<String> saveColumnValue(@RequestParam(value = "columnId", required = false) String columnId,
+                                                  @RequestParam(value = "colour", required = false) String colour,
+                                                  HttpServletRequest request) {
+        String action = "changeColour";
+        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS).updateOne(
+                eq("_id", new ObjectId(columnId)),
+                new Document("$set", new Document("colour", colour))
+        );
+        String detail = null;
+        return OtherUtil.outputJSON(action, true, "");
+    }
+
+    @RequestMapping(value = "/editStudent/{id}", method = RequestMethod.GET)
+    public String editStudent(@PathVariable String id,
+                                  HttpServletRequest request,
+                                  ModelMap model) {
+        ObjectId studentId = new ObjectId(id);
+        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
+                new Document("$match", new Document("_id", studentId)),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
+
+        Document user = null;
+        for (Document u : iterable)
+        {
+            Document result = new Document();
+            result.put("_id", u.get("_id"));
+            result.put("userInfo", u.get("userInfo"));
+            @SuppressWarnings("unchecked")
+            List<Document> userdata = (List<Document>) u.get("userdata");
+            for(Document ud : userdata) {
+                String colref = ud.get("colref").toString();
+                Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, "_id", new ObjectId(colref));
+                ud.put("name",column.get("name"));
+                Document paper = MongoUtil.getPaper(db, column.get("paperref").toString());
+                model.put("paper", paper);
+            }
+            result.put("userData",userdata);
+            user = result;
+        }
+
+        model.put("user",user);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        model.put("pageName", "editStudent");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
     //async loading
+    @RequestMapping(value = "/getDataOverview/{id}", method = RequestMethod.GET)
+    public String getDataOverview(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db,paperId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        model.put("columns", columns);
+        model.put("paper",paper);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "dashboard/dataOverview";
+    }
+
     @RequestMapping(value = "/getColumns/{id}", method = RequestMethod.GET)
     public String getColumns(@PathVariable String id,
                              HttpServletRequest request,
@@ -1248,6 +1310,7 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
         model.put("paper",paper);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/columnPanel";
     }

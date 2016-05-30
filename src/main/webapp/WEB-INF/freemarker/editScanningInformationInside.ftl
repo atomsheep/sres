@@ -12,12 +12,9 @@ Edit column restrictions
 
 <h1 style='margin:0 20px'>
     Step 3: edit scanning information (optional)
-    <button type="submit" class="btn btn-default btn-primary"
-            style='float:right;border-radius:0;padding:10px 10px 9px;'>
-        Finish</button>
-    <a href="${baseUrl}/user/addStudentList/${id}" class="btn btn-default btn-primary"
-       style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span
-            class='fa fa-caret-left'></span> Previous step</a>
+    <button id='submitScanningInfo' type="button" class="btn btn-default btn-primary btn-square right">Finish</button>
+    <a href="${baseUrl}/user/addStudentList/${id}" class="btn btn-default btn-primary btn-square right"
+       style='margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
 <div class='info_text'>
@@ -37,7 +34,7 @@ Edit column restrictions
 
         <div class='topPanel'>
             <div class='btn btn-default btn-primary' id="addKeyValue"  style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                Add new predefined value
+                <span class='fa fa-plus'></span> Add new predefined value
             </div>
         </div>
 
@@ -49,7 +46,6 @@ Edit column restrictions
     </#if>
         <input type="hidden" name="size" value="0"/>
         <table style='width:100%;margin-top:60px'>
-
             <tr id='addNewColumnAttribute'></tr>
         </table>
     </div>
@@ -93,7 +89,6 @@ Edit column restrictions
                     </div>
                     <div id="customDisplay" class='quillField'
                          data-toolbar='customDisplay-toolbar'>
-
                     </div>
                 </td>
             </tr>
@@ -112,7 +107,7 @@ Edit column restrictions
                         <td style='padding:5px 5px 0'>
                             <div class='input-group input-group1' style="width:100%">
                                 <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
-                                <input type="text" class="form-control shortcode" value="{{user.${f}}}"/>
+                                <input type="text" class="form-control shortcode" value="{{user.${f?html}}}"/>
                             </div>
                         </td>
                     </tr>
@@ -151,17 +146,16 @@ Edit column restrictions
             theme: 'snow'
         };
 
-        var editorArray = [];
-
-        $('.quillField').each(function () {
-            var self = $(this);
-            var tb = "#" + self.data("toolbar");
-            var quill = new Quill(self[0], configs);
-            quill.addModule('toolbar', {
-                container: tb
-            });
-            editorArray.push(quill);
+        var qField = $('.quillField');
+        var tb = "#" + qField.data("toolbar");
+        var quill = new Quill(qField[0], configs);
+        quill.addModule('toolbar', {
+            container: tb
         });
+
+        <#if column.customDisplay?has_content>
+            quill.setHTML("${column.customDisplay}");
+        </#if>
 
         var top = $('.side1').offset().top;
         var height = $(window).height();
@@ -199,6 +193,16 @@ Edit column restrictions
             $('#addNewColumnAttribute').before(newRow);
             $('.extraFieldsSize').text($('.predefined').length);
             return false;
+        });
+
+        $('#submitScanningInfo').on('click', function(){
+            var customDisplay = quill.getHTML();
+            var id = "${column._id}";
+            $.post("${baseUrl}/user/saveScanningInformation",
+                {id:id,customDisplay:customDisplay},
+                function(){
+                    window.location = "${baseUrl}/user/viewColumnList/${paper._id}";
+                });
         });
 
     });

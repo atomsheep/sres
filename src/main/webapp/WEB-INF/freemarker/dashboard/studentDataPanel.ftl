@@ -21,7 +21,6 @@
 <#if results?has_content>
     <button class="btn btn-default btn-primary emailStudents btn-square left"><span class='fa fa-envelope'></span> Email selected students</button>
     <button class="btn btn-default btn-primary btn-square left"><span class='fa fa-comments'></span> SMS selected students</button>
-    <button class="btn btn-default btn-primary btn-square left"><span class='fa fa-pencil'></span> Edit selected students</button>
 </#if>
 </div>
 
@@ -42,7 +41,7 @@
                                 <#if paper.uncheckedList?has_content && paper.uncheckedList?seq_contains(c._id)>
                                     display:none;
                                 </#if>
-                        color:white;background:${arrayOfColours[c_index%arrayOfColours?size][0]};border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>">${c.name}</th>
+                        color:white;background:<#if c.colour?has_content>${c.colour}<#else>${arrayOfColours[c_index%arrayOfColours?size][0]}</#if>;border-bottom-color: ${arrayOfColours[c_index%arrayOfColours?size][6]};<#if !c_has_next>border-right:none</#if>">${c.name}</th>
                 </#list>
             </thead>
             <tbody>
@@ -52,7 +51,14 @@
                         <input type="checkbox" value="${r._id}" name="usernames" checked='checked'/>
                     </td>
                     <#list studentFields as f>
-                        <td style='text-align:left;' data-value="${f?html}">${r.userInfo[f]}</td>
+                        <td style='text-align:left;position:relative' data-value="${f?html}">
+                            ${r.userInfo[f]}
+                            <#if f_index == 0>
+                                <div class='editControls'>
+                                    <a href="${baseUrl}/user/editStudent/${r._id}"><span class='fa fa-pencil btn btn-default btn-primary btn-square' style='font-size:11px'></span></a><a href="${baseUrl}/user/deleteStudent/${r._id}"><span class='fa fa-times btn btn-default btn-danger btn-square' style='border-left:1px solid #043B4E;font-size:11px'></span></a>
+                                </div>
+                            </#if>
+                        </td>
                     </#list>
                     <#list columns as c>
                             <#if r[c._id]?has_content>

@@ -32,10 +32,15 @@
                                     checked="checked"
                                 </#if> class="columnCheckbox" name="columns"/>
                     </td>
-                    <td style='text-align:left'>${c.name}</td>
+                    <td style='text-align:left;position:relative'>
+                        ${c.name}
+                        <div class='editControls'>
+                            <a href="${baseUrl}/user/editColumn/${c._id}"><span class='fa fa-pencil btn btn-default btn-primary btn-square' style='font-size:11px'></span></a><a href="${baseUrl}/user/deleteColumn/${c._id}"><span class='fa fa-times btn btn-default btn-danger btn-square' style='border-left:1px solid #043B4E;font-size:11px'></span></a>
+                        </div>
+                    </td>
                     <td style='text-align:left'>${c.description!}</td>
                     <td style='text-align:left'>${c.tags!}</td>
-                    <td style='border-right:none;text-align:center;'><span class='fa fa-square colourPicker' data-column='${c._id}' style='cursor:pointer;font-size:18px;color:${arrayOfColours[cc_index%arrayOfColours?size][0]}'></span></td>
+                    <td style='border-right:none;text-align:center;'><span class='fa fa-square showPalette showPalette_${c._id}' data-column='${c._id}' style='cursor:pointer;font-size:18px;color:<#if c.colour?has_content>${c.colour}<#else>${arrayOfColours[cc_index%arrayOfColours?size][0]}</#if>'></span></td>
                 </#list>
             </tr>
         </#list>
