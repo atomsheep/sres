@@ -19,7 +19,7 @@
         <div class='paper_buttons'
              style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
             <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-            <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
+            <a href="${baseUrl}/user/editPaper/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
             <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
             <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
@@ -28,7 +28,7 @@
     <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
         <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:40px;background:white;color:#0886AF;z-index:100'>
-            <div class='menuButton'>
+            <div class='menuButton addPanel'>
                 <span class='fa fa-plus'></span>
                 <div style='display:inline;margin-left:5px'>Add dashboard panel</div>
                 <div style='clear:both'></div>
@@ -39,6 +39,17 @@
                 <div style='clear:both'></div>
             </div>
         </div>
+    </div>
+    <div id='panels' style='display:none;clear:both;background:white;height:40px;z-index:50;position:absolute;top:40px;left:0;right:0'>
+        <div class='fa fa-times closePanels' style='cursor:pointer;float:left;color:#0886AF;font-size: 18px;padding: 10px 10px;'></div>
+        <#-- Add panels -->
+        <div class='btn btn-default addPanelButton btn-square right'>Columns</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Filters</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Student fields</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Paper info</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Data overview</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Intervention log</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Student data</div>
     </div>
 </#if>
 </div>
@@ -138,6 +149,14 @@ $(function () {
         saveGridData(true, function(){
             location.reload();
         });
+    });
+
+    $('.addPanel').on('click', function(){
+        $('#panels').slideDown();
+    });
+
+    $('.closePanels').on('click', function(){
+        $('#panels').slideUp();
     });
 
     <#if paper.gridData?has_content>

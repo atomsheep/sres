@@ -1350,6 +1350,7 @@ public class UserController {
         model.put("id", id);
         //TODO: add ICN here
         model.put("ICN_C", "Paper");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/paperInfoPanel";
     }

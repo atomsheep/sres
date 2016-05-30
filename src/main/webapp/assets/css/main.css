@@ -189,6 +189,10 @@ table.dataTable tbody tr { background: none !important }
 .datepicker table tr td.active.active { background: #0886AF !important; }
 
 
+.addPanelButton { background:#fff; border:none;color:#043B4E;padding:10px }
+.addPanelButton:hover { background:#eee; }
+
+
 /*quill*/
 .quill-toolbar { background:white;border:1px solid #066888  }
 .quillField{ background:white;min-height: 100px;color:black;resize:vertical;border:1px solid #066888 }

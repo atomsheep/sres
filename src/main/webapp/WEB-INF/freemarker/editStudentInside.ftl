@@ -6,7 +6,7 @@ Edit student information
 </span>
 <div style='clear:both'></div>
 
-<form name="editPaperForm" method="post" action="${baseUrl}/user/savePaper">
+<form name="editPaperForm" method="post" action="${baseUrl}/user/saveStudent">
 <#if (paper._id)?has_content>
     <input type="hidden" name="_id" value="${paper._id}"/>
 </#if>
