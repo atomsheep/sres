@@ -633,11 +633,11 @@ public class UserController {
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
 
-        String introparagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
-        email.put("introductoryParagraph", introparagraph);
+        String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
+        email.put("introductoryParagraph", introParagraph);
 
-        String concludingparagraph = "Regards,\n\n{{user.firstName}}";
-        email.put("concludingParagraph", concludingparagraph);
+        String concludingParagraph = "Regards,\n\n{{user.firstName}}";
+        email.put("concludingParagraph", concludingParagraph);
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
         return "redirect:/user/emailStudents/" + eid.toString();
     }
