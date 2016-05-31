@@ -1,10 +1,12 @@
 package nz.ac.otago.edtech.sres.controller;
 
+import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.client.AggregateIterable;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
@@ -592,6 +594,21 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/saveParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> saveParagraph(@RequestParam("id") String id,
+                                            @RequestParam("value") String value) {
+
+        String action = "saveParagraph";
+        boolean success = true;
+        String detail = null;
+        if (StringUtils.isNotBlank(value)) {
+            db.getCollection(MongoUtil.COLLECTION_NAME_PARAGRAPHS).updateOne(eq("_id", new ObjectId(id)),
+                    new Document("$set", new Document("text", value))
+            );
+        }
+        return OtherUtil.outputJSON(action, success, detail);
+    }
+
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
                                 @RequestParam("id") String id,
@@ -616,19 +633,11 @@ public class UserController {
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
 
-        Document introparagraph = new Document();
-        if (StringUtils.isBlank(studentName))
-            introparagraph.put("text","Dear student,");
-        else
-            introparagraph.put("text","Dear {{student." + studentName + "}},");
-        introparagraph.put("html","");
+        String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
+        email.put("introductoryParagraph", introParagraph);
 
-        email.put("introductoryParagraph", introparagraph);
-
-        Document concludingparagraph = new Document();
-        concludingparagraph.put("text","Regards,\n\n{{user.firstName}}");
-        concludingparagraph.put("html","");
-        email.put("concludingParagraph", concludingparagraph);
+        String concludingParagraph = "Regards,\n\n{{user.firstName}}";
+        email.put("concludingParagraph", concludingParagraph);
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).insertOne(new Document(email));
         return "redirect:/user/emailStudents/" + eid.toString();
     }
@@ -640,6 +649,8 @@ public class UserController {
 
         ObjectId emailId = new ObjectId(id);
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
+        List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,"emailref",emailId);
+        email.put("paragraphs",paragraphs);
         model.put("email", email);
 
         @SuppressWarnings("unchecked")
@@ -703,6 +714,58 @@ public class UserController {
         return new ResponseEntity<List<Document>>(results, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/addAdditional", method = RequestMethod.POST)
+    public String addAdditional(@RequestParam("id") String id,
+                                @RequestParam("type") String type,
+                                HttpServletRequest request,
+                                ModelMap model) {
+        ObjectId emailId = new ObjectId(id);
+        Document email = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_INTERVENTIONS,"_id",emailId);
+        ObjectId paragraphId = new ObjectId();
+        Document paragraph = new Document("_id",paragraphId);
+        paragraph.put("type",type);
+        paragraph.put("emailref",emailId);
+
+        db.getCollection(MongoUtil.COLLECTION_NAME_PARAGRAPHS)
+                .updateOne(eq("_id", paragraphId), new Document("$set", new Document(paragraph)),
+                        new UpdateOptions().upsert(true));
+
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", email.get("paperref"));
+        model.put("columns",columns);
+        model.put("paragraph",paragraph);
+        model.put("id", id);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return type+"Paragraph";
+    }
+
+    @RequestMapping(value = "/removeParagraph", method = RequestMethod.POST)
+    public ResponseEntity<String> removeParagraph(@RequestParam("id") String id,
+                                HttpServletRequest request,
+                                ModelMap model) {
+        ObjectId paragraphId = new ObjectId(id);
+        DeleteResult dr = MongoUtil.removeDocument(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,"_id",paragraphId);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        return OtherUtil.outputJSON("removeParagraph", true, "");
+    }
+
+    @RequestMapping(value = "/getParagraph/{id}", method = RequestMethod.GET)
+    public String getParagraph(@PathVariable String id,
+                               HttpServletRequest request,
+                               ModelMap model){
+        ObjectId paragraphId = new ObjectId(id);
+        Document paragraph = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PARAGRAPHS, "_id",paragraphId);
+        Document email = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_INTERVENTIONS,"_id",paragraph.get("emailref"));
+        String type = paragraph.get("type").toString();
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", email.get("paperref"));
+        model.put("columns",columns);
+        model.put("paragraph",paragraph);
+        model.put("id", id);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return type+"Paragraph";
+    }
+
     @RequestMapping(value = "/emailPreview", method = RequestMethod.GET)
     public String emailPreview(@RequestParam("emailId") String emailId,
 
@@ -718,7 +781,9 @@ public class UserController {
         if (index < size) {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
-            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -752,7 +817,9 @@ public class UserController {
         if (index < size) {
             String id = studentList.get(index);
             Document user = MongoUtil.getUser(db, id);
-            Map<String, String> map = MongoUtil.getEmailInformation(user, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -793,7 +860,9 @@ public class UserController {
         }
         for (String u : studentList) {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
-            Map<String, String> map = MongoUtil.getEmailInformation(uu, email);
+            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
+            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -938,7 +1007,7 @@ public class UserController {
 
     @RequestMapping(value = "/saveScanningInformation", method = RequestMethod.POST)
     public String saveScanningInformation(
-            @RequestParam(value = "_id", required = false) String _id,
+            @RequestParam(value = "id", required = false) String _id,
             @RequestParam(value = "customDisplay", required = false) String customDisplay) {
 
         Date now = new Date();
@@ -1120,8 +1189,9 @@ public class UserController {
         model.put("results", results);
         model.put("columns", columns);
         model.put("pageName", "viewPaper");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
-        return Common.DEFAULT_VIEW_NAME;
+        return "dashboard/studentDataPanel";
     }
 
 
@@ -1168,7 +1238,69 @@ public class UserController {
         return OtherUtil.outputJSON(action, success, detail);
     }
 
+    @RequestMapping(value = "/changeColour", method = RequestMethod.POST)
+    public ResponseEntity<String> saveColumnValue(@RequestParam(value = "columnId", required = false) String columnId,
+                                                  @RequestParam(value = "colour", required = false) String colour,
+                                                  HttpServletRequest request) {
+        String action = "changeColour";
+        db.getCollection(MongoUtil.COLLECTION_NAME_COLUMNS).updateOne(
+                eq("_id", new ObjectId(columnId)),
+                new Document("$set", new Document("colour", colour))
+        );
+        String detail = null;
+        return OtherUtil.outputJSON(action, true, "");
+    }
+
+    @RequestMapping(value = "/editStudent/{id}", method = RequestMethod.GET)
+    public String editStudent(@PathVariable String id,
+                                  HttpServletRequest request,
+                                  ModelMap model) {
+        ObjectId studentId = new ObjectId(id);
+        AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
+                new Document("$match", new Document("_id", studentId)),
+                new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
+
+        Document user = null;
+        for (Document u : iterable)
+        {
+            Document result = new Document();
+            result.put("_id", u.get("_id"));
+            result.put("userInfo", u.get("userInfo"));
+            @SuppressWarnings("unchecked")
+            List<Document> userdata = (List<Document>) u.get("userdata");
+            for(Document ud : userdata) {
+                String colref = ud.get("colref").toString();
+                Document column = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_COLUMNS, "_id", new ObjectId(colref));
+                ud.put("name",column.get("name"));
+                Document paper = MongoUtil.getPaper(db, column.get("paperref").toString());
+                model.put("paper", paper);
+            }
+            result.put("userData",userdata);
+            user = result;
+        }
+
+        model.put("user",user);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        model.put("pageName", "editStudent");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+
     //async loading
+    @RequestMapping(value = "/getDataOverview/{id}", method = RequestMethod.GET)
+    public String getDataOverview(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db,paperId);
+        List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
+        model.put("columns", columns);
+        model.put("paper",paper);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "dashboard/dataOverview";
+    }
+
     @RequestMapping(value = "/getColumns/{id}", method = RequestMethod.GET)
     public String getColumns(@PathVariable String id,
                              HttpServletRequest request,
@@ -1178,8 +1310,21 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
         model.put("paper",paper);
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/columnPanel";
+    }
+
+    @RequestMapping(value = "/getUserFields/{id}", method = RequestMethod.GET)
+    public String getUserFields(@PathVariable String id,
+                             HttpServletRequest request,
+                             ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        Document paper = MongoUtil.getPaper(db,paperId);
+        model.put("studentFields", paper.get("studentFields"));
+        model.put("paper",paper);
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return "dashboard/userFieldsPanel";
     }
 
     @RequestMapping(value = "/getFilters/{id}", method = RequestMethod.GET)
@@ -1190,8 +1335,7 @@ public class UserController {
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         model.put("columns", columns);
         model.put("id", id);
-        //TODO: add baseurl here
-        model.put("baseUrl", "");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/filterPanel";
     }
@@ -1206,6 +1350,7 @@ public class UserController {
         model.put("id", id);
         //TODO: add ICN here
         model.put("ICN_C", "Paper");
+        model.put("baseUrl", ServletUtil.getContextURL(request));
         MongoUtil.putCommonIntoModel(db, request, model);
         return "dashboard/paperInfoPanel";
     }

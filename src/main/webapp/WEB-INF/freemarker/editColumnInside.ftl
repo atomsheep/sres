@@ -1,7 +1,7 @@
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
 <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
 <a style='color:white;text-decoration: underline' href="${baseUrl}/user/viewPaper/${paperId}">View paper</a> >
-<a style='color:white;text-decoration: underline' href="${baseUrl}/user/columns">View columns</a> >
+<a style='color:white;text-decoration: underline' href="${baseUrl}/user/viewColumnList/${paperId}">View columns</a> >
 Edit column info
 </span>
 <div style='clear:both'></div>
@@ -95,7 +95,7 @@ Edit column info
 
         <div class='topPanel'>
             <div class='btn btn-default btn-primary' id="addKeyValue"  style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'>
-                Add new column attribute
+                <span class='fa fa-plus'></span> Add new column attribute
             </div>
         </div>
 

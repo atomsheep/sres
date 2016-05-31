@@ -19,7 +19,7 @@
         <div class='paper_buttons'
              style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
             <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-            <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
+            <a href="${baseUrl}/user/editPaper/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
             <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
             <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
@@ -28,7 +28,7 @@
     <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
         <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:40px;background:white;color:#0886AF;z-index:100'>
-            <div class='menuButton'>
+            <div class='menuButton addPanel'>
                 <span class='fa fa-plus'></span>
                 <div style='display:inline;margin-left:5px'>Add dashboard panel</div>
                 <div style='clear:both'></div>
@@ -40,6 +40,17 @@
             </div>
         </div>
     </div>
+    <div id='panels' style='display:none;clear:both;background:white;height:40px;z-index:50;position:absolute;top:40px;left:0;right:0'>
+        <div class='fa fa-times closePanels' style='cursor:pointer;float:left;color:#0886AF;font-size: 18px;padding: 10px 10px;'></div>
+        <#-- Add panels -->
+        <div class='btn btn-default addPanelButton btn-square right'>Columns</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Filters</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Student fields</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Paper info</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Data overview</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Intervention log</div>
+        <div class='btn btn-default addPanelButton btn-square right'>Student data</div>
+    </div>
 </#if>
 </div>
 
@@ -48,22 +59,28 @@
     <div class="gridster">
         <ul>
             <#if !paper.gridData?has_content> <#-- default dashboard layout -->
-                <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="columns">
+                <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="columns">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
                 </li>
-                <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="filters">
+                <li class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="filters">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
                 </li>
-                <li id='panel3' class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2" data-paneltype="studentData">
+                <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2" data-paneltype="studentData">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
                 </li>
-                <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="2" data-paneltype="paperInfo">
+                <li class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="paperInfo">
+                    <div class='innerContent'>
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                    </div>
+                </li>
+
+                <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="userFields">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
@@ -72,18 +89,14 @@
                 <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1"
                     style='background:white;overflow:hidden' data-paneltype="dataOverview">
                     <div class='innerContent'>
-                        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-                    <#--      <#list columns as c>
-                                <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
-                            </#list> -->
+                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
                 </li>
 
-                <li id='panel6' class='sres_panel' data-row="4" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="interventions">
+                <li class='sres_panel' data-row="4" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="interventions">
                     <div class='innerContent'>
                         <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
                     </div>
-
                 </li>
             </#if>
         </ul>
@@ -138,6 +151,14 @@ $(function () {
         });
     });
 
+    $('.addPanel').on('click', function(){
+        $('#panels').slideDown();
+    });
+
+    $('.closePanels').on('click', function(){
+        $('#panels').slideUp();
+    });
+
     <#if paper.gridData?has_content>
         var gridData = JSON.parse("${paper.gridData?js_string}");
         gridData = Gridster.sort_by_row_and_col_asc(gridData);
@@ -160,26 +181,47 @@ $(function () {
 
     //async loading of panels-------------------------------------------------
 
+    var colours = ['#1A90C7', '#C71AAD', '#1AC78D','#C7651A','#C71A1A'];
     $('.sres_panel').each(function(i,e){
         var self = $(this);
-        var id = self.attr('id');
         var pt = self.data("paneltype");
         if(pt == "columns"){
             $.get("${baseUrl}/user/getColumns/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
+                $(".showPalette").each(function(i,e){
+                    var columnId = $(e).data('column');
+                    $(e).spectrum({
+                        showPaletteOnly: true,
+                        showPalette:true,
+                        color: colours[i%colours.length],
+                        palette: [
+                            ['#1A90C7', '#C71AAD', '#1AC78D','#C7651A','#C71A1A']
+                        ],
+                        change: function(color) {
+                        console.log(color);
+                            $.post("${baseUrl}/user/changeColour",
+                                {columnId:columnId,colour:color.toHexString()},
+                                function(response){
+                                    $('.showPalette_'+columnId).css('color',color);
+                                    $('th.'+columnId).css('background',color);
+                                }
+                            );
+                        }
+                    });
+                });
             });
         } else if (pt == "filters"){
             $.get("${baseUrl}/user/getFilters/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
                 filterList = $('#filterList');
                 filterDivHtml = $('.filterDiv').html();
             });
         } else if (pt == "studentData"){
             $.get("${baseUrl}/user/getStudentData/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
 
                 self.find('th').each(function () {
                     var slf = $(this);
@@ -192,18 +234,32 @@ $(function () {
         } else if (pt == "paperInfo"){
             $.get("${baseUrl}/user/getPaperInfo/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
             });
         } else if (pt == "interventions") {
             $.get("${baseUrl}/user/getInterventions/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
+            });
+        } else if (pt == "userFields") {
+            $.get("${baseUrl}/user/getUserFields/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(self);
+            });
+        } else if (pt == "dataOverview") {
+            $.get("${baseUrl}/user/getDataOverview/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(self);
             });
         }
     });
 
     //-------------------------------------------------------------------------
 
+    $(document).on('click', 'input[name=usernames]', function() {
+        var count = $('input[name=usernames]:checked').length;
+        $('.studentCount').text(count);
+    });
 
     $(document).on('click', 'input[name=usernameAll]', function () {
         if ($(this).is(':checked')) {
@@ -240,8 +296,8 @@ $(function () {
         saveGridData();
     });
 
-    function replaceCheckboxes(div_id){
-        $('input[type=checkbox]','#'+div_id).each(function (i, e) {
+    function replaceCheckboxes(div){
+        $('input[type=checkbox]',div).each(function (i, e) {
             var self = $(this);
             var newCheckbox = "";
             if (self.is(":checked")) {
@@ -279,15 +335,6 @@ $(function () {
         item.text(toset).attr('title', str);
     };
 
-   /*
-    $('.colourPicker').on('click', function(){
-        var self = $(this);
-        var column = self.data('column');
-        console.log('colour');
-        //TODO: change colours
-    });  */
-
-
     $(document).on('click', 'span.newFilter', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         div.prev('.filterDiv').find('input[name=value]').css('width', '25%');
@@ -295,11 +342,6 @@ $(function () {
         $('span.removeFilter').show();
     });
 
-   /* var columns = $('.topLeftPanel:last').html();
-    var filters = $('.midLeftPanel:last').html();
-    var studentList = $('.bottomLeftPanel:last').html();
-    var paperInfo = $('.topRightPanel:last').html();
-    var dataOverview = $('.midRightPanel:last').html(); */
 
   /*  var p;
 
@@ -399,11 +441,31 @@ $(function () {
             array.push(obj);
         });
         var jsonString = JSON.stringify(array);
-        console.log('json string', jsonString);
-        $('[name=json]').val(jsonString);
-        $('[name=filterForm]').submit();
-    });
 
+        $.post("${baseUrl}/user/filterStudentList",
+            {id:id, json:jsonString},
+            function(data){
+                $('.sres_panel').each(function(i,e){
+                    var self = $(this);
+                    var id = self.attr('id');
+                    var pt = self.data("paneltype");
+                    if (pt == "studentData"){
+                        self.find('.innerContent').html(data);
+                        replaceCheckboxes(id);
+
+                        self.find('th').each(function () {
+                            var slf = $(this);
+                            if (slf.find("input").length == 0) {
+                                var text = slf.text();
+                                slf.shortText(text, 20);
+                            }
+                        });
+                    }
+                });
+            }
+        );
+    });
+/* TODO:remove?
     $(document).on("dblclick", '#studentList td', function () {
         var slf = $(this);
         var id = slf.data('id');
@@ -433,7 +495,7 @@ $(function () {
             });
         }
     });
-
+*/
     $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
@@ -489,54 +551,6 @@ $(function () {
         ["#C71A1A", "#E32626", "#E84A4A", "#EC6F6F", "#F19393", "#360707", "#5A0C0C", "#7E1010", "#A21515"]
     ];
 
-   // google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
- <#--
-    function drawCharts() {
-
-    <#list columns as c>
-        var column = {};
-        column.name = "${c.name?js_string}";
-        column.id = "${c._id}";
-        column.data = {};
-        $('td.' + column.id).each(function (i, e) {
-            var value = $(e).data('value');
-            if ((value == null) || (value == ""))
-                value = "[blank]";
-            if (!column.data[value])
-                column.data[value] = 1;
-            else
-                column.data[value] += 1;
-        });
-        console.log('column.data', column.data);
-
-        var arrayOfArray = [
-            ['Task', 'sdd']
-        ];
-        $.each(column.data, function (i, e) {
-            arrayOfArray.push([i, e]);
-        });
-
-        var data = google.visualization.arrayToDataTable(arrayOfArray);
-
-        var options = {
-            title: column.name,
-            backgroundColor: 'transparent',
-            legend: {textStyle: {color: '#000'}, position: "labeled"},
-            pieSliceTextStyle: {
-                color: 'transparent'
-            },
-            colors: arrayOfColours[${c_index}% arrayOfColours.length
-    ],
-        chartArea: {
-            width:"100%", left:20, right:20
-        }
-    };
-
-        var chart = new google.visualization.PieChart(document.getElementById(column.id));
-        chart.draw(data, options);
-    </#list>
-    }
-      -->
     $(document).on('click', '.emailStudents', function () {
         $('#resultsForm').submit();
         return false;
@@ -570,15 +584,6 @@ $(function () {
             $paperButtons.hide();
         event.stopPropagation();
     });
-
-  <#--  var colTotal = ${columns?size};
-    var colCount = 0;
-
-    var interval = setInterval(function () {
-        $('.chart_' + (colCount % colTotal)).css('display', 'none');
-        colCount++;
-        $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
-    }, 5000);       -->
 
     $('td.userCheck').on("mouseover", function () {
         var slf = $(this);

@@ -1,7 +1,7 @@
 <h4 style='margin:0;padding:10px;background:#043B4E'>${ICN_C} information <span class='fa fa-times deletePanel' style='float:right'></span></h4>
 
 <div class='topPanel'>
-    <a href="" class="btn btn-default btn-primary editPaper" style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E'><span class='fa fa-pencil'></span> Edit paper info</a>
+    <a href="${baseUrl}/user/editPaper/${paper._id}" class="btn btn-default btn-primary editPaper btn-square left"><span class='fa fa-pencil'></span> Edit paper info</a>
 </div>
 <div style="clear:both"></div>
 

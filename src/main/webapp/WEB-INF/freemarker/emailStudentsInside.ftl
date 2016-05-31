@@ -1,17 +1,13 @@
 <div id='topBar' class='topPanel' style='top:50px'>
     <span style='font-weight:bold;float:left;margin:10px;color:#043B4E'>
         <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">View ${ICN}
+        <a style='color:white;text-decoration: underline' href="${baseUrl}/user/viewPaper/${paper._id}">View ${ICN}
             (${paper.code!}  ${paper.name!} ${paper.year!} ${paper.semester!})</a> >
         Email students
     </span>
 
-    <button type="button" class="btn btn-default btn-primary sendEmail"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Send to students
-    </button>
-    <button type="button" id='previewEmail' class="btn btn-default btn-primary"
-            style='float:right;border-radius:0;padding:10px 10px 9px;border-left:1px solid #043B4E'>Preview email
-    </button>
+    <button type="button" class="btn btn-default btn-primary btn-square right sendEmail">Send to students</button>
+    <button type="button" id='previewEmail' class="btn btn-default btn-primary btn-square right">Preview email</button>
 </div>
 
 
@@ -132,7 +128,7 @@
                                 <table width='100%'>
                                     <tr>
                                         <td colspan='5' style="vertical-align:bottom;position:relative">
-                                            <h4 style='cursor:default;position: absolute;bottom:10px'>
+                                            <h4 style='cursor:default;position: absolute;bottom:0'>
                                             Additional/conditional paragraphs</h4>
 
                                             <div id='paperMenu'
@@ -206,78 +202,6 @@
     <div class='quill-field'>
     </div>
 
-    <table class="additionalParagraphTemplate">
-        <tr class='paragraph paragraph_{num}'>
-            <th colspan='5' style='background:#0886AF'>
-                <h4 style='cursor:default;padding:10px;margin:0'>
-                    Additional paragraph
-                    (for <span class='totalStudents'>{totalStudents}</span> students)
-                    <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph'
-                          data-num='{num}'></span></h4>
-            </th>
-        </tr>
-        <tr class='paragraph_{num}'>
-            <td colspan='5' class="inputArea"
-                style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'>
-
-            </td>
-        </tr>
-
-    </table>
-
-    <table class="conditionalParagraphTemplate">
-
-        <tr class='paragraph paragraph_{num}'>
-            <th style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;background:#AF0808' colspan='5'>
-                <h4 style='cursor:default;padding:10px;margin:0'>
-                    Conditional paragraph
-                    (for <span class='conditionalStudentCount'>0</span> students)
-                    <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph'
-                          data-num='{num}'></span>
-                </h4>
-            </th>
-        </tr>
-        <tr class='paragraph_{num}'>
-            <td class='input-group-addon'
-                style='border-radius:0;border-left:1px solid #AF0808;text-align:center;border-right:1px solid #043B4E;width:5%;'>
-                if
-            </td>
-            <td style='padding:0;width:30%'>
-                <select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'
-                        name='conditionalColref' class='conditionalElement form-control'>
-                <#list columns as c>
-                    <option value='${c._id}'>${c.name?js_string}</option>
-                </#list>
-                </select>
-            </td>
-            <td style='width:30%;'>
-                <select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'
-                        name='conditionalOperator' class='conditionalElement form-control'>
-                    <option value='$eq'>equal to</option>
-                    <option value='$lt'>less than</option>
-                    <option value='$lte'>less than or equal to</option>
-                    <option value='$gt'>greater than</option>
-                    <option value='$gte'>greater than or equal to</option>
-                    <option value='$ne'>not equal to</option>
-                </select>
-            </td>
-            <td style='width:30%;padding:0'>
-                <input type='text' name='conditionalValue' class='conditionalElement form-control'
-                       placeholder='enter a value here, e.g. 10'
-                       style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'/>
-            </td>
-            <td class='input-group-addon'
-                style='border-right:1px solid #AF0808;text-align:center;width:5%;border-radius:0'>then
-            </td>
-        </tr>
-        <tr class='paragraph_{num}'>
-            <td colspan='5' class="inputArea"
-                style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:0'>
-
-            </td>
-        </tr>
-    </table>
-
 </div>
 
 <script type="text/javascript">
@@ -339,8 +263,26 @@ $(function () {
         editorArray.push(quill);
     });
 
-    $('.shortcode').on('keydown', function () {
-        return false;
+    var ctrlDown = false;
+    var ctrlKey = 17, vKey = 86, cKey = 67;
+
+    $(document).on('keydown',function(e){
+        if(e.keyCode == ctrlKey)
+            ctrlDown = true;
+    }).on('keyup',function(e){
+              if (e.keyCode == ctrlKey)
+                  ctrlDown = false;
+          });
+
+    $('.shortcode').on('keydown', function (e) {
+        if(e.keyCode == ctrlKey)
+            ctrlDown = true;
+
+        if (ctrlDown && e.keyCode == cKey) {
+            //do the copy
+        }else{
+            return false;
+        }
     });
 
     $('.shortcode').on('click', function () {
@@ -421,77 +363,57 @@ $(function () {
         event.stopPropagation();
     });
 
-    var numRegEx = new RegExp('{num}', 'g');
-
+    var numRegEx = new RegExp('{num}', 'g')
     var totalStudents = ${users?size};
 
-    $('.addAdditional').on('click', function () {
-        console.log('additional', additionalParagraph);
-        var num = $('.paragraph').length;
-        // var newParagraph = "<tr class='paragraph paragraph_" + num + "'><th colspan='5' style='background:#0886AF'><h4 style='cursor:default;padding:10px;margin:0'>Additional paragraph (for <span class='totalStudents'>" + totalStudents + "</span> students) <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph' data-num='" + num + "'></span></h4></th></tr><tr class='paragraph paragraph_" + num + "'><td colspan='5' style='border-left:1px solid #0886AF;border-right:1px solid #0886AF;border-bottom:1px solid #0886AF;padding:0'><textarea style='border-radius:0;min-height:100px' placeholder='Add some text to include in the email for all students' class='form-control'></textarea></td></tr>";
-        var html = additionalParagraph.html();
-        console.log('html', html);
-        html = html.replace(numRegEx, num);
-        html = html.replace('{totalStudents}', totalStudents);
-        console.log('html', html);
+    function loadParagraph(result){
+        var paragraphText = $(result).filter('#paragraphText').html();
+        var html = result.replace("{totalStudents}",totalStudents);
         var newParagraph = $(html).find('tr');
+        var paragraphId = newParagraph.data("id");
         var td = $('td.inputArea', newParagraph);
-        td.attr('id', '__paragraph_' + num);
-        addQuillEditor(td, '__toolbar_'+num, '__filed_' + num);
-
+        addQuillEditor(td, '__toolbar_'+paragraphId, '__field_' + paragraphId);
         $('#additionalParagraphs').before(newParagraph);
-        var self = $('#__filed_' + num);
-        var tb = "#" + self.data("toolbar");
-        var quill = new Quill(self[0], configs);
-        quill.addModule('toolbar', {
-            container: tb
-        });
-        // TODO: add paragraph to db
-    });
-
-
-    $('.addConditional').on('click', function () {
-        console.log('conditional', conditionalParagraph);
-        var num = $('.paragraph').length;
-        <#--
-        var newParagraph = "<tr class='paragraph paragraph_" + num + "'><th style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;background:#AF0808' colspan='5'><h4 style='cursor:default;padding:10px;margin:0'>Conditional paragraph (for <span class='conditionalStudentCount'>0</span> students) <span style='cursor:pointer;float:right' class='fa fa-times removeParagraph' data-num='" + num + "'></span></h4></th></tr><tr class='paragraph_" + num + "' ><td class='input-group-addon' style='border-radius:0;border-left:1px solid #AF0808;text-align:center;border-right:1px solid #043B4E;width:5%;'>if</td><td style='padding:0;width:30%'><select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;' name='conditionalColref' class='conditionalElement form-control'>"
-        <#list columns as c>
-                + "<option value='${c._id}'>${c.name?js_string}</option>"
-        </#list>
-                + "</select></td>"
-
-                + "<td style='width:30%;'><select style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;' name='conditionalOperator' class='conditionalElement form-control'>"
-                + "<option value='$eq'>equal to</option>"
-                + "<option value='$lt'>less than</option>"
-                + "<option value='$lte'>less than or equal to</option>"
-                + "<option value='$gt'>greater than</option>"
-                + "<option value='$gte'>greater than or equal to</option>"
-                + "<option value='$ne'>not equal to</option>"
-                + "</select></td>"
-
-                + "<td style='width:30%;padding:0'><input type='text' name='conditionalValue' class='conditionalElement form-control' placeholder='enter a value here, e.g. 10'  style='float:left;border-radius:0;width:100%;border: none;border-right: 1px solid #043B4E;'/>"
-
-                + "</td><td class='input-group-addon' style='border-right:1px solid #AF0808;text-align:center;width:5%;border-radius:0'>then</td></tr><tr class='paragraph paragraph_" + num + "'><td colspan='5' style='border-left:1px solid #AF0808;border-right:1px solid #AF0808;border-bottom:1px solid #AF0808;padding:0'><textarea style='border-radius:0;min-height:100px' class='form-control' placeholder='Add some text to include in the email to students matching the above condition'></textarea></td></tr>";
-
-        -->
-        var html = conditionalParagraph.html();
-        console.log('html', html);
-        html = html.replace(numRegEx, num);
-        html = html.replace('{totalStudents}', totalStudents);
-        console.log('html', html);
-        var newParagraph = $(html).find('tr');
-        var td = $('td.inputArea', newParagraph);
-        td.attr('id', '__paragraph_' + num);
-        addQuillEditor(td, '__toolbar_'+num, '__filed_' + num);
-
-        $('#additionalParagraphs').before(newParagraph);
-        var self = $('#__filed_' + num);
+        var self = $('#__field_' + paragraphId);
         var tb = "#" + self.data("toolbar");
         var quill = new Quill(self[0], configs);
         quill.addModule('toolbar', {
             container: tb
         });
 
+        quill.setHTML(paragraphText);
+
+        quill.on('text-change', function (delta, source) {
+            console.log('text change', quill, quill.container.id);
+            var pId = quill.container.id;
+            pId = pId.replace("__field_","");
+            var value = quill.getHTML();
+            $.post("${baseUrl}/user/saveParagraph",
+                {id: pId, value: value},
+                function (json) {
+                    if (json.success) {
+                        console.log("update field", fieldName, "successfully.");
+                    }
+                }
+            );
+        });
+    }
+
+    <#list email.paragraphs as p>
+        $.get("${baseUrl}/user/getParagraph/${p._id}",
+            function (result) {
+                loadParagraph(result);
+            });
+    </#list>
+
+    $('.addAdditional, .addConditional').on('click', function () {
+        var self = $(this);
+        var type = self.hasClass("addAdditional") ? "additional" : "conditional";
+        $.post("${baseUrl}/user/addAdditional",
+            {id: "${email._id}", type: type},
+            function (result) {
+                loadParagraph(result);
+            });
     });
 
     $('input[name=usernames]').on('click', function () {
@@ -522,8 +444,12 @@ $(function () {
 
     $(document).on('click', '.removeParagraph', function () {
         var self = $(this);
-        var num = self.data('num');
-        $('tr.paragraph_' + num).remove();
+        var id = self.data('id');
+        $.post("${baseUrl}/user/removeParagraph",
+            {id:id},
+            function(){
+                $.when($('tr.paragraph_' + id).fadeOut()).then(function(){$('tr.paragraph_' + id).remove()});
+            });
     });
 
     // set email field if available

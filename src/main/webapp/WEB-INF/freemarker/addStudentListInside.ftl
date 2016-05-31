@@ -9,8 +9,8 @@
 <form name="editStudentList" id="editStudentList" method="post" action="${baseUrl}/user/addStudentList" enctype="multipart/form-data" onSubmit="">
 
 <h1 style='margin:0 20px'>Step 2: add student list
-    <button type="submit" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;'>Next step <span class='fa fa-caret-right'></span></button>
-    <a href="${baseUrl}/user/editPaper/${id}" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
+    <button type="submit" class="btn btn-default btn-primary btn-square right">Next step <span class='fa fa-caret-right'></span></button>
+    <a href="${baseUrl}/user/editPaper/${id}" class="btn btn-default btn-primary btn-square right" style='margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
 <div class='info_text'>Upload a list of students for this ${ICN}. SRES only accepts student lists in CSV (comma separated value) format. Your CSV file must contain a unique identifier for each student (e.g. a username or student ID).
