@@ -421,7 +421,7 @@ $(function () {
         event.stopPropagation();
     });
 
-    var numRegEx = new RegExp('{num}', 'g')
+    var numRegEx = new RegExp('{num}', 'g');
 
     var totalStudents = ${users?size};
 
