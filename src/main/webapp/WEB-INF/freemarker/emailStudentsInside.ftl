@@ -226,6 +226,14 @@ $(function () {
                 .data('toolbar', toolbarId);
     }
 
+    function saveParagraph(quill){
+        var fieldName = quill.container.id;
+        var value = quill.getHTML();
+        $.post("${baseUrl}/user/saveEmail",
+                {emailId: '${email._id}', name: fieldName, value: value},
+                function (json) {  });
+    }
+
     var configs = {
         theme: 'snow',
         pollInterval: 500
@@ -249,17 +257,9 @@ $(function () {
             quill.setHTML("${email.concludingParagraph?j_string}");
     </#if>
         quill.on('text-change', function (delta, source) {
-            console.log('text change', quill, quill.container.id);
-            var fieldName = quill.container.id;
-            var value = quill.getHTML();
-            $.post("${baseUrl}/user/saveEmail",
-                    {emailId: '${email._id}', name: fieldName, value: value},
-                    function (json) {
-                        if (json.success) {
-                            console.log("update field", fieldName, "successfully.");
-                        }
-                    });
+            saveParagraph(quill);
         });
+        saveParagraph(quill);
         editorArray.push(quill);
     });
 
@@ -363,7 +363,7 @@ $(function () {
         event.stopPropagation();
     });
 
-    var numRegEx = new RegExp('{num}', 'g')
+    var numRegEx = new RegExp('{num}', 'g');
     var totalStudents = ${users?size};
 
     function loadParagraph(result){
@@ -429,12 +429,13 @@ $(function () {
     $(document).on('change', '.conditionalElement', function () {
         var self = $(this);
         var parent = self.parents('tr:first');
+        var id = parent.data('id');
         var colref = $("select[name=conditionalColref]", parent).find("option:selected").val();
         var operator = $("select[name=conditionalOperator]", parent).find("option:selected").val();
         var value = $("input[name=conditionalValue]", parent).val();
 
         $.post("${baseUrl}/user/runConditional",
-                {colref: colref, operator: operator, value: value},
+                {colref: colref, operator: operator, value: value, paragraphId:id},
                 function (result) {
                     parent.data(result);
                     var classes = parent.attr("class");
@@ -468,7 +469,6 @@ $(function () {
                     {emailId: '${email._id}', name: fieldName, value: newValue },
                     function (json) {
                         if (json.success) {
-                            console.log("update field", fieldName, "successfully.");
                             slf.data("value", newValue);
                         }
                     });

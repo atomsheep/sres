@@ -14,7 +14,7 @@
             <tr>
                 <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
                 <td style=''>${i.status!}</td>
-                <td style=''>${i.studentList?size}</td>
+                <td style=''><#if i.studentList?has_content>${i.studentList?size}</#if></td>
                 <td style=''><#if i.created?has_content>${i.created?datetime}</#if></td>
             </tr>
         </#list>
