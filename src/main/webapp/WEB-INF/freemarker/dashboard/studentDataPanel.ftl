@@ -8,12 +8,7 @@
 ] />
 
 <h4 style='margin:0;padding:10px;background:#043B4E'>
-<#if json?has_content>
-    Search results (${results?size})
-<#--<a href="${baseUrl}/user/viewPaper/${id}" class="btn btn-default btn-primary">Back to all student list</a>-->
-<#else>
     Students <span class='studentCount'>${results?size}</span> / ${results?size}
-</#if>
     <span class='fa fa-times deletePanel' style='float:right'></span>
 </h4>
 
