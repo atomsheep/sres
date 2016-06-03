@@ -8,7 +8,7 @@
     <#if index &gt; 0>
         <a href="${baseUrl}/user/emailPreview/${(index-1)?c}?emailId=${emailId}" class="btn btn-default btn-primary btn-square right"><span class='fa fa-caret-left'></span> Previous</a>
     </#if>
-    <span style="color: #eee">To</span> ${address!}<br/>
+    <span style="color: #eee">To</span> ${emailAddress!}<br/>
     <span style="color: #eee">Subject</span> ${subject}
 </div>
 

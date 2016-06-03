@@ -769,6 +769,22 @@ public class UserController {
         ObjectId paragraphId = new ObjectId(id);
         Document paragraph = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_PARAGRAPHS, "_id",paragraphId);
         Document email = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_INTERVENTIONS,"_id",paragraph.get("emailref"));
+
+        List studentList = (ArrayList)paragraph.get("studentList");
+        if(studentList != null){
+            List<String> uncheckedList = (ArrayList)email.get("uncheckedList");
+            List<ObjectId> uncheckedObList = new ArrayList<ObjectId>();
+
+            for(String s : uncheckedList){
+                uncheckedObList.add(new ObjectId(s));
+            }
+
+            List userList = ListUtils.subtract(studentList, uncheckedObList);
+            paragraph.put("studentList",userList);
+            List excludedList = ListUtils.intersection(studentList,uncheckedObList);
+            paragraph.put("excludedList",excludedList);
+        }
+
         String type = paragraph.get("type").toString();
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", email.get("paperref"));
         model.put("columns",columns);
