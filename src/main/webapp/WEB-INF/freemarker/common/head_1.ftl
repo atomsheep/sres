@@ -31,10 +31,8 @@
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/quill/quill.base.css" />
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/quill/quill.snow.css" />
 
-    <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/datatables.js"></script>
-    <script type="text/javascript" src="${baseUrl}/assets/js/DataTables/FixedHeader-3.1.1/js/dataTables.fixedHeader.js"></script>
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/DataTables/datatables.css" />
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/DataTables/FixedHeader-3.1.1/css/fixedHeader.dataTables.css" />
+    <script type="text/javascript" src="${baseUrl}/assets/js/spectrum/spectrum.js"></script>
+    <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/spectrum/spectrum.css" />
 
     <!-- Plugins -->
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/popup_simple/popup_simple.css" />

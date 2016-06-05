@@ -80,8 +80,7 @@ Edit ${ICN} information
                     </td>
                     <td>
                         <input class='form-control' type='text' name='value${key_index}' placeholder='attribute value'
-                               value='${extra[key]?html}' size='4'
-                               style='vertical-align: top;display:inline-block;'/>
+                               value='${extra[key]?html}' size='4' style='vertical-align: top;display:inline-block;'/>
                     </td>
                 </tr>
 
@@ -93,6 +92,21 @@ Edit ${ICN} information
 
 </form>
 
+<table style='display:none'>
+    <tbody id='addAttribute'>
+        <tr class='extra'>
+            <td style='padding:0 20px 5px 20px'>
+                <input placeholder='attribute name' class='form-control' type='text' name='key_{num}' value='' size='4' style='width:47.5%;border-radius:0;vertical-align: top;float:left;' />
+                <input class='form-control' type='text' name='value_{num}' placeholder='attribute value' value='' size='4' style='width:47.5%;border-radius:0;vertical-align: top;float:left;' />
+                <div class='removeAttribute btn btn-default btn-danger'
+                     style='padding:0;border-radius:0;width:5%;float:right;text-align:center'><span
+                        style='padding:10px' class="fa fa-times"></span></div>
+                <div style='clear:both'></div>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
 <script type="text/javascript">
     $(function () {
         var top = $('.side1').offset().top;
@@ -101,18 +115,33 @@ Edit ${ICN} information
         $('.side1, .side2').css("height", newHeight + "px");
 
         var index = 0;
-    <#if extra?has_content>
-        index = ${extra?keys?size};
-        $('input[name=size]').val(index);
-    </#if>
+        <#if extra?has_content>
+            index = ${extra?keys?size};
+            $('input[name=size]').val(index);
+        </#if>
+
+        var numRegEx = new RegExp('{num}', 'g');
 
         $('#addKeyValue').on('click', function () {
-            var newRow = "<tr class='extra'><td style='padding:0 5px 5px 20px'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;' /></td><td style='padding:0 20px 5px 0;vertical-align: top'><input class='form-control' type='text' name='value" + index + "' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;' /></td></tr>";
-            index++;
+            //var newRow = "<tr class='extra'><td style='padding:0 20px 5px 20px'><input placeholder='attribute name' class='form-control' type='text' name='key" + index + "' value='' size='4' style='vertical-align: top;display:inline-block;' /><input class='form-control' type='text' name='value" + index + "' placeholder='attribute value' value='' size='4' style='vertical-align: top;display:inline-block;' /></td></tr>";
+            var html = $('#addAttribute').html();
+            html = html.replace(numRegEx, index);
+            var newRow = $(html);
+            $(newRow).addClass("extra"+index);
+            $(newRow).find('.removeAttribute').data("index",index);
             $('input[name=size]').val(index);
             $('#addNewColumnAttribute').before(newRow);
-            $('.extraFieldsSize').text($('.extra').length);
+
+            $('.extraFieldsSize').text($('.extra:visible').length);
+            index++;
             return false;
+        });
+
+        $(document).on('click','.removeAttribute', function(){
+            var self = $(this);
+            var index = self.data("index");
+            self.parents('.extra'+index).remove();
+            $('.extraFieldsSize').text($('.extra:visible').length);
         });
 
     });

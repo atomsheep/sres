@@ -413,7 +413,15 @@ public class MongoUtil {
 
         for(Document p : paragraphs)
         {
-            body += p.get("text");
+            if(p.get("type").equals("conditional")){
+            List<ObjectId> includeList = (ArrayList)p.get("studentList");
+            if(includeList != null && includeList.contains(user.get("_id")))
+                body += p.get("text") != null ? p.get("text") : "";
+            }
+            else
+            {
+                body += p.get("text") != null ? p.get("text") : "";
+            }
         }
 
         body += concludingParagraph;

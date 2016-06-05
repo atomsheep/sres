@@ -81,8 +81,13 @@
             </li>
 
             <li class='sres_panel' data-row="4" data-col="1" data-sizex="3" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Search for ${ICN_C}s</h4>
-                Other papers
+                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Search for ${ICN}s</h4>
+                <div style='position:absolute;top:40px;left:0;right:0;bottom:0;overflow-y:scroll'>
+                    <div class='input-group input-group6' style="width:100%;margin-bottom:5px;padding:20px">
+                        <span class='input-group-addon sres_name' style='width:150px'>Search for a paper:</span>
+                        <input type="text" class="form-control searchText" value=""/>
+                    </div>
+                </div>
             </li>
         </ul>
 

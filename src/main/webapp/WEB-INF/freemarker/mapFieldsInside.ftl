@@ -208,6 +208,10 @@
                     marginLeft: "10px"
                 });
             }
+            else
+            {
+                $('[name=mapFieldsForm]').submit();
+            }
         });
 
         var top = $('.side2').offset().top;

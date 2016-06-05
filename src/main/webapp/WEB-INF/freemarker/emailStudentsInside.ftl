@@ -209,8 +209,6 @@ $(function () {
 
     var quillToolbar = $('#elementTemplate').find('.quill-toolbar');
     var quillField = $('#elementTemplate').find('.quill-field');
-    var additionalParagraph = $('#elementTemplate').find('.additionalParagraphTemplate');
-    var conditionalParagraph = $('#elementTemplate').find('.conditionalParagraphTemplate');
 
     addQuillEditor($('td#introEditor'), 'intro-toolbar', 'introductoryParagraph');
     addQuillEditor($('td#concludingEditor'), 'concluding-toolbar', 'concludingParagraph');
@@ -224,6 +222,14 @@ $(function () {
                 .attr('id', fieldId)
                 .addClass("quillField")
                 .data('toolbar', toolbarId);
+    }
+
+    function saveParagraph(quill){
+        var fieldName = quill.container.id;
+        var value = quill.getHTML();
+        $.post("${baseUrl}/user/saveEmail",
+                {emailId: '${email._id}', name: fieldName, value: value},
+                function (json) {  });
     }
 
     var configs = {
@@ -249,17 +255,9 @@ $(function () {
             quill.setHTML("${email.concludingParagraph?j_string}");
     </#if>
         quill.on('text-change', function (delta, source) {
-            console.log('text change', quill, quill.container.id);
-            var fieldName = quill.container.id;
-            var value = quill.getHTML();
-            $.post("${baseUrl}/user/saveEmail",
-                    {emailId: '${email._id}', name: fieldName, value: value},
-                    function (json) {
-                        if (json.success) {
-                            console.log("update field", fieldName, "successfully.");
-                        }
-                    });
+            saveParagraph(quill);
         });
+        saveParagraph(quill);
         editorArray.push(quill);
     });
 
@@ -270,9 +268,9 @@ $(function () {
         if(e.keyCode == ctrlKey)
             ctrlDown = true;
     }).on('keyup',function(e){
-              if (e.keyCode == ctrlKey)
-                  ctrlDown = false;
-          });
+        if (e.keyCode == ctrlKey)
+            ctrlDown = false;
+    });
 
     $('.shortcode').on('keydown', function (e) {
         if(e.keyCode == ctrlKey)
@@ -283,9 +281,7 @@ $(function () {
         }else{
             return false;
         }
-    });
-
-    $('.shortcode').on('click', function () {
+    }).on('click', function () {
         $(this).select();
     });
 
@@ -363,17 +359,22 @@ $(function () {
         event.stopPropagation();
     });
 
-    var numRegEx = new RegExp('{num}', 'g')
+    var numRegEx = new RegExp('{num}', 'g');
     var totalStudents = ${users?size};
 
-    function loadParagraph(result){
+    function loadParagraph(result, existingTR){
         var paragraphText = $(result).filter('#paragraphText').html();
         var html = result.replace("{totalStudents}",totalStudents);
         var newParagraph = $(html).find('tr');
         var paragraphId = newParagraph.data("id");
         var td = $('td.inputArea', newParagraph);
         addQuillEditor(td, '__toolbar_'+paragraphId, '__field_' + paragraphId);
-        $('#additionalParagraphs').before(newParagraph);
+
+        if(existingTR == null)
+            $('#additionalParagraphs').before(newParagraph);
+        else
+            $(existingTR).replaceWith(newParagraph);
+
         var self = $('#__field_' + paragraphId);
         var tb = "#" + self.data("toolbar");
         var quill = new Quill(self[0], configs);
@@ -391,18 +392,18 @@ $(function () {
             $.post("${baseUrl}/user/saveParagraph",
                 {id: pId, value: value},
                 function (json) {
-                    if (json.success) {
-                        console.log("update field", fieldName, "successfully.");
-                    }
+                    if (json.success) { }
                 }
             );
         });
     }
 
     <#list email.paragraphs as p>
+        var tr = "<tr id='existing_${p._id}'></tr>";
+        $('#additionalParagraphs').before(tr);
         $.get("${baseUrl}/user/getParagraph/${p._id}",
             function (result) {
-                loadParagraph(result);
+                loadParagraph(result, "#existing_${p._id}");
             });
     </#list>
 
@@ -418,23 +419,47 @@ $(function () {
 
     $('input[name=usernames]').on('click', function () {
         var self = $(this);
+        var userId = self.val();
+        var remove = !self.is(":checked");
         $.post('${baseUrl}/user/addRemoveUser',
-                {emailId: '${email._id}', userId: self.val(), remove: !self.is(":checked")},
+                {emailId: '${email._id}', userId: userId, remove: remove},
                 function (json) {
                     totalStudents = $('input[name=usernames]:checked').length;
                     $('.totalStudents').text(totalStudents);
+                    $('.conditionalStudentCount').each(function(i,e){
+                        var excludedList = $(e).data('excludedlist');
+                        var studentList = $(e).data('studentlist');
+
+                        if(remove){
+                            if(studentList.indexOf(userId) != -1){
+                                studentList = studentList.replace(userId,"");
+                                excludedList = excludedList + ","+userId;
+                                var count = parseInt($(e).text()) - 1;
+                            }
+                        } else{
+                            if(excludedList.indexOf(userId) != -1){
+                                excludedList = excludedList.replace(userId,"");
+                                studentList = studentList + ","+userId;
+                                var count = parseInt($(e).text()) + 1;
+                            }
+                        }
+                        $(e).text(count);
+                        $(e).data("studentlist",studentList);
+                        $(e).data("excludedlist",excludedList);
+                    });
                 });
     });
 
     $(document).on('change', '.conditionalElement', function () {
         var self = $(this);
         var parent = self.parents('tr:first');
+        var id = parent.data('id');
         var colref = $("select[name=conditionalColref]", parent).find("option:selected").val();
         var operator = $("select[name=conditionalOperator]", parent).find("option:selected").val();
         var value = $("input[name=conditionalValue]", parent).val();
 
         $.post("${baseUrl}/user/runConditional",
-                {colref: colref, operator: operator, value: value},
+                {colref: colref, operator: operator, value: value, paragraphId:id},
                 function (result) {
                     parent.data(result);
                     var classes = parent.attr("class");
@@ -468,7 +493,6 @@ $(function () {
                     {emailId: '${email._id}', name: fieldName, value: newValue },
                     function (json) {
                         if (json.success) {
-                            console.log("update field", fieldName, "successfully.");
                             slf.data("value", newValue);
                         }
                     });
@@ -485,7 +509,6 @@ $(function () {
                     {emailId: '${email._id}', name: fieldName, value: newValue },
                     function (json) {
                         if (json.success) {
-                            console.log("update field", fieldName, "successfully.");
                             slf.data("value", newValue);
                         }
                     });

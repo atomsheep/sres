@@ -19,7 +19,7 @@ View columns
 
         <div class='topPanel'>
             <a class='btn btn-default btn-primary' id="addKeyValue"  style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E' href="${baseUrl}/user/addColumn/${id}">
-                Add new column
+                <span class='fa fa-plus'></span> Add new column
             </a>
         </div>
 
@@ -27,18 +27,22 @@ View columns
             <input name="id" type="hidden" value="${id}"/>
             <table id="studentList" width=100%>
                 <tr>
-                    <th style='text-align:left;border-left:none'><input type="checkbox" name="usernameAll"/>
+                    <th style='text-align:left;border-left:none'><input type="checkbox" name="usernameAll" checked='checked'/>
                     </th>
                     <th style='text-align:left;'>Column name</th>
                     <th style='text-align:left;'>Description</th>
-                    <th></th>
+                    <th style='text-align:left;'>Tags</th>
                 </tr>
                 <#list columns as c>
                     <tr>
-                        <td style='text-align:left;border-left:none'><input type="checkbox" name="columns"/></td>
-                        <td style='text-align:left'><a href="${baseUrl}/user/editColumn/${c._id}">${c.name}</a></td>
+                        <td style='text-align:left;border-left:none'><input type="checkbox" name="columns" checked='checked'/></td>
+                        <td style='text-align:left;position:relative'>${c.name}
+                            <div class='editControls'>
+                                <a href="${baseUrl}/user/editColumn/${c._id}"><span class='fa fa-pencil btn btn-default btn-primary btn-square' style='font-size:11px'></span></a><a href="${baseUrl}/user/deleteColumn/${c._id}"><span class='fa fa-times btn btn-default btn-danger btn-square' style='border-left:1px solid #043B4E;font-size:11px'></span></a>
+                            </div>
+                        </td>
                         <td style='text-align:left'>${c.description!}</td>
-                        <td style='text-align:left;border-right:none'></td>
+                        <td style='text-align:left;border-right:none'>${c.tags!}</td>
                     </tr>
                 </#list>
             </table>

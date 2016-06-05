@@ -19,7 +19,7 @@
         <div class='paper_buttons'
              style='margin-left:20px;display:none;position:absolute;top:40px;right:0;background:white;z-index:100'>
             <a href="${baseUrl}/user/" class='menuButton'>Back to ${ICN} list</a>
-            <a href="${baseUrl}/user/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
+            <a href="${baseUrl}/user/editPaper/${paper._id}" class='menuButton'>Edit ${ICN} info</a>
             <a href="${baseUrl}/user/viewColumnList/${paper._id}" class='menuButton'>Edit columns</a>
             <a href="${baseUrl}/user/addStudentList/${paper._id}" class='menuButton'>Import student list</a>
             <a href="${baseUrl}/user/importStudentData/${paper._id}" class='menuButton'>Import student data</a>
@@ -28,7 +28,7 @@
     <div id='layoutButton' style='padding:5px 10px 6px;float:right;margin:0;font-size:20px;border-radius:0' class='btn btn-default btn-primary'><img style='width:20px;height:20px;margin-top:-1px' src="${baseUrl}/assets/img/layout1.svg" /></div>
 
         <div class='layout_buttons' style='margin-left:20px;display:none;position:absolute;top:40px;right:40px;background:white;color:#0886AF;z-index:100'>
-            <div class='menuButton'>
+            <div class='menuButton addPanel'>
                 <span class='fa fa-plus'></span>
                 <div style='display:inline;margin-left:5px'>Add dashboard panel</div>
                 <div style='clear:both'></div>
@@ -40,57 +40,43 @@
             </div>
         </div>
     </div>
+    <div id='panels' style='display:none;clear:both;background:white;height:40px;z-index:50;position:absolute;top:40px;left:0;right:0'>
+        <div class='fa fa-times closePanels' style='cursor:pointer;float:left;color:#0886AF;font-size: 18px;padding: 10px 10px;'></div>
+        <#-- Add panels -->
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="columns">Columns</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="filters">Filters</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="userFields">Student fields</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="paperInfo">Paper info</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="dataOverview">Data overview</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="interventions">Intervention log</div>
+        <div class='btn btn-default addPanelButton btn-square right' data-panel="studentData">Student data</div>
+    </div>
 </#if>
 </div>
+
+<#-- panel name : row, col, sizex, sizey -->
+<#assign panels = {
+    "columns":[1,1,2,1],
+    "filters":[2,1,2,1],
+    "studentData":[3,1,2,2],
+    "paperInfo":[1,3,1,1],
+    "userFields":[2,3,1,1],
+    "dataOverview":[3,3,1,1],
+    "interventions":[4,3,1,1]
+}/>
 
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow-y:scroll;overflow-x: hidden'>
 
     <div class="gridster">
         <ul>
             <#if !paper.gridData?has_content> <#-- default dashboard layout -->
-                <li id='panel1' class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="columns">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-                </li>
-                <li id='panel2' class='sres_panel' data-row="2" data-col="1" data-sizex="2" data-sizey="1" data-paneltype="filters">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-                </li>
-                <li id='panel3' class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2" data-paneltype="studentData">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-                </li>
-                <li id='panel4' class='sres_panel' data-row="1" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="paperInfo">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-                </li>
-
-                <li id='panel8' class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="userFields">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-                </li>
-
-                <li class='sres_panel' data-row="3" data-col="3" data-sizex="1" data-sizey="1"
-                    style='background:white;overflow:hidden' data-paneltype="dataOverview">
-                    <div class='innerContent'>
-                        <h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-                    <#--      <#list columns as c>
-                                <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto"></div>
-                            </#list> -->
-                    </div>
-                </li>
-
-                <li id='panel6' class='sres_panel' data-row="4" data-col="3" data-sizex="1" data-sizey="1" data-paneltype="interventions">
-                    <div class='innerContent'>
-                        <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
-                    </div>
-
-                </li>
+                <#list panels?keys as k>
+                    <li class='sres_panel' data-row="${panels[k][0]}" data-col="${panels[k][1]}" data-sizex="${panels[k][2]}" data-sizey="${panels[k][3]}" data-paneltype="${k}">
+                        <div class='innerContent'>
+                            <img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' />
+                        </div>
+                    </li>
+                </#list>
             </#if>
         </ul>
     </div>
@@ -144,11 +130,19 @@ $(function () {
         });
     });
 
+    $('.addPanel').on('click', function(){
+        $('#panels').slideDown();
+    });
+
+    $('.closePanels').on('click', function(){
+        $('#panels').slideUp();
+    });
+
     <#if paper.gridData?has_content>
         var gridData = JSON.parse("${paper.gridData?js_string}");
         gridData = Gridster.sort_by_row_and_col_asc(gridData);
         $.each(gridData, function(i,e){
-            gridster.add_widget("<li id='" + this.id + "' data-paneltype='" + this.paneltype + "' class='sres_panel'><div class='innerContent'><img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' /></div></li>", this.size_x, this.size_y, this.col, this.row);
+            gridster.add_widget("<li data-paneltype='" + this.paneltype + "' class='sres_panel'><div class='innerContent'><img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' /></div></li>", this.size_x, this.size_y, this.col, this.row);
         });
     </#if>
 
@@ -166,26 +160,45 @@ $(function () {
 
     //async loading of panels-------------------------------------------------
 
-    $('.sres_panel').each(function(i,e){
-        var self = $(this);
-        var id = self.attr('id');
+    function loadPanel(self){
         var pt = self.data("paneltype");
         if(pt == "columns"){
             $.get("${baseUrl}/user/getColumns/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
+                $(".showPalette").each(function(i,e){
+                    var columnId = $(e).data('column');
+                    $(e).spectrum({
+                        showPaletteOnly: true,
+                        showPalette:true,
+                        color: colours[i%colours.length],
+                        palette: [
+                            ['#1A90C7', '#C71AAD', '#1AC78D','#C7651A','#C71A1A']
+                        ],
+                        change: function(color) {
+                            console.log(color);
+                            $.post("${baseUrl}/user/changeColour",
+                                    {columnId:columnId,colour:color.toHexString()},
+                                    function(response){
+                                        $('.showPalette_'+columnId).css('color',color);
+                                        $('th.'+columnId).css('background',color);
+                                    }
+                            );
+                        }
+                    });
+                });
             });
         } else if (pt == "filters"){
             $.get("${baseUrl}/user/getFilters/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
                 filterList = $('#filterList');
                 filterDivHtml = $('.filterDiv').html();
             });
         } else if (pt == "studentData"){
             $.get("${baseUrl}/user/getStudentData/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
 
                 self.find('th').each(function () {
                     var slf = $(this);
@@ -198,19 +211,30 @@ $(function () {
         } else if (pt == "paperInfo"){
             $.get("${baseUrl}/user/getPaperInfo/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
             });
         } else if (pt == "interventions") {
             $.get("${baseUrl}/user/getInterventions/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
             });
         } else if (pt == "userFields") {
             $.get("${baseUrl}/user/getUserFields/${paper._id}", function(data){
                 self.find('.innerContent').html(data);
-                replaceCheckboxes(id);
+                replaceCheckboxes(self);
+            });
+        } else if (pt == "dataOverview") {
+            $.get("${baseUrl}/user/getDataOverview/${paper._id}", function(data){
+                self.find('.innerContent').html(data);
+                replaceCheckboxes(self);
             });
         }
+    }
+
+    var colours = ['#1A90C7', '#C71AAD', '#1AC78D','#C7651A','#C71A1A'];
+    $('.sres_panel').each(function(i,e){
+        var self = $(this);
+        loadPanel(self);
     });
 
     //-------------------------------------------------------------------------
@@ -255,8 +279,8 @@ $(function () {
         saveGridData();
     });
 
-    function replaceCheckboxes(div_id){
-        $('input[type=checkbox]','#'+div_id).each(function (i, e) {
+    function replaceCheckboxes(div){
+        $('input[type=checkbox]',div).each(function (i, e) {
             var self = $(this);
             var newCheckbox = "";
             if (self.is(":checked")) {
@@ -268,7 +292,6 @@ $(function () {
             self.css('display', 'none');
         });
     }
-
 
     $(document).on('click', '.sres_checkbox', function () {
         var self = $(this);
@@ -294,15 +317,6 @@ $(function () {
         item.text(toset).attr('title', str);
     };
 
-   /*
-    $('.colourPicker').on('click', function(){
-        var self = $(this);
-        var column = self.data('column');
-        console.log('colour');
-        //TODO: change colours
-    });  */
-
-
     $(document).on('click', 'span.newFilter', function () {
         var div = $('<div/>').addClass('filterDiv').html(filterDivHtml).appendTo(filterList);
         div.prev('.filterDiv').find('input[name=value]').css('width', '25%');
@@ -310,64 +324,6 @@ $(function () {
         $('span.removeFilter').show();
     });
 
-   /* var columns = $('.topLeftPanel:last').html();
-    var filters = $('.midLeftPanel:last').html();
-    var studentList = $('.bottomLeftPanel:last').html();
-    var paperInfo = $('.topRightPanel:last').html();
-    var dataOverview = $('.midRightPanel:last').html(); */
-
-  /*  var p;
-
-    $(document).on('click', '.addPanel', function () {
-        var self = $(this);
-        p.popup_simple('destroy');
-        var placeholder = p.data('placeholder');
-        var div = placeholder.next('.sres_panel');
-        placeholder.hide();
-        if (self.hasClass("addColumns"))
-            div.html(columns).show();
-        else if (self.hasClass("addFilters"))
-            div.html(filters).show();
-        else if (self.hasClass('addStudentList'))
-            div.html(studentList).show();
-        else if (self.hasClass('addPaperInfo'))
-            div.html(paperInfo).show();
-        else if (self.hasClass("addDataOverview"))
-            div.html(dataOverview).show();
-    });     */
-     /*
-    $('.placeHolder').on('click', function () {
-        var self = $(this);
-        p = $("<div></div>").appendTo("body");
-        p.data('placeholder', self);
-
-        var inner = $("<div></div>");
-        var table = $("<table style='width:100%'></table>");
-        var tr1 = $("<tr></tr>");
-        var tr2 = $("<tr></tr>");
-        var button1 = "<td><button class='addPanel addColumns btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-bars' style='font-size:32px;transform:rotate(90deg)' ></span><br/>Columns</button></td>";
-        var button2 = "<td><button class='addPanel addFilters btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-sitemap' style='font-size:32px;' ></span><br/>Filters</button></td>";
-        var button3 = "<td><button class='addPanel addStudentList btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-bars' style='font-size:32px;' ></span><br/>Student list</button></td>";
-
-        var button4 = "<td><button class='addPanel addDataOverview btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-pie-chart' style='font-size:32px;' ></span><br/>Data overview</button></td>";
-        var button5 = "<td><button class='addPanel addPaperInfo btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-file-text-o' style='font-size:32px;' ></span><br/>${ICN_C} info</button></td>";
-        var button6 = "<td><button class='addPanel btn btn-default btn-primary' style='width:120px;height:120px'><span class='fa fa-envelope' style='font-size:32px;' ></span><br/>Email log</button></td>";
-
-        tr1.append(button1, button2, button3);
-        tr2.append(button4, button5, button6);
-        table.append(tr1, tr2);
-
-        inner.append("<h4 style='color:#021E27'>Add a panel</h4>");
-        inner.append(table);
-
-        p.popup_simple('init', {
-            content: inner,
-            extraClasses: ["mainPopup"],
-            confirm: false,
-            cancel: true
-        }).popup_simple("show").popup_simple("centre");
-    });
-                 */
     <#if json?has_content>
         {
             var jsonString = "${json?js_string}";
@@ -438,7 +394,7 @@ $(function () {
             }
         );
     });
-
+/* TODO:remove?
     $(document).on("dblclick", '#studentList td', function () {
         var slf = $(this);
         var id = slf.data('id');
@@ -468,7 +424,7 @@ $(function () {
             });
         }
     });
-
+*/
     $(document).on('change', 'input.columnCheckbox', function () {
         var slf = $(this);
         var value = slf.val();
@@ -524,57 +480,27 @@ $(function () {
         ["#C71A1A", "#E32626", "#E84A4A", "#EC6F6F", "#F19393", "#360707", "#5A0C0C", "#7E1010", "#A21515"]
     ];
 
-   // google.load('visualization', '1.1', {packages: ['corechart'], callback: drawCharts});
- <#--
-    function drawCharts() {
-
-    <#list columns as c>
-        var column = {};
-        column.name = "${c.name?js_string}";
-        column.id = "${c._id}";
-        column.data = {};
-        $('td.' + column.id).each(function (i, e) {
-            var value = $(e).data('value');
-            if ((value == null) || (value == ""))
-                value = "[blank]";
-            if (!column.data[value])
-                column.data[value] = 1;
-            else
-                column.data[value] += 1;
-        });
-        console.log('column.data', column.data);
-
-        var arrayOfArray = [
-            ['Task', 'sdd']
-        ];
-        $.each(column.data, function (i, e) {
-            arrayOfArray.push([i, e]);
-        });
-
-        var data = google.visualization.arrayToDataTable(arrayOfArray);
-
-        var options = {
-            title: column.name,
-            backgroundColor: 'transparent',
-            legend: {textStyle: {color: '#000'}, position: "labeled"},
-            pieSliceTextStyle: {
-                color: 'transparent'
-            },
-            colors: arrayOfColours[${c_index}% arrayOfColours.length
-    ],
-        chartArea: {
-            width:"100%", left:20, right:20
-        }
-    };
-
-        var chart = new google.visualization.PieChart(document.getElementById(column.id));
-        chart.draw(data, options);
-    </#list>
-    }
-      -->
     $(document).on('click', '.emailStudents', function () {
         $('#resultsForm').submit();
         return false;
+    });
+
+    var panelsObj = {};
+    <#list panels?keys as k>
+        panelsObj["${k}"] = [];
+        <#list panels[k] as p>
+            panelsObj["${k}"].push("${p}");
+        </#list>
+    </#list>
+
+    $('.addPanelButton').on('click', function(){
+        var self = $(this);
+        var pt = self.data("panel");
+        var li = "<li class='sres_panel' data-paneltype='" + pt + "' data-row='" + panelsObj[pt][0] + "' data-col='" + panelsObj[pt][1] + "' data-sizex='" + panelsObj[pt][2] + "' data-sizey='" + panelsObj[pt][3] + "'><div class='innerContent'><img src='${baseUrl}/assets/img/saving.gif' style='position:absolute;left:50%;margin-left:-25px;top:50%;margin-top:-10px' /></div></li>";
+        var newPanel = gridster.add_widget(li,panelsObj[pt][2],panelsObj[pt][3]);
+        loadPanel(newPanel);
+        saveGridData();
+        $('#panels').slideUp();
     });
 
     var $paperButtons = $('.paper_buttons');
@@ -605,15 +531,6 @@ $(function () {
             $paperButtons.hide();
         event.stopPropagation();
     });
-
-  <#--  var colTotal = ${columns?size};
-    var colCount = 0;
-
-    var interval = setInterval(function () {
-        $('.chart_' + (colCount % colTotal)).css('display', 'none');
-        colCount++;
-        $('.chart_' + (colCount % colTotal)).css('display', 'inline-block');
-    }, 5000);       -->
 
     $('td.userCheck').on("mouseover", function () {
         var slf = $(this);
