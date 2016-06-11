@@ -1432,6 +1432,27 @@ public class UserController {
         return "dashboard/studentDataPanel";
     }
 
+    @RequestMapping(value = "/saveProfile", method = RequestMethod.POST)
+    public String saveProfile(@RequestParam(value = "userName", required = false) String userName,
+                                              @RequestParam(value = "firstName", required = false) String firstName,
+                                              @RequestParam(value = "lastName", required = false) String lastName,
+                                              @RequestParam(value = "email", required = false) String email,
+                                              @RequestParam(value = "phone", required = false) String phone,
+                                              HttpServletRequest request) {
+
+        Document user = MongoUtil.getUserByUsername(db, userName);
+        user.put("firstName",firstName);
+        user.put("lastName",lastName);
+        user.put("email",email);
+        user.put("phone",phone);
+
+        db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                .updateOne(eq("_id", user.get("_id")), new Document("$set", new Document(user)),
+                        new UpdateOptions().upsert(true));
+
+        return "redirect:/user";
+    }
+
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         dateFormat.setLenient(false);
