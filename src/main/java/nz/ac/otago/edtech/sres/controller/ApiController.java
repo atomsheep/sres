@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoDatabase;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
+import nz.ac.otago.edtech.sres.util.LdapUtil;
 import nz.ac.otago.edtech.sres.util.MongoUtil;
 import nz.ac.otago.edtech.util.CommonUtil;
 import nz.ac.otago.edtech.util.JSONUtil;
@@ -49,6 +50,12 @@ public class ApiController {
     @Value("${mongodb.dbname}")
     private String dbName;
 
+    @Value("${ldapUrl}")
+    private String ldapUrl;
+
+    @Value("${baseDN}")
+    private String baseDN;
+
     private MongoDatabase db = null;
 
     @PostConstruct
@@ -89,6 +96,43 @@ public class ApiController {
             return new ResponseEntity<Map>(map, HttpStatus.UNAUTHORIZED);
         }
     }
+
+    @RequestMapping(value = "/ldap", method = RequestMethod.POST)
+    public ResponseEntity<Map> ldap(@RequestParam("username") String username,
+                                    @RequestParam("password") String password,
+                                    HttpServletRequest request) {
+        ModelMap map = new ModelMap();
+        String ipAddress = AuthUtil.getIpAddress(request);
+        log.debug("ip address = {}", ipAddress);
+        if (LdapUtil.ldapAuthentication(ldapUrl, baseDN, username, password)) {
+
+            Document userDoc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
+            if (userDoc != null) {
+                MongoUtil.changeUserObjectId2String(userDoc);
+                map.put("user", userDoc);
+            }
+            {
+                // create a new token
+                ModelMap tokenMap = new ModelMap();
+                ObjectId id = new ObjectId();
+                tokenMap.put("_id", id);
+                tokenMap.put("username", username);
+                String token = CommonUtil.generateRandomCode();
+                token = DigestUtils.sha256Hex(token);
+                tokenMap.put("token", token);
+                tokenMap.put("lastModified", new Date());
+                tokenMap.put("ipAddress", ipAddress);
+                db.getCollection(MongoUtil.COLLECTION_NAME_TOKENS).insertOne(new Document(tokenMap));
+                log.debug("User {} logged in with token = {}", username, token);
+                map.put("token", token);
+            }
+            return new ResponseEntity<Map>(map, HttpStatus.OK);
+        } else {
+            map.put("username", username);
+            return new ResponseEntity<Map>(map, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
 
     @RequestMapping(value = "/papers", method = RequestMethod.GET)
     public ResponseEntity<List<Document>> papers(@RequestParam("token") String token) {
