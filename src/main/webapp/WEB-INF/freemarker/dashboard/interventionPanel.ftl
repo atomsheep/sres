@@ -1,7 +1,7 @@
-<h4 style='margin:0;padding:10px;background:#043B4E'>Intervention log <span
+<h4 class='panelHeader'>Intervention log <span
         class='fa fa-times deletePanel' style='float:right'></span></h4>
 
-<div style='position:absolute;top:40px;left:0;bottom:0;right:0;overflow-y:scroll'>
+<div class='innerPanel' style='top:40px;'>
     <table style='width:100%' id='intervention_table'>
         <tr>
             <th>Type</th>

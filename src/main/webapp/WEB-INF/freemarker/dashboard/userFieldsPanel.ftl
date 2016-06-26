@@ -7,15 +7,21 @@
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
-<h4 style='margin:0;padding:10px;background:#043B4E'>Student fields <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
+<h4 class='panelHeader'>Student fields <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
 
-<div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
+<div class='innerPanel' style='top:40px;'>
     <table id="studentList" width=100%>
             <thead>
-            <th style='text-align:center;border-left:none'><input type="checkbox" name="usernameAll" checked="checked"/></th>
-                <#list studentFields as f>
-                    <th style='text-align:left;'>${f?html}</th>
-                </#list>
+                <th style='text-align:center;border-left:none'><input type="checkbox" name="usernameAll" checked="checked"/></th>
+                <th style='text-align:left'>Field name</th>
             </thead>
+            <tbody>
+                <#list studentFields as f>
+                    <tr>
+                        <td></td>
+                        <td style='text-align:left;'>${f?html}</td>
+                    </tr>
+                </#list>
+            </tbody>
     </table>
 </div>

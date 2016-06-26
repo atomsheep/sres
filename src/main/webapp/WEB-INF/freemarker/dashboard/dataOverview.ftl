@@ -1,5 +1,5 @@
-<h4 style='margin:0;padding:10px;background:#043B4E'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
-<div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;background:white'>
+<h4 class='panelHeader'>Data overview <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+<div class='innerPanel' style='top:40px;background:white'>
     <#list columns as c>
         <div id="${c._id}" class="${c._id} chart chart_${c_index} pieChart" style="margin:0 auto;
             ">

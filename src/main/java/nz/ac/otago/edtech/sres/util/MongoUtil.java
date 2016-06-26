@@ -398,7 +398,7 @@ public class MongoUtil {
      * @param email email
      * @return email information, including email address, subject, body
      */
-    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document email, List<Document> paragraphs) {
+    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document teacher, Document email, List<Document> paragraphs) {
         if ((user == null) || (email == null))
             throw new IllegalArgumentException("User or emails null");
         @SuppressWarnings("unchecked")
@@ -425,8 +425,8 @@ public class MongoUtil {
         }
 
         body += concludingParagraph;
-        subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata);
-        body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata);
+        subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata, teacher);
+        body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata, teacher);
         Map<String, String> result = new HashMap<String, String>();
         result.put("address", address);
         result.put("subject", subject);
@@ -435,7 +435,7 @@ public class MongoUtil {
     }
 
 
-    public static String replaceEmailTemplate(String message, Map map, List<Document> userdata) {
+    public static String replaceEmailTemplate(String message, Map map, List<Document> userdata, Document teacher) {
         String result = message;
         for (String key : (Set<String>) map.keySet()) {
             // replace here
@@ -445,6 +445,12 @@ public class MongoUtil {
             List data = (ArrayList)d.get("data");
             Document dd = (Document)data.get(0);
             result = result.replace("{{data." + d.get("colref") + "}}", dd.get("value").toString());
+        }
+
+        String[] userFields = {"firstName","lastName","email","phone"};
+        for(String s : userFields) {
+            if(teacher.get(s) != null)
+                result = result.replace("{{user." + s + "}}", teacher.get(s).toString());
         }
 
         return result;

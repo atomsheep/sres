@@ -797,10 +797,11 @@ public class UserController {
 
     @RequestMapping(value = "/emailPreview", method = RequestMethod.GET)
     public String emailPreview(@RequestParam("emailId") String emailId,
-
                                HttpServletRequest request,
                                ModelMap model) {
 
+        String userName = AuthUtil.getUserName(request);
+        Document teacher = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,"username",userName);
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
         List<String> studentList = MongoUtil.getStudentList(email);
         int size = 0;
@@ -812,7 +813,7 @@ public class UserController {
             Document user = MongoUtil.getUser(db, id);
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, teacher, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -835,6 +836,8 @@ public class UserController {
                                HttpServletRequest request,
                                ModelMap model) {
 
+        String userName = AuthUtil.getUserName(request);
+        Document teacher = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,"username",userName);
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
         List<String> studentList = MongoUtil.getStudentList(email);
         int size = 0;
@@ -848,7 +851,7 @@ public class UserController {
             Document user = MongoUtil.getUser(db, id);
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, email,paragraphs);
+            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata,teacher, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
@@ -870,12 +873,14 @@ public class UserController {
     public ResponseEntity<String> sendEmails(@RequestParam("emailId") String emailId,
                                              @Value("${email.smtp.server}") String smtpServer,
                                              @Value("${email.from.address}") String fromEmail,
-                                             @Value("${in.development.mode}") boolean inDevelopmentMode) {
+                                             @Value("${in.development.mode}") boolean inDevelopmentMode,
+                                             HttpServletRequest request) {
 
         String action = "sendEmails";
         boolean success = true;
         String detail = null;
-
+        String userName = AuthUtil.getUserName(request);
+        Document teacher = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,"username",userName);
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
         @SuppressWarnings("unchecked")
         List<String> studentList = (List<String>) email.get("studentList");
@@ -891,7 +896,7 @@ public class UserController {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata, email,paragraphs);
+            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata,teacher, email,paragraphs);
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");

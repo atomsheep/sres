@@ -7,9 +7,9 @@
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
-<h4 style='margin:0;padding:10px;background:#043B4E'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
+<h4 class='panelHeader'>Columns <span class='deletePanel fa fa-times' style='float:right;'></span></h4>
 
-<div style='overflow-y:scroll;position:absolute;top:40px;bottom:0;left:0;right:0;'>
+<div class='innerPanel' style='top:40px;'>
     <table width=100% cellspacing=0 cellpadding=0 id='column_table'>
         <tr>
             <th style='text-align:center;border-left:none'><input checked="checked" type="checkbox" name="columnsAll"/></th>

@@ -7,7 +7,7 @@
 ["#C71A1A","#E32626","#E84A4A","#EC6F6F","#F19393","#360707","#5A0C0C","#7E1010","#A21515"]
 ] />
 
-<h4 style='margin:0;padding:10px;background:#043B4E'>
+<h4 class='panelHeader'>
     Students <span class='studentCount'>${results?size}</span> / ${results?size}
     <span class='fa fa-times deletePanel' style='float:right'></span>
 </h4>
@@ -19,7 +19,7 @@
 </#if>
 </div>
 
-<div style='position:absolute;top:80px;left:0;right:0;bottom:0;padding:0;overflow-y:scroll'>
+<div class='innerPanel' style='top:80px;padding:0;'>
 <#if results?has_content>
     <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
         <input name="id" type="hidden" value="${id}"/>

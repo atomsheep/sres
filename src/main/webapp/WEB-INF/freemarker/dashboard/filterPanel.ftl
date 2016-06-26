@@ -1,4 +1,4 @@
-<h4 id='filterTitle' style='background:#043B4E;margin:0;padding:10px'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
+<h4 id='filterTitle' class='panelHeader'>Filters <span class='fa fa-times deletePanel' style='float:right'></span></h4>
 
 <div class='topPanel'>
     <span class="btn btn-default btn-primary newFilter btn-square left"><span class='fa fa-plus'></span> New filter</span>
@@ -6,7 +6,7 @@
 </div>
 <div style="clear:both"></div>
 
-<form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline" style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll;overflow-x: hidden'>
+<form id='filterForm' action="${baseUrl}/user/filterStudentList" method="post" name="filterForm" class="form-inline innerPanel" style='top:80px;overflow-x: hidden'>
     <input type="hidden" name="id" value="${id}"/>
     <input type="hidden" name="json" value=""/>
 

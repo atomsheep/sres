@@ -7,7 +7,7 @@
             </li>
 
             <li class='sres_panel' data-row="2" data-col="3" data-sizex="1" data-sizey="3">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>User profile</h4>
+                <h4 class='panelHeader' style='cursor:default;'>User profile</h4>
                 <form action='${baseUrl}/user/saveProfile' method='post'>
                     <div class='topPanel'>
                         <button type='submit' class='btn btn-default btn-primary btn-square right'>
@@ -40,7 +40,7 @@
             </li>
 
             <li class='sres_panel' data-row="1" data-col="1" data-sizex="2" data-sizey="2">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>My ${ICN} list (${list?size})</h4>
+                <h4 class='panelHeader' style='cursor:default'>My ${ICN} list (${list?size})</h4>
 
                 <div class='topPanel'>
                     <a class='btn btn-default btn-primary btn-square left' id="addList" href="${baseUrl}/user/editPaper">
@@ -88,7 +88,7 @@
             </li>
 
             <li class='sres_panel' data-row="3" data-col="1" data-sizex="2" data-sizey="2">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Search for ${ICN}s</h4>
+                <h4 class='panelHeader' style='cursor:default;'>Search for ${ICN}s</h4>
                 <div style='position:absolute;top:40px;left:0;right:0;bottom:0;overflow-y:scroll'>
                     <div class='input-group input-group6' style="width:100%;margin-bottom:5px;padding:20px">
                         <span class='input-group-addon sres_name' style='width:150px'>Search for a paper:</span>
