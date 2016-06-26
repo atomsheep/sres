@@ -50,10 +50,13 @@
 
         <div style='color:#333;font-size:24px;margin-bottom:10px'>...a joint partnership between</div>
 
-        <img src='${baseUrl}/assets/img/uo_logo.svg' height='83'/>
         <img src='${baseUrl}/assets/img/macquarie_university_logo.png' height='80' style='background:white'/>
         <img src='${baseUrl}/assets/img/auckland.png' height='80' style='background:white'/>
+        <img src='${baseUrl}/assets/img/Usyd_new_logo.png' height='80' style='background:white'/>
         <img src='${baseUrl}/assets/img/unisa.png' height='80' style='display:none;background:white'/>
+        <img src='${baseUrl}/assets/img/NPF_logo.jpg' height='80' style='margin-left:40px;background:white'/>
+        <img src='${baseUrl}/assets/img/uo_logo.svg' height='83' style='margin-left:40px;'/>
+
 
     </td>
 
