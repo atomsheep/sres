@@ -11,6 +11,7 @@ import com.mongodb.client.result.UpdateResult;
 import nz.ac.otago.edtech.auth.util.AuthUtil;
 import nz.ac.otago.edtech.spring.bean.UploadLocation;
 import nz.ac.otago.edtech.spring.util.OtherUtil;
+import nz.ac.otago.edtech.sres.util.MailUtil;
 import nz.ac.otago.edtech.sres.util.MongoUtil;
 import nz.ac.otago.edtech.util.CommonUtil;
 import nz.ac.otago.edtech.util.JSONUtil;
@@ -903,9 +904,9 @@ public class UserController {
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
                 log.debug("send email to {} with subject {} body {}", address, subject, body);
                 if (inDevelopmentMode) {
-                    address = fromEmail;
+                    //address = fromEmail;
                 }
-                OtherUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
+                MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
             }
         }
         return OtherUtil.outputJSON(action, success, detail);
