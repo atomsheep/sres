@@ -407,6 +407,7 @@ public class MongoUtil {
         String address = (String) userInfo.get(emailField);
         String introductoryParagraph = (String) email.get("introductoryParagraph");
         String concludingParagraph = (String) email.get("concludingParagraph");
+        String fromemail = (String) email.get("fromemail");
         // send email
         String subject = (String) email.get("subject");
         String body = introductoryParagraph;
@@ -430,6 +431,7 @@ public class MongoUtil {
         Map<String, String> result = new HashMap<String, String>();
         result.put("address", address);
         result.put("subject", subject);
+        result.put("fromemail", fromemail);
         result.put("body", body);
         return result;
     }

@@ -613,6 +613,7 @@ public class UserController {
 
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
+    							@Value("${email.from.address}") String fromEmail,
                                 @RequestParam("id") String id,
                                 @RequestParam("usernames") String[] userIds) {
         ObjectId paperId = new ObjectId(id);
@@ -634,6 +635,7 @@ public class UserController {
         email.put("status", "draft");
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
+        email.put("fromemail", fromEmail);
 
         String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
         email.put("introductoryParagraph", introParagraph);
@@ -816,9 +818,11 @@ public class UserController {
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
             Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, teacher, email,paragraphs);
             String address = map.get("address");
+            String fromemail = map.get("fromemail");
             String subject = map.get("subject");
             String body = map.get("body");
             model.put("emailAddress", address);
+            model.put("fromemail", fromemail);
             model.put("subject", subject);
             model.put("body", body);
             model.put("user", user);
@@ -854,9 +858,11 @@ public class UserController {
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
             Map<String, String> map = MongoUtil.getEmailInformation(user, userdata,teacher, email,paragraphs);
             String address = map.get("address");
+            String fromemail = map.get("fromemail");
             String subject = map.get("subject");
             String body = map.get("body");
             model.put("emailAddress", address);
+            model.put("fromemail", fromemail);
             model.put("subject", subject);
             model.put("body", body);
             model.put("user", user);
@@ -873,7 +879,6 @@ public class UserController {
     @RequestMapping(value = "/sendEmails", method = RequestMethod.POST)
     public ResponseEntity<String> sendEmails(@RequestParam("emailId") String emailId,
                                              @Value("${email.smtp.server}") String smtpServer,
-                                             @Value("${email.from.address}") String fromEmail,
                                              @Value("${in.development.mode}") boolean inDevelopmentMode,
                                              HttpServletRequest request) {
 
@@ -893,6 +898,7 @@ public class UserController {
             List<String> userList = ListUtils.subtract(studentList, uncheckedList);
             studentList = userList;
         }
+        String fromEmail = email.getString("fromemail");
         for (String u : studentList) {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
@@ -901,6 +907,7 @@ public class UserController {
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
+            fromEmail = map.get("fromemail");
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
                 log.debug("send email to {} with subject {} body {}", address, subject, body);
                 if (inDevelopmentMode) {

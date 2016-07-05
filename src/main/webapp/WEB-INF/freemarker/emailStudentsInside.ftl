@@ -106,6 +106,15 @@
                             </td>
                         </tr>
                         <tr>
+                            <td style='padding:0 0 20px 0'>
+                                <div class='input-group input-group1'>
+                                    <span class='input-group-addon sres_name'>From Email:</span>
+                                    <input style='width:100%' type="text" name="fromemail" class="form-control"
+                                           value="${email.fromemail!}" data-value="${email.fromemail!}"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>
                                 <div class='input-group input-group1'>
                                     <span class='input-group-addon sres_name'>Subject:</span>
@@ -515,6 +524,21 @@ $(function () {
         }
     });
 
+	$('[name=fromemail]').on("blur", function () {
+        var slf = $(this);
+        var fieldName = slf[0].name;
+        var oldValue = slf.data("value");
+        var newValue = slf.val();
+        if (oldValue != newValue) {
+            $.post("${baseUrl}/user/saveEmail",
+                    {emailId: '${email._id}', name: fieldName, value: newValue },
+                    function (json) {
+                        if (json.success) {
+                            slf.data("value", newValue);
+                        }
+                    });
+        }
+    });
 
     $('button.sendEmail').on('click', function () {
         console.log("sending email");
