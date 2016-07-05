@@ -916,6 +916,8 @@ public class UserController {
                 MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
             }
         }
+        db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
+                new Document("$set", new Document("status", "send")));
         return OtherUtil.outputJSON(action, success, detail);
     }
 

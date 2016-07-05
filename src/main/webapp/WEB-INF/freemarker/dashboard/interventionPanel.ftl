@@ -12,7 +12,7 @@
     <#if interventions?has_content>
         <#list interventions as i>
             <tr>
-                <td style='padding:5px 5px 0 5px;'>${i.type!}</td>
+                <td style='padding:5px 5px 0 5px;'><#if i.type! == "email" && i.status == "draft" ><a href=/sres/user/emailStudents/${i._id}>${i.type!}</a><#else>${i.type!}</#if></td>
                 <td style=''>${i.status!}</td>
                 <td style=''><#if i.studentList?has_content>${i.studentList?size}</#if></td>
                 <td style=''><#if i.created?has_content>${i.created?datetime}</#if></td>
