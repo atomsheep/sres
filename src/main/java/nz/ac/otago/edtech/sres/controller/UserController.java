@@ -913,7 +913,7 @@ public class UserController {
                 if (inDevelopmentMode) {
                     //address = fromEmail;
                 }
-                MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
+                success = MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
             }
         }
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),

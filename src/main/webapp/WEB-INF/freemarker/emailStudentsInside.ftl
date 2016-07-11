@@ -546,10 +546,41 @@ $(function () {
                 {emailId: '${email._id}'},
                 function (json) {
                     if (json.success) {
-                        console.log("Emails sent.");
+                        console.log("Email's sent.");
 
+                 var p = $("<div></div>").appendTo("body");
+                p.popup_simple('init', {
+                    content: "Email's were sent successfully!<br/>",
+                    extraClasses: ["sresPopup"],
+                    confirm: true,
+                    confirmCallback: function(){
+                        $('[name=mapFieldsForm]').submit();
                     }
-                });
+                }).popup_simple("show").popup_simple("centre");
+
+                $('.popup_simple_confirm').addClass('btn btn-default btn-primary btn-square').css({
+                    marginTop: "10px",
+                    marginRight: "10px"
+                }).text("Continue");
+                    }
+                else {
+                console.log("Email's were not sent.");
+                var p = $("<div></div>").appendTo("body");
+                p.popup_simple('init', {
+                    content: "Error occurred while sending Email's!<br/>",
+                    extraClasses: ["sresPopup"],
+                    confirm: true,
+                    confirmCallback: function(){
+                        $('[name=mapFieldsForm]').submit();
+                    }
+                }).popup_simple("show").popup_simple("centre");
+
+                $('.popup_simple_confirm').addClass('btn btn-default btn-primary btn-square').css({
+                    marginTop: "10px",
+                    marginRight: "10px"
+                }).text("Continue");                  
+                    }
+         });
     });
 
     <#if email.uncheckedList?has_content>
