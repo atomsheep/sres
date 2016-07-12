@@ -33,6 +33,8 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -250,32 +252,62 @@ public class UserController {
         File upload = new File(paperDir, filename);
         if (upload.exists()) {
             try {
+            	JSONParser parser=new JSONParser();
+            	List<String> columns = new ArrayList<String>();
+            	List<String> values = new ArrayList<String>();
                 // read csv file without header
                 Reader in = new FileReader(upload);
-                Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(in);
-                CSVRecord record = records.iterator().next();
-                if (record != null) {
-                    List<String> columns = new ArrayList<String>();
-                    for (String s : record) {
-                        columns.add(s);
-                    }
-                    model.put("record", columns);
-                }
-                record = records.iterator().next();
-                if (record != null) {
-                    List<String> values = new ArrayList<String>();
-                    for (String s : record) {
-                        values.add(s);
-                    }
-                    model.put("values", values);
-                }
+				if (upload.getName().endsWith("json")) {
+
+					JSONArray records = (JSONArray) parser.parse(in);
+					if (records.size() > 0) {
+						JSONObject object = (JSONObject) records.get(0);
+						columns.addAll(object.keySet());
+						values.addAll(object.values());
+						model.put("record", columns);
+						model.put("columns", columns);
+						model.put("values", values);
+					}
+
+				} else if (upload.getName().endsWith("csv") || upload.getName().endsWith("tsv") ) {
+	
+						Iterable<CSVRecord> records;
+						if(upload.getName().endsWith("csv")) {
+				           records = CSVFormat.EXCEL.parse(in);
+						}else{
+							records = CSVFormat.TDF.parse(in);
+						}
+		                CSVRecord record = records.iterator().next();
+		                if (record != null) {
+		                 
+		                    for (String s : record) {
+		                        columns.add(s);
+		                    }
+		                    model.put("record", columns);
+		                    model.put("columns", columns);
+		                }
+		                record = records.iterator().next();
+		                if (record != null) {
+		                    values = new ArrayList<String>();
+		                    for (String s : record) {
+		                        values.add(s);
+		                    }
+		                    model.put("values", values);
+		                }
+				}
+     
+             
                 model.put("id", id);
             } catch (IOException e) {
                 log.error("Exception", e);
-            }
+            } catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         model.put("fields", MongoUtil.USER_FIELDS);
         model.put("pageName", "mapFields");
+     
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
@@ -321,52 +353,94 @@ public class UserController {
         String filename = paper.get("studentFile").toString();
         File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
         File file = new File(paperDir, filename);
+       try {
         if (file.exists()) {
-            ObjectId paperId = new ObjectId(id);
-            Iterable<CSVRecord> records;
-            try {
-                if (hasHeader) {
-                    // read csv file with header
-                    InputStream input = new FileInputStream(file);
-                    Reader reader = new InputStreamReader(new BOMInputStream(input), "UTF-8");
-                    records = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
-                } else {
-                    // read csv file without header
-                    Reader in = new FileReader(file);
-                    records = CSVFormat.EXCEL.parse(in);
-                }
-                int studentCount = 0;
-                // go through csv file
-                for (CSVRecord record : records) {
-                    ModelMap userMap = new ModelMap();
-                    // all user info into userInfo
-                    ModelMap userInfo = new ModelMap();
-                    for (String k : userInfoFields.keySet()) {
-                        int ii = userInfoFields.get(k);
-                        if (ii != -1) {
-                            userInfo.put(k, record.get(ii));
-                        }
-                    }
-                    userMap.put("userInfo", userInfo);
-                    userMap.put("paperref", paperId);
 
-                    //     List<Document> list = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_USERS, eq(MongoUtil.USERNAME, userMap.get(MongoUtil.USERNAME)), eq("papers.paperref", paperId));
-                    //    if (list.isEmpty()) {
-                    //UpdateOptions uo = new UpdateOptions().upsert(true);
-                    db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(
-                            new Document(userMap)
-                    );
-                    studentCount++;
-                }
-                // update studentCount for paper
-                db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
-                        eq("_id", paperId),
-                        new Document("$set", new Document("studentCount", studentCount))
-                );
-            } catch (IOException ioe) {
-                log.error("IOException", ioe);
-            }
-        }
+			ObjectId paperId = new ObjectId(id);
+				if (filename.endsWith("csv") || filename.endsWith("tsv")) {
+					Iterable<CSVRecord> records;
+					// try {
+					if (hasHeader) {
+						// read csv file with header
+						InputStream input = new FileInputStream(file);
+						Reader reader = new InputStreamReader(new BOMInputStream(input), "UTF-8");
+						if (filename.endsWith("csv")) {
+							records = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
+							
+						} else {
+							records = new CSVParser(reader, CSVFormat.TDF.withHeader());
+						}
+					} else {
+						// read csv file without header
+						Reader in = new FileReader(file);
+						if (filename.endsWith("csv")) {
+						records = CSVFormat.EXCEL.parse(in);
+						}else{
+							records = CSVFormat.TDF.parse(in);
+						}
+					}
+					int studentCount = 0;
+					// go through csv file
+					for (CSVRecord record : records) {
+						ModelMap userMap = new ModelMap();
+						// all user info into userInfo
+						ModelMap userInfo = new ModelMap();
+						for (String k : userInfoFields.keySet()) {
+							int ii = userInfoFields.get(k);
+							if (ii != -1) {
+								userInfo.put(k, record.get(ii));
+							}
+						}
+						userMap.put("userInfo", userInfo);
+						userMap.put("paperref", paperId);
+
+						db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
+						studentCount++;
+					}
+					// update studentCount for paper
+					db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(eq("_id", paperId),
+							new Document("$set", new Document("studentCount", studentCount)));
+					// } catch (IOException ioe) {
+					// log.error("IOException", ioe);
+					// }
+				} else if (filename.endsWith("json")) {
+
+					JSONParser parser=new JSONParser();
+					
+						Reader in = new FileReader(file);
+						JSONArray records=(JSONArray)parser.parse(in);
+				
+					int studentCount = 0;
+					// go through csv file
+				//	for (CSVRecord record : records) {
+					for(int i=0;i<records.size();i++) {
+						JSONObject record=(JSONObject)records.get(i);
+						ModelMap userMap = new ModelMap();
+						// all user info into userInfo
+						ModelMap userInfo = new ModelMap();
+						for (String k : userInfoFields.keySet()) {
+							int ii = userInfoFields.get(k);
+							if (ii != -1) {
+								userInfo.put(k, record.get(k));
+							}
+						}
+						userMap.put("userInfo", userInfo);
+						userMap.put("paperref", paperId);
+
+						db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
+						studentCount++;
+					}
+					// update studentCount for paper
+					db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(eq("_id", paperId),
+							new Document("$set", new Document("studentCount", studentCount)));
+
+				}
+			}
+	       }catch (IOException ioe) {
+          
+       } catch (ParseException parseException) {
+    	   log.error("IOException",parseException);
+		}
         return "redirect:/user/importStudentData/" + id;
     }
 
@@ -438,29 +512,56 @@ public class UserController {
         File upload = new File(paperDir, filename);
         if (upload.exists()) {
             try {
-                // read csv file without header
-                Reader in = new FileReader(upload);
-                Iterable<CSVRecord> records = CSVFormat.EXCEL.parse(in);
-                CSVRecord record = records.iterator().next();
-                if (record != null) {
-                    String[] columns = new String[record.size()];
-                    for (int i = 0; i < record.size(); i++) {
-                        columns[i] = record.get(i);
-                    }
-                    model.put("record", columns);
-                }
-                record = records.iterator().next();
-                if (record != null) {
-                    String[] values = new String[record.size()];
-                    for (int i = 0; i < record.size(); i++) {
-                        values[i] = record.get(i);
-                    }
-                    model.put("values", values);
-                }
-                model.put("id", id);
-            } catch (IOException e) {
-                log.error("Exception", e);
-            }
+				// read csv file without header
+				Reader in = new FileReader(upload);
+				if (upload.getName().endsWith("csv") || upload.getName().endsWith("tsv")) {
+					Iterable<CSVRecord> records;
+					if(upload.getName().endsWith("csv")){
+						records = CSVFormat.EXCEL.parse(in);	
+					}else{
+						records = CSVFormat.TDF.parse(in);
+					}
+					CSVRecord record = records.iterator().next();
+					if (record != null) {
+						String[] columns = new String[record.size()];
+						for (int i = 0; i < record.size(); i++) {
+							columns[i] = record.get(i);
+						}
+						model.put("record", columns);
+					}
+					record = records.iterator().next();
+					if (record != null) {
+						String[] values = new String[record.size()];
+						for (int i = 0; i < record.size(); i++) {
+							values[i] = record.get(i);
+						}
+						model.put("values", values);
+					}
+					model.put("id", id);
+				} else if (upload.getName().endsWith("json")) {
+
+					JSONParser parser = new JSONParser();
+					JSONArray records = (JSONArray) parser.parse(in);
+					if (records.size() > 0) {
+						JSONObject record = (JSONObject) records.get(0);
+						Object columns[]=record.keySet().toArray();
+						String values[]=new String[columns.length];
+						int i=0;
+						for(Object s:columns){
+							values[i]=record.get(s.toString()).toString();
+							i++;
+						}
+						model.put("record",columns );
+						model.put("values", values);
+						model.put("id", id);
+					}					
+				}
+			} catch (IOException e) {
+				log.error("Exception", e);
+			} catch (ParseException parseException) {
+
+				log.error("Exception", parseException);
+			}
         }
         model.put("fields", MongoUtil.USER_FIELDS);
         model.put("pageName", "mapDataFields");
@@ -518,44 +619,83 @@ public class UserController {
                     }
                 }
             }
-            if (!columnFields.isEmpty()) {
-                String filename = paper.get("dataFile").toString();
-                File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
-                File upload = new File(paperDir, filename);
-                if (upload.exists()) {
-                    Iterable<CSVRecord> records;
-                    try {
-                        if (hasHeader) {
-                            // read csv file with header
-                            InputStream input = new FileInputStream(upload);
-                            Reader reader = new InputStreamReader(new BOMInputStream(input), "UTF-8");
-                            records = new CSVParser(reader, CSVFormat.EXCEL.withHeader());
-                        } else {
-                            // read csv file without header
-                            Reader in = new FileReader(upload);
-                            records = CSVFormat.EXCEL.parse(in);
-                        }
-                        // go through csv file
-                        for (CSVRecord record : records) {
-                            String un = record.get(unIndex);
-                            Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, eq("paperref", paperId), eq("userInfo." + fieldName, un));
-                            log.debug("find user.");
-                            if ((uu != null) && (uu.get("_id") != null)) {
-                                userCount++;
-                                for (ModelMap m : columnFields) {
-                                    ObjectId colref = (ObjectId) m.get("_id");
-                                    ObjectId userref = (ObjectId) uu.get("_id");
-                                    String value = record.get((Integer) m.get("index")).trim();
-                                    MongoUtil.saveNewUserData(db, value, colref, userref, user);
-                                }
-                            }
-                        }
-                    } catch (IOException ioe) {
-                        log.error("IOException", ioe);
-                    }
-                }
-            }
-        }
+            try {
+				if (!columnFields.isEmpty()) {
+					String filename = paper.get("dataFile").toString();
+					File paperDir = MongoUtil.getPaperDir(uploadLocation, paper);
+					File upload = new File(paperDir, filename);
+					if (upload.exists()) {
+						if (upload.getName().endsWith("csv") || upload.getName().endsWith("tsv")) {
+							Iterable<CSVRecord> records;
+
+							if (hasHeader) {
+								// read csv file with header
+								InputStream input = new FileInputStream(upload);
+								Reader reader = new InputStreamReader(new BOMInputStream(input), "UTF-8");
+								if(upload.getName().endsWith("csv")){
+									records = new CSVParser(reader, CSVFormat.EXCEL.withHeader());		
+								}else{
+									records = new CSVParser(reader, CSVFormat.TDF.withHeader());
+								}
+							
+							} else {
+								// read csv file without header
+								Reader in = new FileReader(upload);
+								if(upload.getName().endsWith("csv")){
+									records = CSVFormat.EXCEL.parse(in);
+								}else{
+									records = CSVFormat.TDF.parse(in);
+								}
+							}
+							// go through csv file
+							for (CSVRecord record : records) {
+								String un = record.get(unIndex);
+								Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,
+										eq("paperref", paperId), eq("userInfo." + fieldName, un));
+								log.debug("find user.");
+								if ((uu != null) && (uu.get("_id") != null)) {
+									userCount++;
+									for (ModelMap m : columnFields) {
+										ObjectId colref = (ObjectId) m.get("_id");
+										ObjectId userref = (ObjectId) uu.get("_id");
+										String value = record.get((Integer) m.get("index")).trim();
+										MongoUtil.saveNewUserData(db, value, colref, userref, user);
+									}
+								}
+							}
+						} else if (upload.getName().endsWith("json")) {
+							Reader in = new FileReader(upload);
+							JSONParser parser=new JSONParser();
+							JSONArray records=(JSONArray)parser.parse(in);
+							for (int i = 0; i < records.size(); i++) {
+
+								JSONObject record = (JSONObject) records.get(i);
+								String un = (String)record.get(unIndex);
+								Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,
+										eq("paperref", paperId), eq("userInfo." + fieldName, un));
+								log.debug("find user.");
+								if ((uu != null) && (uu.get("_id") != null)) {
+									userCount++;
+									for (ModelMap m : columnFields) {
+										ObjectId colref = (ObjectId) m.get("_id");
+										ObjectId userref = (ObjectId) uu.get("_id");
+										String value = record.get(m.get("name")).toString().trim();
+										MongoUtil.saveNewUserData(db, value, colref, userref, user);
+									}
+
+								}
+							}
+							
+						}
+
+					}
+				}
+			} catch (IOException ioe) {
+				log.error("IOException", ioe);
+			} catch (ParseException parseException) {
+				log.error("ParseException", parseException);
+			}
+		}
         success = true;
         ModelMap extra = new ModelMap();
         extra.put("userCount", userCount);
