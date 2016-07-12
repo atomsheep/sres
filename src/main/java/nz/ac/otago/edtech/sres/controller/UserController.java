@@ -670,7 +670,7 @@ public class UserController {
 							for (int i = 0; i < records.size(); i++) {
 
 								JSONObject record = (JSONObject) records.get(i);
-								String un = (String)record.get(unIndex);
+								String un = (String)record.get(columnFields.get(unIndex).get("name"));
 								Document uu = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,
 										eq("paperref", paperId), eq("userInfo." + fieldName, un));
 								log.debug("find user.");

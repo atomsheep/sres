@@ -16,7 +16,7 @@
     <a href="${baseUrl}/user/mapFields/${id}" class="btn btn-default btn-primary" style='float:right;border-radius:0;padding:10px 10px 9px;margin-right:20px'><span class='fa fa-caret-left'></span> Previous step</a>
 </h1>
 
-<div class='info_text'>Upload a file of student data for this ${ICN}. SRES only accepts student data in CSV (comma separated value) format. Your CSV file must contain a unique identifier for each student (e.g. a username or student ID).
+<div class='info_text'>Upload a file of student data for this ${ICN}. SRES only accepts student data in CSV (comma separated value), TSV (tab separated values) and JSON format. Your CSV/TSV/JSON file must contain a unique identifier for each student (e.g. a username or student ID).
     You will be asked to specify which fields you want to import into SRES in the next step.</div>
 
     <div class="box info_text" style='margin:20px;padding:0'>

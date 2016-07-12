@@ -441,7 +441,7 @@ public class MongoUtil {
         String result = message;
         for (String key : (Set<String>) map.keySet()) {
             // replace here
-            result = result.replace("{{student." + key + "}}", (String) map.get(key));
+        	result = result.replace("{{student." + key + "}}", (String) map.get(key).toString());
         }
         for(Document d : userdata){
             List data = (ArrayList)d.get("data");
