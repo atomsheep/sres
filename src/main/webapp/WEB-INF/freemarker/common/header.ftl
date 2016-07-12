@@ -16,7 +16,7 @@
                 <a href="${baseUrl}/user/" class='menuButton'>Go home (${ICN} list)</a>
                 <a href="${baseUrl}/user/" class='menuButton'>Edit user profile</a>
                 <a href="${baseUrl}/user/" class='menuButton'>Get help using SRES</a>
-                <a href="${baseUrl}/user/" class='menuButton'>Log out of SRES</a>
+                <a href="${baseUrl}/logout" class='menuButton'>Log out of SRES</a>
             </div>
         </div>
 
