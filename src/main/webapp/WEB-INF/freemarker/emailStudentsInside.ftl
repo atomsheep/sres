@@ -273,6 +273,8 @@ $(function () {
         quill.addModule('toolbar', {
             container: tb
         });
+    quill.addModule('link-tooltip',true);
+    
     <#if (email.introductoryParagraph)?has_content>
         if (self.attr('id') == 'introductoryParagraph')
             quill.setHTML("${email.introductoryParagraph?j_string}");
