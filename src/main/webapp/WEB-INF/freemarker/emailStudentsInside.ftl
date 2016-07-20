@@ -115,6 +115,24 @@
                             </td>
                         </tr>
                         <tr>
+                            <td style='padding:0 0 20px 0'>
+                                <div class='input-group input-group1'>
+                                    <span class='input-group-addon sres_name'>CC Email:</span>
+                                    <input style='width:100%' type="text" name="ccmail" class="form-control"
+                                           value="${email.ccmail!}" data-value="${email.ccmail!}"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style='padding:0 0 20px 0'>
+                                <div class='input-group input-group1'>
+                                    <span class='input-group-addon sres_name'>BCC Email:</span>
+                                    <input style='width:100%' type="text" name="bccmail" class="form-control"
+                                           value="${email.bccmail!}" data-value="${email.bccmail!}"/>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td>
                                 <div class='input-group input-group1'>
                                     <span class='input-group-addon sres_name'>Subject:</span>
@@ -539,7 +557,39 @@ $(function () {
                     });
         }
     });
-
+    
+	$('[name=ccmail]').on("blur", function () {
+        var slf = $(this);
+        var fieldName = slf[0].name;
+        var oldValue = slf.data("value");
+        var newValue = slf.val();
+        if (oldValue != newValue) {
+            $.post("${baseUrl}/user/saveEmail",
+                    {emailId: '${email._id}', name: fieldName, value: newValue },
+                    function (json) {
+                        if (json.success) {
+                            slf.data("value", newValue);
+                        }
+                    });
+        }
+    });
+	
+	$('[name=bccmail]').on("blur", function () {
+        var slf = $(this);
+        var fieldName = slf[0].name;
+        var oldValue = slf.data("value");
+        var newValue = slf.val();
+        if (oldValue != newValue) {
+            $.post("${baseUrl}/user/saveEmail",
+                    {emailId: '${email._id}', name: fieldName, value: newValue },
+                    function (json) {
+                        if (json.success) {
+                            slf.data("value", newValue);
+                        }
+                    });
+        }
+    });
+	
     $('button.sendEmail').on('click', function () {
         console.log("sending email");
         $.post("${baseUrl}/user/sendEmails",
@@ -567,7 +617,7 @@ $(function () {
                 console.log("Email's were not sent.");
                 var p = $("<div></div>").appendTo("body");
                 p.popup_simple('init', {
-                    content: "Error occurred while sending Email's!<br/>",
+                    content: "Error occurred while sending Email's!<br/> Please put valid data in all email fields!<br/>",
                     extraClasses: ["sresPopup"],
                     confirm: true,
                     confirmCallback: function(){

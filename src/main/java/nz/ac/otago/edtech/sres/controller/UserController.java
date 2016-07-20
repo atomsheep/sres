@@ -753,7 +753,6 @@ public class UserController {
 
     @RequestMapping(value = "/emailStudents", method = RequestMethod.POST)
     public String emailStudents(HttpServletRequest request,
-    							@Value("${email.from.address}") String fromEmail,
                                 @RequestParam("id") String id,
                                 @RequestParam("usernames") String[] userIds) {
         ObjectId paperId = new ObjectId(id);
@@ -772,10 +771,10 @@ public class UserController {
         email.put("paperref", paperId);
         email.put("studentList", Arrays.asList(userIds));
         email.put("type", "email");
+        email.put("fromemail", user.get("email"));
         email.put("status", "draft");
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
-        email.put("fromemail", fromEmail);
 
         String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
         email.put("introductoryParagraph", introParagraph);
@@ -959,10 +958,14 @@ public class UserController {
             Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, teacher, email,paragraphs);
             String address = map.get("address");
             String fromemail = map.get("fromemail");
+            String ccmail = map.get("ccmail");
+            String bccmail = map.get("bccmail");
             String subject = map.get("subject");
             String body = map.get("body");
             model.put("emailAddress", address);
             model.put("fromemail", fromemail);
+            model.put("ccmail", ccmail);
+            model.put("bccmail", bccmail);
             model.put("subject", subject);
             model.put("body", body);
             model.put("user", user);
@@ -999,10 +1002,14 @@ public class UserController {
             Map<String, String> map = MongoUtil.getEmailInformation(user, userdata,teacher, email,paragraphs);
             String address = map.get("address");
             String fromemail = map.get("fromemail");
+            String ccmail = map.get("ccmail");
+            String bccmail = map.get("bccmail");
             String subject = map.get("subject");
             String body = map.get("body");
             model.put("emailAddress", address);
             model.put("fromemail", fromemail);
+            model.put("ccmail", ccmail);
+            model.put("bccmail", bccmail);
             model.put("subject", subject);
             model.put("body", body);
             model.put("user", user);
@@ -1023,11 +1030,12 @@ public class UserController {
                                              HttpServletRequest request) {
 
         String action = "sendEmails";
-        boolean success = true;
+        boolean success = false;
         String detail = null;
         String userName = AuthUtil.getUserName(request);
         Document teacher = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS,"username",userName);
         Document email = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_INTERVENTIONS, emailId);
+        
         @SuppressWarnings("unchecked")
         List<String> studentList = (List<String>) email.get("studentList");
         @SuppressWarnings("unchecked")
@@ -1047,17 +1055,21 @@ public class UserController {
             String address = map.get("address");
             String subject = map.get("subject");
             String body = map.get("body");
-            fromEmail = map.get("fromemail");
+            String ccmail = map.get("ccmail");
+            String bccmail = map.get("bccmail");
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
+            	fromEmail = map.get("fromemail");
                 log.debug("send email to {} with subject {} body {}", address, subject, body);
                 if (inDevelopmentMode) {
                     //address = fromEmail;
                 }
-                success = MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body);
+                success = MailUtil.sendEmail(smtpServer, fromEmail, null, address, subject, body,ccmail,bccmail);
             }
         }
+        if(success) {
         db.getCollection(MongoUtil.COLLECTION_NAME_INTERVENTIONS).updateOne(eq("_id", new ObjectId(emailId)),
-                new Document("$set", new Document("status", "send")));
+                new Document("$set", new Document("status", "sent")));
+        }
         return OtherUtil.outputJSON(action, success, detail);
     }
 

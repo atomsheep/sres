@@ -408,6 +408,8 @@ public class MongoUtil {
         String introductoryParagraph = (String) email.get("introductoryParagraph");
         String concludingParagraph = (String) email.get("concludingParagraph");
         String fromemail = (String) email.get("fromemail");
+        String ccmail = (String) email.get("ccmail");
+        String bccmail = (String) email.get("bccmail");
         // send email
         String subject = (String) email.get("subject");
         String body = introductoryParagraph;
@@ -432,6 +434,8 @@ public class MongoUtil {
         result.put("address", address);
         result.put("subject", subject);
         result.put("fromemail", fromemail);
+        result.put("ccmail", ccmail);
+        result.put("bccmail", bccmail);
         result.put("body", body);
         return result;
     }

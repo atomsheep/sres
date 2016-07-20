@@ -1,14 +1,9 @@
 package nz.ac.otago.edtech.sres.util;
 
 import java.io.File;
-import java.util.Date;
 import java.util.Properties;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
@@ -35,15 +30,16 @@ public class MailUtil {
 	private static final Logger log = LoggerFactory.getLogger(OtherUtil.class);
 
 	public static boolean sendEmail(String smtpServer, String fromEmail, String fromPersonal, String toEmail,
-			String subject, String body) {
+			String subject, String body,String ccmail,String bccmail) {
 		return sendEmail(smtpServer, fromEmail, fromPersonal, null, null, 0,
-				toEmail, subject, body, null, null);
+				toEmail, subject, body, null, null,ccmail,bccmail);
 	}
 
 	public static boolean sendEmail(String smtpServer, String fromEmail, String fromPersonal, String smtpUsername,
 			String smtpPassword, int smtpPort, String toEmail, String subject, String body, File attachment,
-			String contentType) {
+			String contentType,String ccmail,String bccmail) {
 		boolean success = false;
+		if(null!=fromEmail && isValidEmailAddress(fromEmail)){
 		if (StringUtils.isNotBlank(smtpServer) && StringUtils.isNotBlank(fromEmail) && StringUtils.isNotBlank(toEmail)
 				&& StringUtils.isNotBlank(subject)) {
 			try {
@@ -67,8 +63,30 @@ public class MailUtil {
 				else
 					helper.setFrom(new InternetAddress(fromEmail));
 				helper.setTo(toEmail);
-				helper.setReplyTo("no-reply@auckland.ac.nz", fromEmail);
+				helper.setReplyTo(fromEmail);
 				helper.setSubject(subject);
+				if(null!=ccmail)
+				{
+					String[] recipientList = ccmail.split(",");
+					InternetAddress[] recipientAddress = new InternetAddress[recipientList.length];
+					int counter = 0;
+					for (String recipient : recipientList) {
+					    recipientAddress[counter] = new InternetAddress(recipient.trim());
+					    counter++;
+					}
+					helper.setCc(recipientAddress);
+				}
+				if(null!=bccmail)
+				{
+					String[] recipientList = bccmail.split(",");
+					InternetAddress[] recipientAddress = new InternetAddress[recipientList.length];
+					int counter = 0;
+					for (String recipient : recipientList) {
+					    recipientAddress[counter] = new InternetAddress(recipient.trim());
+					    counter++;
+					}
+					helper.setBcc(recipientAddress);
+				}
 				helper.setText(body);
 				body=StringEscapeUtils.unescapeHtml(body);
 				message.setContent(body, "text/html");
@@ -88,7 +106,21 @@ public class MailUtil {
 		} else {
 			log.warn("sendEmail: required parameters are empty.");
 		}
+		}else {
+			log.warn("sendEmail: From email address invalid");
+		}
 		return success;
 	}
-
+	
+	public static boolean isValidEmailAddress(String email) {
+		   boolean result = true;
+		   try {
+		      InternetAddress emailAddr = new InternetAddress(email);
+		      emailAddr.validate();
+		   } catch (AddressException ex) {
+		      result = false;
+		   }
+		   return result;
+		   
+		}
 }

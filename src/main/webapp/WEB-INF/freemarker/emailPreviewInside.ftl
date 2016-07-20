@@ -10,6 +10,8 @@
     </#if>
     <span style="color: #eee">From</span> ${fromemail!}<br/>
     <span style="color: #eee">To</span> ${emailAddress!}<br/>
+    <span style="color: #eee">CC</span> ${ccmail!}<br/>
+    <span style="color: #eee">BCC</span> ${bccmail!}<br/>
     <span style="color: #eee">Subject</span> ${subject}
 </div>
 
