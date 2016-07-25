@@ -107,7 +107,7 @@ public class UserController {
         model.put("user", user);
         List<Document> documents = new ArrayList<Document>();
         AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).aggregate(asList(
-                new Document("$match", new Document("owner", user.get("_id")).append("status", "active")),
+        		new Document("$match", new Document("owner", new Document("$elemMatch",new Document("$eq",user.get("_id")))).append("status", "active")),
                 new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERS).append("localField", "_id").append("foreignField", "papers.paperref").append("as", "users"))));
         for (Document document : iterable) {
             documents.add(document);
@@ -169,7 +169,9 @@ public class UserController {
             String userName = AuthUtil.getUserName(request);
             Document user = MongoUtil.getUserByUsername(db, userName);
             paper.put("_id", id);
-            paper.put("owner", user.get("_id"));
+            List<ObjectId> owners=new ArrayList<ObjectId>();
+            owners.add((ObjectId)user.get("_id"));
+            paper.put("owner", owners);
             paper.put("status", "active");
             paper.put("created", now);
             log.debug("new paper id {}", id);
@@ -1408,6 +1410,71 @@ public class UserController {
         return Common.DEFAULT_VIEW_NAME;
     }
 
+    
+    @RequestMapping(value = "/sharePaper/{id}", method = RequestMethod.GET)
+    public String sharePaper(@PathVariable String id,
+                                 HttpServletRequest request,
+                                 ModelMap model) {
+        ObjectId paperId = new ObjectId(id);
+        List<Document> students=MongoUtil.getAllDocuments(db, MongoUtil.COLLECTION_NAME_USERS);
+        log.debug("users {}", students);
+        List<Document> records=new ArrayList<Document>(); 
+		for (Document student : students) {
+			if (null != student.get(MongoUtil.USERNAME) && null!=student.get("_id")) {
+				Document data = new Document();
+				data.put("_id", student.get("_id"));
+				data.put(MongoUtil.USERNAME, student.get(MongoUtil.USERNAME));
+				data.put("firstName", student.get("firstName"));
+				data.put("lastName", student.get("lastName"));
+				data.put("email", student.get("email"));
+				records.add(data);
+			}
+		}
+
+        model.put("students", records);
+        model.put("pageName", "sharePaper");
+        MongoUtil.putCommonIntoModel(db, request, model);
+        return Common.DEFAULT_VIEW_NAME;
+    }
+    
+    
+    
+    @RequestMapping(value = "/sharePapers/{id}", method = RequestMethod.POST)
+    public ResponseEntity<String> sharePaperWithStudents(@PathVariable String id,@RequestParam(value = "user_id", required = false) String user_id,
+                                 HttpServletRequest request,
+                                 ModelMap model) {
+    	
+        boolean success = false;
+        String action = "/sharePapers/{id}";
+        String detail = null;
+        JSONParser parser=new JSONParser();
+    	try {
+			JSONObject data=(JSONObject)parser.parse(user_id);
+			Document paperref=new Document();
+			paperref.put("paperref", new  ObjectId(id));
+			List<String> roles=new ArrayList<String>();
+			roles.add("owner");
+			paperref.put("roles",roles);
+			List<ObjectId> user_ids=new ArrayList<ObjectId>();
+			for(Object user:data.keySet()){
+				//user_ids.add(new ObjectId((String)user.toString()));
+				
+		        db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(
+		                eq("_id", new ObjectId((String)user.toString())),
+		                new Document("$push", new Document("papers",paperref)));
+		        db.getCollection(MongoUtil.COLLECTION_NAME_PAPERS).updateOne(
+		                eq("_id", new  ObjectId(id)),
+		                new Document("$push", new Document("owner",new ObjectId((String)user.toString()))));
+		        success = true;
+			}
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return OtherUtil.outputJSON(action, success, detail);
+
+    }
+    
     @RequestMapping(value = "/saveColumnValue", method = RequestMethod.POST)
     public ResponseEntity<String> saveColumnValue(@RequestParam(value = "id", required = false) String id,
                                                   @RequestParam(value = "userId", required = false) String userId,

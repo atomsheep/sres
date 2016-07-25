@@ -76,6 +76,9 @@
                                 <td style='text-align:center;padding:0'>
                                     <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Edit columns</a>
                                 </td>
+                                <td style='text-align:center;padding:0'>
+                                    <a href="${baseUrl}/user/sharePaper/${l._id}" id="sharepaper" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Share Paper</a>
+                                </td>
                                 <td style='text-align:center;border-right:none;padding:0'>
                                     <button data-id='${l._id}' class="deleteList btn btn-default btn-danger btn-square" style="width:100%;display:block">Delete ${ICN}</button>
                                 </td>
