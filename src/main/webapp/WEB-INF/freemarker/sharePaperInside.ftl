@@ -37,8 +37,7 @@ Share Paper
                         <td style='text-align:left;border-left:none'><input type="checkbox" name="students" checked='checked' value="${c._id}"/></td>
                         <td style='text-align:left;position:relative'>${c.username!}
                         </td>
-                        <td style='text-align:left'>${c.email!}</td>
-                        
+                        <td style='text-align:left'>${c.email!}</td>                        
                     </tr>
                 </#list>
             </table>
@@ -68,20 +67,46 @@ Share Paper
 
         $(document).on('click', '.sres_checkbox', function () {
             var self = $(this);
+             var i=0; 
+             var checkboxArray=[];
+             var arrayLength=0;
+             var t=$(".sres_checkbox").get();
+            
             if (self.hasClass('fa-check-circle')) {
                 self.removeClass('fa-check-circle').addClass('fa-circle-thin');
-                delete ids[self.attr('id')]
-            } else {
+                
+                if(self.attr('id')!= "on"){
+                delete ids[self.attr('id')];
+                }else{
+                delete ids[self.attr('id')];
+                checkboxArray=document.getElementsByClassName('sres_checkbox');
+                arrayLength = checkboxArray.length;
+				for (i = 0; i < arrayLength; i++) {
+	                if(checkboxArray[i].getAttribute('id')!= "on"){
+    				    delete ids[checkboxArray[i].getAttribute('id')];
+    				    checkboxArray[i].className='sres_checkbox fa fa-circle-thin';
+    				}
+				}
+            } }else {
                 self.addClass('fa-check-circle').removeClass('fa-circle-thin');
-                if(self.val()!= "on"){
+                if(self.attr('id')!= "on"){
                 	ids[self.attr('id')]="off";
+                }else{
+				checkboxArray=document.getElementsByClassName('sres_checkbox');
+                 arrayLength = checkboxArray.length;
+				for (i = 0; i < arrayLength; i++) {	
+				 if(checkboxArray[i].getAttribute('id')!= "on"){
+                	ids[checkboxArray[i].getAttribute('id')]="off";
+    				checkboxArray[i].className='sres_checkbox fa fa-check-circle';
                 }
-            }
+                }
+		    }	
+           }
             self.prev('input[type=checkbox]').click();
         });
 
 
-$('button.sharePaper').on('click', function () {
+		$('button.sharePaper').on('click', function () {
          var data=JSON.stringify(ids);
 
         $.post("${baseUrl}/user/sharePapers/${id}",
