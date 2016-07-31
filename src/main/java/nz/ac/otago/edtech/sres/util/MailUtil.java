@@ -89,7 +89,8 @@ public class MailUtil {
 				}
 				helper.setText(body);
 				body=StringEscapeUtils.unescapeHtml(body);
-				message.setContent(body, "text/html");
+				message.setText(body, "UTF-8", "html");
+
 				if (attachment != null) {
 					FileSystemResource file = new FileSystemResource(attachment);
 					if (StringUtils.isNotBlank(contentType))
