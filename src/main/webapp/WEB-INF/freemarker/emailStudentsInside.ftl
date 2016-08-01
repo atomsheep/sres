@@ -594,12 +594,23 @@ $(function () {
 	
     $('button.sendEmail').on('click', function () {
         console.log("sending email");
+        var t = $("<div></div>").appendTo("body");
+                t.popup_simple('init', {
+                    content: "Sending Mails. Please wait....<br/>",
+                    extraClasses: ["sresPopup"],
+                    confirm: false,
+                    cancel: false,
+                    confirmCallback: function(){
+                        $('[name=mapFieldsForm]').submit();
+                    }
+                }).popup_simple("show").popup_simple("centre");
+                
         $.post("${baseUrl}/user/sendEmails",
                 {emailId: '${email._id}'},
                 function (json) {
                     if (json.success) {
                         console.log("Email's sent.");
-
+				 t.popup_simple("destroy");
                  var p = $("<div></div>").appendTo("body");
                 p.popup_simple('init', {
                     content: "Email's were sent successfully!<br/>",
@@ -617,6 +628,7 @@ $(function () {
                     }
                 else {
                 console.log("Email's were not sent.");
+                t.popup_simple("destroy");
                 var p = $("<div></div>").appendTo("body");
                 p.popup_simple('init', {
                     content: "Error occurred while sending Email's!<br/> Please put valid data in all email fields!<br/>",
