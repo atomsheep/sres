@@ -292,6 +292,25 @@ $(function () {
             self.css('display', 'none');
         });
     }
+    
+    function replaceStudentDataCheckboxes(div){
+        $('input[type=checkbox]',div).each(function (i, e) {
+            var self = $(this);
+            if(this.className != "" && this.className != "columnCheckbox")
+            {
+            var newCheckbox = "";
+            if (self.is(":checked")) {
+                newCheckbox = "<span class='sres_checkbox fa fa-check-circle'></span>";
+                self.after(newCheckbox);
+                self.css('display', 'none');
+            } else {
+                newCheckbox = "<span class='sres_checkbox fa fa-circle-thin'></span>";
+                self.after(newCheckbox);
+                self.css('display', 'none');
+            }
+          }
+        });
+    }
 
     $(document).on('click', '.sres_checkbox', function () {
         var self = $(this);
@@ -380,7 +399,7 @@ $(function () {
                     var pt = self.data("paneltype");
                     if (pt == "studentData"){
                         self.find('.innerContent').html(data);
-                        replaceCheckboxes(id);
+                       replaceStudentDataCheckboxes(id);
 
                         self.find('th').each(function () {
                             var slf = $(this);
