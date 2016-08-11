@@ -11,13 +11,14 @@ Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
 ## Contributors
 
 * University of Otago
- * Adon Moskal
  * Richard Zeng
  * Jenny McDonald
 * University of Sydney
  * Danny Liu
  * Abelardo Pardo
  * Adam Bridgeman
+* Otago Polytechnic
+  * Adon Moskal
 
 ## Greater project team
 
