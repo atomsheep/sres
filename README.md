@@ -12,13 +12,14 @@ Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
 
 * University of Otago
  * Richard Zeng
- * Jenny McDonald
 * University of Sydney
  * Danny Liu
  * Abelardo Pardo
  * Adam Bridgeman
 * Otago Polytechnic
   * Adon Moskal
+* University of Auckland
+ * Jenny McDonald
 
 ## Greater project team
 
