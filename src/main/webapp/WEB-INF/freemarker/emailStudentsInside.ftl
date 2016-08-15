@@ -53,7 +53,7 @@
                                 <td style='padding:5px 5px 0'>
                                     <div class='input-group input-group1' style="width:100%">
                                         <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
-                                        <input type="text" class="form-control shortcode" value="{{student.${f}}}"/>
+                                        <input type="text" class="form-control shortcode" value="{{student.${f?html}}}"/>
                                     </div>
                                 </td>
                             </tr>

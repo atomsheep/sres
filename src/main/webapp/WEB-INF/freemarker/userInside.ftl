@@ -55,7 +55,7 @@
                         <th width='12%' style='text-align:center;'>${ICN_C} year</th>
                         <th width='12%' style='text-align:center;'>${ICN_C} semester</th>
                         <th width='12%' style='text-align:center;'>Number of students</th>
-                        <th width='12%' colspan='4' style='text-align:center;border-right:none'>Actions</th>
+                        <th width='12%' colspan='5' style='text-align:center;border-right:none'>Actions</th>
                         </tr>
                     <#if list?has_content>
                         <#list list as l>
@@ -68,7 +68,7 @@
                                     ${l.studentCount!0}
                                 </td>
                                 <td style='text-align:center;padding:0'>
-                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">View paper</a>
+                                    <a href="${baseUrl}/user/viewPaper/${l._id}" id="viewList" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">View ${ICN}</a>
                                 </td>
                                 <td style='text-align:center;padding:0'>
                                     <a href="${baseUrl}/user/editPaper/${l._id}" id="editPaper" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Edit paper info</a>
@@ -77,7 +77,7 @@
                                     <a href="${baseUrl}/user/viewColumnList/${l._id}" id="editColumns" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Edit columns</a>
                                 </td>
                                 <td style='text-align:center;padding:0'>
-                                    <a href="${baseUrl}/user/sharePaper/${l._id}" id="sharepaper" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Share Paper</a>
+                                    <a href="${baseUrl}/user/sharePaper/${l._id}" id="sharepaper" class="btn btn-default btn-primary btn-square left" style="width:100%;display:block">Share ${ICN}</a>
                                 </td>
                                 <td style='text-align:center;border-right:none;padding:0'>
                                     <button data-id='${l._id}' class="deleteList btn btn-default btn-danger btn-square" style="width:100%;display:block">Delete ${ICN}</button>

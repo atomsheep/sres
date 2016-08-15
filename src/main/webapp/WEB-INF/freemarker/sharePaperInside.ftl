@@ -1,14 +1,12 @@
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
 <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
-<a style='color:white;text-decoration: underline' href="${baseUrl}/user/sharePaper/${id}">Share paper</a> >
 Share Paper
 </span>
 <div style='clear:both'></div>
 
-<h1 style='margin:20px 20px 0'>Share Paper</h1>
+<h1 style='margin:20px 20px 0'>Share ${ICN}</h1>
 
-<div class='info_text'>Select Students and click on share paper.
-</div>
+<div class='info_text'>Select Students and click on share paper.</div>
 
 <#if (students)?has_content>
 <form id="resultsForm" method="post" action="">
@@ -20,7 +18,7 @@ Share Paper
             <!-- <a class='btn btn-default btn-primary' id="addKeyValue"  style='border-radius:0;padding:10px 10px 9px;border-right:1px solid #043B4E' href="${baseUrl}/user/sharePaper/${id}">
                 <span class='fa fa-share-alt'></span> Share this paper
             </a> -->
-            <button type="button" class="btn btn-default btn-primary btn-square left fa fa-share-alt sharePaper"> Share Paper</button>
+            <button type="button" class="btn btn-default btn-primary btn-square left sharePaper"><span class="fa fa-share-alt"></span> Share ${ICN}</button>
         </div>
 
         <div style='position:absolute;top:80px;bottom:0;left:0;right:0;overflow-y:scroll'>

@@ -398,7 +398,7 @@ public class MongoUtil {
      * @param email email
      * @return email information, including email address, subject, body
      */
-    public static Map<String, String> getEmailInformation(Document user, List<Document> userdata, Document teacher, Document email, List<Document> paragraphs) {
+    public static Document getEmailInformation(Document user, List<Document> userdata, Document teacher, Document email, List<Document> paragraphs) {
         if ((user == null) || (email == null))
             throw new IllegalArgumentException("User or emails null");
         @SuppressWarnings("unchecked")
@@ -430,7 +430,7 @@ public class MongoUtil {
         body += concludingParagraph;
         subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata, teacher);
         body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata, teacher);
-        Map<String, String> result = new HashMap<String, String>();
+        Document result = new Document();
         result.put("address", address);
         result.put("subject", subject);
         result.put("fromemail", fromemail);
@@ -441,11 +441,11 @@ public class MongoUtil {
     }
 
 
-    public static String replaceEmailTemplate(String message, Map map, List<Document> userdata, Document teacher) {
+    public static String replaceEmailTemplate(String message, Document map, List<Document> userdata, Document teacher) {
         String result = message;
-        for (String key : (Set<String>) map.keySet()) {
+        for (String key : map.keySet()) {
             // replace here
-        	result = result.replace("{{student." + key + "}}", (String) map.get(key).toString());
+        	result = result.replace("{{student." + key + "}}", map.get(key).toString());
         }
         for(Document d : userdata){
             List data = (ArrayList)d.get("data");
@@ -481,8 +481,8 @@ public class MongoUtil {
      * @param who     who
      * @return user data as map
      */
-    public static Map saveUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
-        Map map;
+    public static Document saveUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
+        Document map;
         Document oldUserData = getDocument(db, COLLECTION_NAME_USERDATA, eq("colref", colref), eq("userref", userref));
         if (oldUserData == null) {
             map = saveNewUserData(db, value, colref, userref, who);
@@ -503,13 +503,13 @@ public class MongoUtil {
      * @param who     who
      * @return user data as map
      */
-    public static Map saveNewUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
+    public static Document saveNewUserData(MongoDatabase db, String value, ObjectId colref, ObjectId userref, Document who) {
         ObjectId oid = new ObjectId();
-        ModelMap userdata = new ModelMap();
+        Document userdata = new Document();
         userdata.put("_id", oid);
         userdata.put("colref", colref);
         userdata.put("userref", userref);
-        ModelMap datum = new ModelMap();
+        Document datum = new Document();
         if (NumberUtils.isNumber(value)) {
             Number num = NumberUtils.createNumber(value);
             datum.put("value", num);
@@ -517,7 +517,7 @@ public class MongoUtil {
             datum.put("value", value);
         datum.put("timestamp", new Date());
         datum.put("updateBy", who.get("_id"));
-        List<ModelMap> data = new ArrayList<ModelMap>();
+        List<Document> data = new ArrayList<Document>();
         data.add(datum);
         userdata.put("data", data);
         db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).insertOne(new Document(userdata));
@@ -533,7 +533,7 @@ public class MongoUtil {
      * @param who   who
      * @return user data as map
      */
-    public static Map updateUserData(MongoDatabase db, String value, String id, Document who) {
+    public static Document updateUserData(MongoDatabase db, String value, String id, Document who) {
         ObjectId userDataId = new ObjectId(id);
         return updateUserData(db, value, userDataId, who);
     }
@@ -547,9 +547,9 @@ public class MongoUtil {
      * @param who        who
      * @return user data as map
      */
-    private static Map updateUserData(MongoDatabase db, String value, ObjectId userDataId, Document who) {
-        Map map = null;
-        ModelMap datum = new ModelMap();
+    private static Document updateUserData(MongoDatabase db, String value, ObjectId userDataId, Document who) {
+        Document map = null;
+        Document datum = new Document();
         value = value.trim();
         if (NumberUtils.isNumber(value)) {
             Number num = NumberUtils.createNumber(value);
@@ -558,7 +558,7 @@ public class MongoUtil {
             datum.put("value", value);
         datum.put("timestamp", new Date());
         datum.put("updatedBy", who.get("_id"));
-        List<ModelMap> list = new ArrayList<ModelMap>();
+        List<Document> list = new ArrayList<Document>();
         list.add(datum);
 
         UpdateResult result = db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).updateOne(

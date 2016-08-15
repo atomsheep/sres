@@ -98,7 +98,7 @@ public class UserController {
         String userName = AuthUtil.getUserName(request);
         Document user = MongoUtil.getUserByUsername(db, userName);
         if (user == null) {
-            ModelMap userMap = new ModelMap();
+            Document userMap = new Document();
             userMap.put(MongoUtil.USERNAME, userName);
             // TODO: load user information here
             db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
@@ -151,11 +151,11 @@ public class UserController {
                             @RequestParam("size") int size,
                             HttpServletRequest request) {
 
-        ModelMap extra = new ModelMap();
+        Document extra = new Document();
         for (int i = 0; i < size; i++) {
-            if ((request.getParameter("key" + i) != null) && (request.getParameter("value" + i) != null)) {
-                String key = request.getParameter("key" + i).trim();
-                String value = request.getParameter("value" + i).trim();
+            if ((request.getParameter("key_" + i) != null) && (request.getParameter("value_" + i) != null)) {
+                String key = request.getParameter("key_" + i).trim();
+                String value = request.getParameter("value_" + i).trim();
                 if (StringUtils.isNotBlank(key))
                     extra.put(key, value);
             }
@@ -384,9 +384,9 @@ public class UserController {
 					int studentCount = 0;
 					// go through csv file
 					for (CSVRecord record : records) {
-						ModelMap userMap = new ModelMap();
+                        Document userMap = new Document();
 						// all user info into userInfo
-						ModelMap userInfo = new ModelMap();
+                        Document userInfo = new Document();
 						for (String k : userInfoFields.keySet()) {
 							int ii = userInfoFields.get(k);
 							if (ii != -1) {
@@ -417,9 +417,9 @@ public class UserController {
 				//	for (CSVRecord record : records) {
 					for(int i=0;i<records.size();i++) {
 						JSONObject record=(JSONObject)records.get(i);
-						ModelMap userMap = new ModelMap();
+                        Document userMap = new Document();
 						// all user info into userInfo
-						ModelMap userInfo = new ModelMap();
+                        Document userInfo = new Document();
 						for (String k : userInfoFields.keySet()) {
 							int ii = userInfoFields.get(k);
 							if (ii != -1) {
@@ -595,14 +595,14 @@ public class UserController {
 
         int userCount = 0;
         if (unIndex != -1) {
-            List<ModelMap> columnFields = new ArrayList<ModelMap>();
+            List<Document> columnFields = new ArrayList<Document>();
             for (int i = 0; i < size; i++) {
                 if (request.getParameter("extra" + i) != null) {
                     String name = request.getParameter("name" + i).trim();
                     String description = request.getParameter("description" + i);
                     int value = ServletUtil.getParameter(request, "value" + i, -1);
                     if ((name != null) && (value != -1)) {
-                        ModelMap map = new ModelMap();
+                        Document map = new Document();
                         map.put("name", name);
                         map.put("description", description);
                         map.put("index", value);
@@ -657,10 +657,10 @@ public class UserController {
 								log.debug("find user.");
 								if ((uu != null) && (uu.get("_id") != null)) {
 									userCount++;
-									for (ModelMap m : columnFields) {
-										ObjectId colref = (ObjectId) m.get("_id");
+									for (Document d : columnFields) {
+										ObjectId colref = (ObjectId) d.get("_id");
 										ObjectId userref = (ObjectId) uu.get("_id");
-										String value = record.get((Integer) m.get("index")).trim();
+										String value = record.get((Integer) d.get("index")).trim();
 										MongoUtil.saveNewUserData(db, value, colref, userref, user);
 									}
 								}
@@ -678,10 +678,10 @@ public class UserController {
 								log.debug("find user.");
 								if ((uu != null) && (uu.get("_id") != null)) {
 									userCount++;
-									for (ModelMap m : columnFields) {
-										ObjectId colref = (ObjectId) m.get("_id");
+									for (Document d : columnFields) {
+										ObjectId colref = (ObjectId) d.get("_id");
 										ObjectId userref = (ObjectId) uu.get("_id");
-										String value = record.get(m.get("name")).toString().trim();
+										String value = record.get(d.get("name")).toString().trim();
 										MongoUtil.saveNewUserData(db, value, colref, userref, user);
 									}
 
@@ -699,7 +699,7 @@ public class UserController {
 			}
 		}
         success = true;
-        ModelMap extra = new ModelMap();
+        Document extra = new Document();
         extra.put("userCount", userCount);
         extra.put("studentCount", paper.get("studentCount"));
         extra.put("paperId", id);
@@ -954,25 +954,7 @@ public class UserController {
             size = studentList.size();
         if (index < size) {
             String id = studentList.get(index);
-            Document user = MongoUtil.getUser(db, id);
-            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
-            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata, teacher, email,paragraphs);
-            String address = map.get("address");
-            String fromemail = map.get("fromemail");
-            String ccmail = map.get("ccmail");
-            String bccmail = map.get("bccmail");
-            String subject = map.get("subject");
-            String body = map.get("body");
-            model.put("emailAddress", address);
-            model.put("fromemail", fromemail);
-            model.put("ccmail", ccmail);
-            model.put("bccmail", bccmail);
-            model.put("subject", subject);
-            model.put("body", body);
-            model.put("user", user);
-            model.put("size", size);
-            model.put("index", index);
+            model = returnEmailModel(model,id,email,teacher,index,size);
         }
         model.put("emailId", emailId);
         model.put("pageName", "emailPreview");
@@ -998,30 +980,36 @@ public class UserController {
             index = 0;
         if (index < size) {
             String id = studentList.get(index);
-            Document user = MongoUtil.getUser(db, id);
-            List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
-            List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(user, userdata,teacher, email,paragraphs);
-            String address = map.get("address");
-            String fromemail = map.get("fromemail");
-            String ccmail = map.get("ccmail");
-            String bccmail = map.get("bccmail");
-            String subject = map.get("subject");
-            String body = map.get("body");
-            model.put("emailAddress", address);
-            model.put("fromemail", fromemail);
-            model.put("ccmail", ccmail);
-            model.put("bccmail", bccmail);
-            model.put("subject", subject);
-            model.put("body", body);
-            model.put("user", user);
-            model.put("size", size);
-            model.put("index", index);
+            model = returnEmailModel(model, id, email, teacher, index, size);
         }
+
         model.put("emailId", emailId);
         model.put("pageName", "emailPreview");
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
+    }
+
+    private ModelMap returnEmailModel(ModelMap model, String id, Document email, Document teacher, int index, int size){
+        Document user = MongoUtil.getUser(db, id);
+        List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",user.get("_id")));
+        List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
+        Document map = MongoUtil.getEmailInformation(user, userdata,teacher, email,paragraphs);
+        String address = (String)map.get("address");
+        String fromemail = (String)map.get("fromemail");
+        String ccmail = (String)map.get("ccmail");
+        String bccmail = (String)map.get("bccmail");
+        String subject = (String)map.get("subject");
+        String body = (String)map.get("body");
+        model.put("emailAddress", address);
+        model.put("fromemail", fromemail);
+        model.put("ccmail", ccmail);
+        model.put("bccmail", bccmail);
+        model.put("subject", subject);
+        model.put("body", body);
+        model.put("user", user);
+        model.put("size", size);
+        model.put("index", index);
+        return model;
     }
 
 
@@ -1053,14 +1041,14 @@ public class UserController {
             Document uu = MongoUtil.getUser(db, new ObjectId(u));
             List<Document> userdata = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_USERDATA,eq("userref",uu.get("_id")));
             List<Document> paragraphs = MongoUtil.getDocuments(db,MongoUtil.COLLECTION_NAME_PARAGRAPHS,eq("emailref",email.get("_id")));
-            Map<String, String> map = MongoUtil.getEmailInformation(uu,userdata,teacher, email,paragraphs);
-            String address = map.get("address");
-            String subject = map.get("subject");
-            String body = map.get("body");
-            String ccmail = map.get("ccmail");
-            String bccmail = map.get("bccmail");
+            Document map = MongoUtil.getEmailInformation(uu,userdata,teacher, email,paragraphs);
+            String address = (String)map.get("address");
+            String subject = (String)map.get("subject");
+            String body = (String)map.get("body");
+            String ccmail = (String)map.get("ccmail");
+            String bccmail = (String)map.get("bccmail");
             if (StringUtils.isNotBlank(address) && address.contains("@")) {
-            	fromEmail = map.get("fromemail");
+            	fromEmail = (String)map.get("fromemail");
                 log.debug("send email to {} with subject {} body {}", address, subject, body);
                 if (inDevelopmentMode) {
                     //address = fromEmail;
@@ -1109,7 +1097,7 @@ public class UserController {
                              @RequestParam("size") int size,
                              HttpServletRequest request) {
 
-        ModelMap extra = new ModelMap();
+        Document extra = new Document();
         for (int i = 0; i < size; i++) {
             if ((request.getParameter("key" + i) != null) && (request.getParameter("value" + i) != null)) {
                 String key = request.getParameter("key" + i).trim();
@@ -1326,7 +1314,7 @@ public class UserController {
         model.put("paper", paper);
         model.put("studentFields", paper.get("studentFields"));
 
-        List<ModelMap> results = new ArrayList<ModelMap>();
+        List<Document> results = new ArrayList<Document>();
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
 
         Set<ObjectId> set = new HashSet<ObjectId>();
@@ -1364,7 +1352,7 @@ public class UserController {
             }
         }
         for (ObjectId oid : set) {
-            ModelMap result = new ModelMap();
+            Document result = new Document();
             AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
                     new Document("$match", new Document("_id", oid)),
                     new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
@@ -1548,6 +1536,44 @@ public class UserController {
         MongoUtil.putCommonIntoModel(db, request, model);
         return Common.DEFAULT_VIEW_NAME;
     }
+//*
+    @RequestMapping(value = "/saveStudent", method = RequestMethod.POST)
+    public String saveStudent(@RequestParam(value = "_id", required = false) String _id,
+                              @RequestParam("userDataSize") int userDataSize,
+                              @RequestParam("studentFieldsSize") int studentFieldsSize,
+                              @RequestParam("paperId") String paperId,
+                              HttpServletRequest request) {
+        String userName = AuthUtil.getUserName(request);
+        Document who = MongoUtil.getUserByUsername(db, userName);
+        Document user = MongoUtil.getDocument(db,MongoUtil.COLLECTION_NAME_USERS,_id);
+        Document userInfo = new Document();
+        for (int i = 0; i < studentFieldsSize; i++) {
+            if ((request.getParameter("sf_key_" + i) != null) && (request.getParameter("sf_value_" + i) != null)) {
+                String key = request.getParameter("sf_key_" + i).trim();
+                String value = request.getParameter("sf_value_" + i).trim();
+                if (StringUtils.isNotBlank(key)) {
+                    userInfo.put(key, value);
+                }
+            }
+        }
+        user.put("userInfo",userInfo);
+        db.getCollection(MongoUtil.COLLECTION_NAME_USERS)
+                .updateOne(eq("_id", user.get("_id")), new Document("$set", new Document(user)),
+                        new UpdateOptions().upsert(true));
+
+        for (int i = 0; i < userDataSize; i++) {
+            if ((request.getParameter("ud_key_" + i) != null) && (request.getParameter("ud_value_" + i) != null)) {
+                String key = request.getParameter("ud_key_" + i).trim();
+                String value = request.getParameter("ud_value_" + i).trim();
+                if (StringUtils.isNotBlank(key)) {
+                    MongoUtil.saveUserData(db,value,new ObjectId(key),(ObjectId)user.get("_id"),who);
+                }
+            }
+        }
+        user.put("userInfo",userInfo);
+        return "redirect:/user/viewPaper/" + paperId;
+    }
+//*/
 
     //async loading
     @RequestMapping(value = "/getDataOverview/{id}", method = RequestMethod.GET)
@@ -1638,14 +1664,14 @@ public class UserController {
         model.put("paper", paper);
         model.put("studentFields", paper.get("studentFields"));
 
-        List<ModelMap> results = new ArrayList<ModelMap>();
+        List<Document> results = new ArrayList<Document>();
         List<Document> columns = MongoUtil.getDocuments(db, MongoUtil.COLLECTION_NAME_COLUMNS, "paperref", paperId);
         AggregateIterable<Document> iterable = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).aggregate(asList(
                 new Document("$match", new Document("paperref", paperId)),
                 new Document("$lookup", new Document("from", MongoUtil.COLLECTION_NAME_USERDATA).append("localField", "_id").append("foreignField", "userref").append("as", "userdata"))));
 
         for (Document u : iterable) {
-            ModelMap result = new ModelMap();
+            Document result = new Document();
             result.put("_id", u.get("_id"));
             result.put("userInfo", u.get("userInfo"));
             @SuppressWarnings("unchecked")

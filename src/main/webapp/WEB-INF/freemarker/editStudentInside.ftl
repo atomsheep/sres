@@ -7,10 +7,13 @@ Edit student information
 <div style='clear:both'></div>
 
 <form name="editPaperForm" method="post" action="${baseUrl}/user/saveStudent">
-<#if (paper._id)?has_content>
-    <input type="hidden" name="_id" value="${paper._id}"/>
+<#if user._id?has_content>
+    <input type="hidden" name="_id" value="${user._id}"/>
 </#if>
-    <input type="hidden" name="size" value="0"/>
+
+    <input type="hidden" name="studentFieldsSize" value="${paper.studentFields?size}"/>
+    <input type="hidden" name="userDataSize" value="${user.userData?size}"/>
+    <input type="hidden" name="paperId" value="${paper._id}"/>
 
     <h1 style='margin:20px 20px 0'>Edit student information
         <button type="submit" class="btn btn-default btn-primary btn-square right">Save</button>
@@ -27,7 +30,8 @@ Edit student information
                     <td style='padding:0 20px 5px 20px'>
                         <div class='input-group input-group4' style='width:100%'>
                             <span class='input-group-addon sres_name' style='width:150px;text-align:left'>${f}</span>
-                            <input class='form-control' type="text" name="semester" value="${user.userInfo[f]}"
+                            <input type="hidden" name="sf_key_${f_index}" value="${f?html}" />
+                            <input class='form-control' type="text" name="sf_value_${f_index}" value="${user.userInfo[f]}"
                                 style='display:inline-block;'/>
                         </div>
                     </td>
@@ -46,7 +50,8 @@ Edit student information
                     <td style='padding:0 20px 5px 20px'>
                         <div class='input-group input-group4' style='width:100%'>
                             <span class='input-group-addon sres_name' style='width:150px;text-align:left'>${ud.name!}</span>
-                            <input class='form-control' type="text" name="semester" value="${ud.data[0].value!}"
+                            <input type="hidden" name="ud_key_${ud_index}" value="${ud.colref}" />
+                            <input class='form-control' type="text" name="ud_value_${ud_index}" value="${ud.data[0].value!}"
                                 style='display:inline-block;'/>
                         </div>
                     </td>
@@ -64,8 +69,6 @@ Edit student information
         var height = $(window).height();
         var newHeight = height - top - (20);
         $('.side1, .side2').css("height", newHeight + "px");
-
-        var index = 0;
 
         $.fn.shortText = function (str, length) {
             var item = $(this);
