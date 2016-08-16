@@ -14,71 +14,79 @@
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow: hidden'>
     <div class="gridster">
         <ul>
-            <li class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="2">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Students <span
-                        class='totalStudents'>${users?size}</span> / ${users?size}</h4>
+            <li id="sidePanel" class='sres_panel' data-row="1" data-col="1" data-sizex="1" data-sizey="4">
+                <div style="height:50%;position:relative">
+                    <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>
+                        Students <span class='totalStudents'>${users?size}</span> / ${users?size}
+                        <span style="float:right;cursor:pointer" class="fa fa-caret-left" id="hideSidePanel"></span>
+                    </h4>
 
-                <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                    <#list users as u>
-                        <tr>
-                            <td style='padding:5px'>
-                                <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
-                                       checked="checked"/>
-                            </td>
-                            <td>
-                                <#if email.emailField?has_content>
-                                ${u.userInfo[email.emailField]}
-                                </#if>
-                            <#list u.userInfo?keys as k>
-                                <#if !email.emailField?has_content || (email.emailField != k)>
-                                ${u.userInfo[k]}
-                                </#if>
+                    <div style='position:absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll;'>
+                        <table style='width:100%'>
+                        <#list users as u>
+                            <tr>
+                                <td style='padding:5px'>
+                                    <input id="user_${u._id}" type="checkbox" name="usernames" value="${u._id}"
+                                           checked="checked"/>
+                                </td>
+                                <td>
+                                    <#if email.emailField?has_content>
+                                    ${u.userInfo[email.emailField]}
+                                    </#if>
+                                <#list u.userInfo?keys as k>
+                                    <#if !email.emailField?has_content || (email.emailField != k)>
+                                    ${u.userInfo[k]}
+                                    </#if>
+                                </#list>
+                                </td>
+
+                            </tr>
+                        </#list>
+                        </table>
+                    </div>
+                </div>
+      <#--      </li>
+
+            <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1"> -->
+                <div style="height:25%;border-bottom:1px solid #066888;border-top:1px solid #066888;position:relative">
+                    <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Student fields shortcodes</h4>
+
+                    <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+                        <table style='width:100%'>
+                            <#list studentFields as f>
+                                <tr>
+                                    <td style='padding:5px 5px 0'>
+                                        <div class='input-group input-group1' style="width:100%">
+                                            <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
+                                            <input type="text" class="form-control shortcode" value="{{student.${f?html}}}"/>
+                                        </div>
+                                    </td>
+                                </tr>
                             </#list>
-                            </td>
-
-                        </tr>
-                    </#list>
-                    </table>
+                        </table>
+                    </div>
                 </div>
-            </li>
+   <#--         </li>
 
-            <li class='sres_panel' data-row="3" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Student fields shortcodes</h4>
+            <li class='sres_panel' data-row="4" data-col="1" data-sizex="1" data-sizey="1"> -->
+                <div style="height:25%;position:relative">
+                    <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Column shortcodes</h4>
 
-                <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                        <#list studentFields as f>
-                            <tr>
-                                <td style='padding:5px 5px 0'>
-                                    <div class='input-group input-group1' style="width:100%">
-                                        <span class='input-group-addon sres_name shortcode_name' style='width:35%'>${f}:</span>
-                                        <input type="text" class="form-control shortcode" value="{{student.${f?html}}}"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </#list>
-                    </table>
-                </div>
-            </li>
-
-            <li class='sres_panel' data-row="4" data-col="1" data-sizex="1" data-sizey="1">
-                <h4 style='cursor:default;margin:0;padding:10px;background:#043B4E'>Column shortcodes</h4>
-
-                <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
-                    <table style='width:100%'>
-                        <#list columns as c>
-                            <tr>
-                                <td style='padding:5px 5px 0'>
-                                    <div class='input-group input-group1' style="width:100%">
-                                                <span class='input-group-addon sres_name shortcode_name'
-                                                      style='width:35%'>${c.name!}:</span>
-                                        <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
-                                    </div>
-                                </td>
-                            </tr>
-                        </#list>
-                    </table>
+                    <div style='position: absolute;top:40px;bottom:0;left:0;right:0;overflow-y:scroll'>
+                        <table style='width:100%'>
+                            <#list columns as c>
+                                <tr>
+                                    <td style='padding:5px 5px 0'>
+                                        <div class='input-group input-group1' style="width:100%">
+                                                    <span class='input-group-addon sres_name shortcode_name'
+                                                          style='width:35%'>${c.name!}:</span>
+                                            <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </#list>
+                        </table>
+                    </div>
                 </div>
             </li>
 
@@ -324,6 +332,10 @@ $(function () {
         }
         self.after(newCheckbox);
         self.css('display', 'none');
+    });
+
+    $(document).on('click', function(){
+        gridster.remove_widget('#sidePanel');
     });
 
     $(document).on('click', '.sres_checkbox', function () {
