@@ -1,0 +1,94 @@
+@charset "UTF-8";
+
+@font-face {
+  font-family: "iris";
+  src:url("fonts/iris.eot");
+  src:url("fonts/iris.eot?#iefix") format("embedded-opentype"),
+    url("fonts/iris.woff") format("woff"),
+    url("fonts/iris.ttf") format("truetype"),
+    url("fonts/iris.svg#iris") format("svg");
+  font-weight: normal;
+  font-style: normal;
+
+}
+
+[data-icon]:before {
+  font-family: "iris" !important;
+  content: attr(data-icon);
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+[class^="iris-"]:before,
+[class*=" iris-"]:before {
+  font-family: "iris" !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  font-variant: normal !important;
+  text-transform: none !important;
+  speak: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.iris-add:before {
+  content: "\61";
+}
+.iris-delete:before {
+  content: "\62";
+}
+.iris-share:before {
+  content: "\64";
+}
+.iris-open:before {
+  content: "\63";
+}
+.iris-settings:before {
+  content: "\65";
+}
+.iris-search:before {
+  content: "\66";
+}
+.iris-lock:before {
+  content: "\67";
+}
+.iris-user:before {
+  content: "\68";
+}
+.iris-key:before {
+  content: "\69";
+}
+.iris-check:before {
+  content: "\6a";
+}
+.iris-email:before {
+  content: "\6b";
+}
+.iris-download:before {
+  content: "\6c";
+}
+.iris-edit:before {
+  content: "\6d";
+}
+.iris-upload:before {
+  content: "\6e";
+}
+.iris-down:before {
+  content: "\6f";
+}
+.iris-left:before {
+  content: "\70";
+}
+.iris-right:before {
+  content: "\71";
+}
+.iris-up:before {
+  content: "\72";
+}

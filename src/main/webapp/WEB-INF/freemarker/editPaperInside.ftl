@@ -1,3 +1,96 @@
+<#assign tabs = [ICN_C + " info", "Student list", "Student data" ] />
+
+<div style="margin-left:50px">
+    <a href="${baseUrl}/user"><div style="background:#333;color:white" class="top_tab" data-tab="back"><div class="iris-left button_icon" style="margin-left:-5px;padding-top:5px"></div> Back</div></a>
+<#list tabs as t>
+    <div class="top_tab <#if t_index == 0>active</#if>" data-tab="${t_index}">${t}</div>
+</#list>
+    <div style="clear:both"></div>
+</div>
+<ul id="lightSlider" style="">
+    <li class="slide">
+        <div class="slideInner">
+            <form name="editPaperForm" method="post" action="${baseUrl}/user/savePaper">
+                <#if (paper._id)?has_content>
+                    <input type="hidden" name="_id" value="${paper._id}"/>
+                </#if>
+                    <input type="hidden" name="size" value="0"/>
+
+                <h2 style="color:#b19209">Basic info</h2>
+                <div class="search_bar">
+                    <div class="iris-edit text-icon"></div>
+                    <input name="name" id="name" value="${(paper.name)!}" size="40" required type="text" class="iris-input" placeholder="${ICN_C} name"/>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div class="search_bar" style="width:calc(34% - 20px);float:left">
+                    <div class="iris-edit text-icon"></div>
+                    <input name="code" id="code" value="${(paper.code)!}" size="40" required type="text" class="iris-input" placeholder="${ICN_C} code"/>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div class="search_bar" style="width:calc(33% - 10px);margin-left:20px;float:left">
+                    <div class="iris-edit text-icon"></div>
+                    <input name="year" id="year" type="text" class="iris-input" placeholder="Year"/>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div class="search_bar" style="width:calc(33% - 10px);float:right">
+                    <div class="iris-edit text-icon"></div>
+                    <input name="semester" id="semester" type="text" class="iris-input" placeholder="Semester"/>
+                    <div style="clear:both"></div>
+                </div>
+
+                <div style="clear:both"></div>
+
+                <div style="margin-bottom:20px;text-align:right;float:right">
+                    <button class="top_buttons button_clear">
+                        <div class="iris-check button_icon"></div>
+                        <div class="button_text">Save paper</div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </li>
+    <li class="slide">
+        <div class="slideInner">
+            <h2 style="color:#b19209">Upload a student list (csv, tsv, excel)</h2>
+            <div class="search_bar" style="width:75%;float:left">
+                <div class="iris-search text-icon"></div>
+                <input type="text" class="iris-input" placeholder="Choose student list file..."/>
+                <div style="clear:both"></div>
+            </div>
+            <div style="margin-bottom:20px;text-align:right;float:right">
+                <button class="top_buttons button_clear">
+                    <div class="iris-upload button_icon"></div>
+                    <div class="button_text">Upload file</div>
+                </button>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </li>
+    <li class="slide">
+        <div class="slideInner">
+            <h2 style="color:#b19209">Upload a student data file (csv, tsv, excel)</h2>
+            <div class="search_bar" style="width:75%;float:left">
+                <div class="iris-search text-icon"></div>
+                <input type="text" class="iris-input" placeholder="Choose student data file..."/>
+                <div style="clear:both"></div>
+            </div>
+            <div style="margin-bottom:20px;text-align:right;float:right">
+                <button class="top_buttons button_clear">
+                    <div class="iris-upload button_icon"></div>
+                    <div class="button_text">Upload file</div>
+                </button>
+            </div>
+
+            <div style="clear:both"></div>
+        </div>
+    </li>
+</ul>
+
+<#--
 <span style='font-weight:bold;float:left;margin:0 10px;color:#0886AF'>
 <a style='color:white;text-decoration: underline' href="${baseUrl}/user/">Home</a> >
 Edit ${ICN} information
@@ -109,12 +202,34 @@ Edit ${ICN} information
     </tbody>
 </table>
 
+-->
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("li","#lightSlider").css("height",($(document).height() - 50)+"px");
+        var slider = $("#lightSlider").lightSlider({
+            item : 1,
+            pager : false,
+            enableDrag : false,
+            controls:false
+        });
+
+        $(document).on("click",".top_tab", function () {
+            var self = $(this);
+            var num = self.data("tab");
+            slider.goToSlide(num);
+            $('.top_tab.active').removeClass("active");
+            self.addClass("active");
+        })
+    });
+</script>
+
 <script type="text/javascript">
     $(function () {
-        var top = $('.side1').offset().top;
+      /*  var top = $('.side1').offset().top;
         var height = $(window).height();
         var newHeight = height - top - (20);
-        $('.side1, .side2').css("height", newHeight + "px");
+        $('.side1, .side2').css("height", newHeight + "px");*/
 
         var index = 0;
         <#if extra?has_content>

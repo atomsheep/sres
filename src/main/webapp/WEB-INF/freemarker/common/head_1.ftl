@@ -9,6 +9,7 @@
     <meta name="keywords" content="Student Relationship Engagement System"/>
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/bootstrap-3.3.6-dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/font-awesome-4.5.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" media="screen" href="${baseUrl}/assets/iris-font/styles.css"/>
     <link rel="stylesheet" type="text/css" media="all" href="${baseUrl}/assets/css/main.css"/>
 
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:400,300,500,700"/>
@@ -17,6 +18,7 @@
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/javascript.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="${baseUrl}/assets/js/jquery-ui-effects.js"></script>
     <script type="text/javascript" src="${baseUrl}/assets/js/jquery.form.min.js"></script>
 
     <script type="text/javascript" src="${baseUrl}/assets/bootstrap-datepicker-1.5.1-dist/js/bootstrap-datepicker.js"></script>
@@ -37,6 +39,9 @@
     <!-- Plugins -->
     <link rel="stylesheet" type="text/css" href="${baseUrl}/assets/js/popup_simple/popup_simple.css" />
     <script src="${baseUrl}/assets/js/popup_simple/popup_simple.js" type="text/javascript"></script>
+
+    <script src="${baseUrl}/assets/js/lightslider-master/src/js/lightslider.js"></script>
+    <link type="text/css" rel="stylesheet" href="${baseUrl}/assets/js/lightslider-master/src/css/lightslider.css" />
 
     <script>
   /*

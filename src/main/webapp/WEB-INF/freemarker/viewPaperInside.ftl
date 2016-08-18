@@ -1,3 +1,100 @@
+<#assign tabs = ["Student list", "Data overview", "Interventions" ] />
+
+<div style="margin-left:50px">
+<#list tabs as t>
+    <div class="top_tab <#if t_index == 0>active</#if>" data-tab="${t_index}">${t}</div>
+</#list>
+    <div style="clear:both"></div>
+</div>
+<ul id="lightSlider" style="">
+    <li class="slide">
+        <div class="slideInner">
+            <div id="studentData" style="position: absolute;overflow: hidden;top: 20px;bottom: 20px;left: 20px;right: 20px;"></div>
+        </div>
+    </li>
+    <li class="slide">
+        <div class="slideInner">
+            <div class="search_bar">
+                <div class="iris-search text-icon"></div>
+                <input type="text" class="iris-input" placeholder="Search"/>
+                <div style="clear:both"></div>
+            </div>
+            <table class="paperList_table" style="margin-top:20px">
+            <#if list?has_content>
+                <#list list as l>
+                    <tr>
+                        <td style="background:#fdefbb">Owner</td>
+                        <td style="background:#fdefbb">${l.code!}</td>
+                        <td style="background:#fdefbb">${l.name!}</td>
+                        <td style="background:#fdefbb">${l.year!}</td>
+                        <td style="background:#fdefbb;border-right:10px solid #f1cf3d">${l.semester!}</td>
+                        <td style="width:16%"><a href="#" class="paper_buttons"><div class="iris-lock paper_controls"></div><div class="paper_controls small_text">Request access</div></a></td>
+                    </tr>
+                </#list>
+            </#if>
+            </table>
+        </div>
+    </li>
+    <li class="slide">
+        <div class="slideInner">
+            <h3>My profile</h3>
+            <p>Lorem ipsum Excepteur amet adipisicing fugiat velit nisi.</p>
+        </div>
+    </li>
+</ul>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("li","#lightSlider").css("height",($(document).height() - 50)+"px");
+        var slider = $("#lightSlider").lightSlider({
+            item : 1,
+            pager : false,
+            enableDrag : false,
+            controls:false
+        });
+
+        $(document).on("click",".top_tab", function () {
+            var self = $(this);
+            var num = self.data("tab");
+            slider.goToSlide(num);
+            $('.top_tab.active').removeClass("active");
+            self.addClass("active");
+        });
+
+        $(document).on("mouseover",".paperList_table td",function(){
+            $(this).parent("tr").find("td").addClass("highlight");
+        }).on("mouseout",".paperList_table td",function(){
+            $(this).parent("tr").find("td").removeClass("highlight");
+        });
+
+        $(document).on("mouseover",".studentField-td",function(){
+            $(".studentField-td").show();
+            $("tr",".paperList_table").each(function(k,v){
+                $(".studentData-td",v).each(function(i,e){
+                    if(i!=0)
+                        $(this).hide();
+                    else
+                        $(this).width(50);
+                });
+            });
+        });
+
+        $(document).on("mouseover",".studentData-td",function(){
+            $(".studentData-td").show();
+            $("tr",".paperList_table").each(function(k,v){
+                $(".studentField-td",v).each(function(i,e){
+                    if(i!=0)
+                        $(this).hide();
+                    else
+                        $(this).width(50);
+                });
+            });
+        });
+    });
+</script>
+
+<#--
+
 <#assign arrayOfColours = [
 ["#1A90C7","#26A7E3","#4AB6E8","#6FC4EC","#93D3F1","#072736","#0C415A","#105C7E","#1576A2"],
 ["#C71AAD","#E326C7","#E84AD0","#F193E3","#F6B7EC", "#36072F","#5A0C4E","#7E106E","#A2158D"],
@@ -42,7 +139,7 @@
     </div>
     <div id='panels' style='display:none;clear:both;background:white;height:40px;z-index:50;position:absolute;top:40px;left:0;right:0'>
         <div class='fa fa-times closePanels' style='cursor:pointer;float:left;color:#0886AF;font-size: 18px;padding: 10px 10px;'></div>
-        <#-- Add panels -->
+
         <div class='btn btn-default addPanelButton btn-square right' data-panel="columns">Columns</div>
         <div class='btn btn-default addPanelButton btn-square right' data-panel="filters">Filters</div>
         <div class='btn btn-default addPanelButton btn-square right' data-panel="userFields">Student fields</div>
@@ -53,7 +150,7 @@
     </div>
 </#if>
 </div>
-
+-->
 <#-- panel name : row, col, sizex, sizey -->
 <#assign panels = {
     "columns":[1,1,2,1],
@@ -64,12 +161,12 @@
     "dataOverview":[3,3,1,1],
     "interventions":[4,3,1,1]
 }/>
-
+<#--
 <div style='position:absolute;left:0;right:0;bottom:0;top:90px;overflow-y:scroll;overflow-x: hidden'>
 
     <div class="gridster">
         <ul>
-            <#if !paper.gridData?has_content> <#-- default dashboard layout -->
+            <#if !paper.gridData?has_content>
                 <#list panels?keys as k>
                     <li class='sres_panel' data-row="${panels[k][0]}" data-col="${panels[k][1]}" data-sizex="${panels[k][2]}" data-sizey="${panels[k][3]}" data-paneltype="${k}">
                         <div class='innerContent'>
@@ -82,47 +179,26 @@
     </div>
 
 </div>
-
+-->
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 
 <script type="text/javascript">
 
 $(function () {
 
-    var third = 1 / 3;
-    var quarter = 1 / 4;
-    var gap = 10;
-    var screenwidth = $(document).width() - (gap * 10);
-    var firstPanelStart = 50 + $('#topBar').height() + (gap * 2);
-    var screenheight = $(document).height() - firstPanelStart - (gap * 8);
+    $.get("${baseUrl}/user/getStudentData/${paper._id}", function(data){
+        $('#studentData').html(data);
+       /* replaceCheckboxes(self);
 
-    var gridster = $(".gridster ul").gridster({
-        widget_margins: [gap, gap],
-        widget_base_dimensions: [(screenwidth * third), (screenheight * quarter)],
-        max_cols: 3,
-        resize: {
-            enabled: true,
-            stop : function(){
-                saveGridData();
+        self.find('th').each(function () {
+            var slf = $(this);
+            if (slf.find("input").length == 0) {
+                var text = slf.text();
+                slf.shortText(text, 20);
             }
-        },
-        serialize_params: function($w, wgd) {
-            return {
-                id: $w.attr('id'),
-                col: wgd.col,
-                row: wgd.row,
-                size_x: wgd.size_x,
-                size_y: wgd.size_y,
-                paneltype: $w.data('paneltype')
-            };
-        },
-        draggable : {
-            stop : function(){
-                //save grid layout here
-                saveGridData();
-            }
-        }
-    }).data('gridster') ;
+        });*/
+    });
+
 
     $('.restoreLayout').on('click', function(){
         saveGridData(true, function(){
@@ -322,7 +398,7 @@ $(function () {
         self.prev('input[type=checkbox]').click();
     });
 
-    $('.chart').css('margin-top', '5px').css('width', (screenwidth * third) + 'px').css("height", (screenheight * quarter - 30) + "px");
+  //  $('.chart').css('margin-top', '5px').css('width', (screenwidth * third) + 'px').css("height", (screenheight * quarter - 30) + "px");
 
     var filterList = $('#filterList');
     var filterDivHtml = $('.filterDiv').html();

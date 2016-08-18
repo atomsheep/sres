@@ -1,28 +1,37 @@
-<div style='margin-left:20px'>
-<h1>Login</h1>
+<div style='margin:0 20px'>
+    <h1>Login</h1>
 
-<div class='info_text' style='margin-left:0;margin-bottom:20px'>
-    For first time user, just input your normal university username, or your email as username, and input a password you
-    can remember. DO NOT USE ANY VALUABLE PASSWORD. Next time, make sure you input the same username and password.
-</div>
+    <div class="slideInner">
 
-<#if error?has_content>
-    <div style="color: red; font-weight: bold">${error}</div>
-</#if>
+        <div class='info_text' style='display:none;margin-left:0;margin-bottom:20px'>
+            For first time user, just input your normal university username, or your email as username, and input a password you
+            can remember. DO NOT USE ANY VALUABLE PASSWORD. Next time, make sure you input the same username and password.
+        </div>
 
-<form action="${baseUrl}/login" method="post">
-    <input name="from" type="hidden" value="${fromUrl!}"/>
+        <#if error?has_content>
+            <div style="color: #b19209; font-weight: 300;font-size:32px;font-size:2vw;">${error}</div>
+        </#if>
 
-    <div class='input-group input-group1' style='margin-bottom:20px'>
-        <span class='input-group-addon sres_name'>Username:</span>
-        <input type="text" class="form-control" name="username" id="username" placeholder="Username" style="max-width: 600px"/>
+        <form action="${baseUrl}/login" method="post">
+            <input name="from" type="hidden" value="${fromUrl!}"/>
+
+            <div class="search_bar">
+                <div class="iris-user text-icon"></div>
+                <input name="username" id="username" type="text" class="iris-input" placeholder="Username"/>
+                <div style="clear:both"></div>
+            </div>
+
+            <div class="search_bar">
+                <div class="iris-key text-icon"></div>
+                <input name="password" id="password" type="password" class="iris-input" placeholder="Password"/>
+                <div style="clear:both"></div>
+            </div>
+
+            <table style="width:100%;font-size:32px;font-size:2vw;font-weight:300">
+                <tr>
+                    <td style="padding:0 0 10px"><button type="submit" class="top_buttons button_clear"><div class="iris-check button_icon"></div><div class="button_text">Login</div></button></td>
+                </tr>
+            </table>
+        </form>
     </div>
-
-    <div class='input-group input-group1' style='margin-bottom:20px'>
-        <span class='input-group-addon sres_name'>Password:</span>
-        <input type="password" class="form-control" name="password" id="password" placeholder="Password" style="max-width: 600px"/>
-    </div>
-
-    <button type="submit" class="btn btn-default btn-primary">Submit</button>
-</form>
 </div>

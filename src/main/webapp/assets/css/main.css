@@ -12,12 +12,15 @@ a:active {
 }
 
 h1 {
-    font-size: 36px;
+    font-size: 32px;
+    font-size: 2vw;
     padding-bottom: 15px;
-    font-weight:700;
+    font-weight:300;
 }
 
 h2, h3{
+    font-size:20px;
+    font-size:1.2vw;
     font-weight:400;
 }
 
@@ -36,13 +39,52 @@ h2, h3{
 
 
 body {
-
-    background:#021E27;
+    background:#edc30d;
     color: #fcfbf9;
     font-family:Roboto, sans-serif;
 }
 
 h4 { font-weight:300 }
+
+.top_tab { background:#fff;padding:10px 20px;float:left;font-weight:300;font-size:32px;font-size:2vw;color:#b19209;border-right:1px solid #f1cf3d;cursor:pointer }
+.top_tab:hover { color:#c09e0a; }
+.top_tab.active { background:#f1cf3d;color:#333;box-shadow:0 2px 10px #b19209; }
+
+#lightSlider {  }
+#lightSlider .slide { padding:0 20px 20px;position:relative }
+#lightSlider .slide .slideInner { box-shadow:0 2px 10px #b19209;font-size:32px;font-size:2vw;font-weight:300;position:absolute;top:0;left:20px;right:20px;bottom:20px;background:#f1cf3d;padding:20px;color:#333 }
+
+.top_buttons {  }
+.top_buttons:hover {  }
+
+.paperList_table { width:100%;text-align:center;color:#333;background:white }
+.paperList_table td { border-bottom: 1px solid #edc30d;padding:10px 20px; }
+
+.paper_controls{ margin-top: 5px;margin-bottom: -10px;font-size:32px;font-size:2vw; }
+.paper_controls.small_text{ margin-top: 0;margin-bottom: 5px;font-size:20px;font-size:1.2vw; }
+
+.paper_buttons { color:#b19209;font-size:20px;text-align:center }
+.paper_buttons:hover { color:#c09e0a; }
+
+.search_bar { background:white; width:100%;font-size:32px;font-size:2vw;font-weight:300;position:relative;margin-bottom:20px }
+
+.text-icon{ color:#999;position:absolute;top:0;left:0;padding-top: 10px;margin:0 10px -5px }
+
+input.iris-input { border:none;padding:5px 50px;color:#333;width:100% }
+
+.button_clear { border: none;background: #11aa88;padding: 10px;color: white;font-size: 20px;font-size:1.2vw;box-shadow:0 2px 10px #b19209; }
+.button_clear:hover { background: #12b893; }
+
+.button_icon{ float: left;padding-top:3px;margin-bottom:-5px }
+.button_text{ margin-left:5px;float:left}
+
+
+/** Tricky table stuff **/
+
+.studentField-td{ display:none; }
+tr>.studentField-td:nth-child(2){ display:table-cell;width:50px }
+
+td:not(.button_clear).highlight{ background:rgb(253, 239, 187) }
 
 /** datepicker specific css **/
 .day, .datepicker-switch, .prev, .next, .dow{ color:black; }
