@@ -428,8 +428,8 @@ public class MongoUtil {
         }
 
         body += concludingParagraph;
-        subject = MongoUtil.replaceEmailTemplate(subject, userInfo, userdata, teacher);
-        body = MongoUtil.replaceEmailTemplate(body, userInfo, userdata, teacher);
+        subject = MongoUtil.replaceEmailTemplate(user,subject, userInfo, userdata, teacher);
+        body = MongoUtil.replaceEmailTemplate(user,body, userInfo, userdata, teacher);
         Document result = new Document();
         result.put("address", address);
         result.put("subject", subject);
@@ -441,11 +441,12 @@ public class MongoUtil {
     }
 
 
-    public static String replaceEmailTemplate(String message, Document map, List<Document> userdata, Document teacher) {
+    public static String replaceEmailTemplate(Document user,String message, Document map, List<Document> userdata, Document teacher) {
         String result = message;
         for (String key : map.keySet()) {
             // replace here
         	result = result.replace("{{student." + key + "}}", map.get(key).toString());
+        	result = result.replace("{{data." + key + "}}", (String) map.get(key).toString());
         }
         for(Document d : userdata){
             List data = (ArrayList)d.get("data");

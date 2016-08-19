@@ -73,7 +73,7 @@
                                     <div class='input-group input-group1' style="width:100%">
                                                 <span class='input-group-addon sres_name shortcode_name'
                                                       style='width:35%'>${c.name!}:</span>
-                                        <input type="text" class="form-control shortcode" value="{{data.${c._id}}}"/>
+                                        <input type="text" class="form-control shortcode" value="{{data.${c.name}}}"/>
                                     </div>
                                 </td>
                             </tr>
