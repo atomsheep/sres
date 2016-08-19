@@ -25,6 +25,8 @@
                 <option value="$gt">greater than</option>
                 <option value="$gte">greater than or equal to</option>
                 <option value="$ne">not equal to</option>
+                <option value="empty">is empty</option>
+                <option value="not_empty">is not empty</option>
             </select>
 
             <input placeholder="enter a value here, e.g. 10" type="text" name="value" class="form-control" style="width: 35%;float:left;border-radius:0"/>

@@ -1328,6 +1328,13 @@ public class UserController {
                 if (NumberUtils.isNumber(value))
                     o = NumberUtils.createNumber(value);
                 String operator = obj.get("operator").toString();
+                if (operator.equals("empty")) {
+					operator = "$eq";
+					o = "";
+				} else if (operator.equals("not_empty")) {
+					operator = "$ne";
+					o = "";
+				}
                 Bson valueFilter = new OperatorFilter<Object>(operator, "data.0.value", o);
                 String colref = obj.get("colref").toString();
                 Bson colFilter = eq("colref", new ObjectId(colref));
