@@ -92,3 +92,21 @@
 .iris-up:before {
   content: "\72";
 }
+.iris-circle:before {
+  content: "\73";
+}
+.iris-filter:before {
+  content: "\74";
+}
+.iris-logout:before {
+  content: "\75";
+}
+.iris-options:before {
+  content: "\76";
+}
+.iris-off:before {
+  content: "\77";
+}
+.iris-on:before {
+  content: "\78";
+}

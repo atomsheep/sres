@@ -46,8 +46,8 @@ body {
 
 h4 { font-weight:300 }
 
-.top_tab { background:#fff;padding:10px 20px;float:left;font-weight:300;font-size:32px;font-size:2vw;color:#b19209;border-right:1px solid #f1cf3d;cursor:pointer }
-.top_tab:hover { color:#c09e0a; }
+.top_tab { background:#fff;padding:10px 20px;float:left;font-weight:300;font-size:32px;font-size:2vw;color:#886622;border-right:1px solid #f1cf3d;cursor:pointer }
+.top_tab:hover { color:#897933; }
 .top_tab.active { background:#f1cf3d;color:#333;box-shadow:0 2px 10px #b19209; }
 
 #lightSlider {  }
@@ -61,10 +61,10 @@ h4 { font-weight:300 }
 .paperList_table td { border-bottom: 1px solid #edc30d;padding:10px 20px; }
 
 .paper_controls{ margin-top: 5px;margin-bottom: -10px;font-size:32px;font-size:2vw; }
-.paper_controls.small_text{ margin-top: 0;margin-bottom: 5px;font-size:20px;font-size:1.2vw; }
+.paper_controls.small_text{ margin-top: 0;margin-bottom: 5px;font-size:20px;font-size:1.2vw;font-weight:500; }
 
-.paper_buttons { color:#b19209;font-size:20px;text-align:center }
-.paper_buttons:hover { color:#c09e0a; }
+.paper_buttons { color:#886622;font-size:20px;text-align:center }
+.paper_buttons:hover { color:#897933; }
 
 .search_bar { background:white; width:100%;font-size:32px;font-size:2vw;font-weight:300;position:relative;margin-bottom:20px }
 
@@ -72,8 +72,8 @@ h4 { font-weight:300 }
 
 input.iris-input { border:none;padding:5px 50px;color:#333;width:100% }
 
-.button_clear { border: none;background: #11aa88;padding: 10px;color: white;font-size: 20px;font-size:1.2vw;box-shadow:0 2px 10px #b19209; }
-.button_clear:hover { background: #12b893; }
+.button_clear { border: none;background: #367;padding: 10px;color: white;font-size: 20px;font-size:1.2vw;box-shadow:0 2px 10px #b19209; }
+.button_clear:hover { background: #367; }
 
 .button_icon{ float: left;padding-top:3px;margin-bottom:-5px }
 .button_text{ margin-left:5px;float:left}
@@ -81,10 +81,22 @@ input.iris-input { border:none;padding:5px 50px;color:#333;width:100% }
 
 /** Tricky table stuff **/
 
-.studentField-td{ display:none; }
-tr>.studentField-td:nth-child(2){ display:table-cell;width:50px }
+.trick_cell { visibility: hidden;padding: 0 !important;height: 0;font-size: 0;border: none !important; }
+
+.row_check { width:50px;border-bottom:1px solid #333 !important;box-shadow:none;border-right:1px solid #333 }
+.not_shown{ display:none; }
+.hidden_td{ display:none !important; }
+
+.studentField-td { background:#f2f2f2 }
+.paperList_table td { cursor:pointer ;}
+.nowrap { white-space : nowrap; text-overflow : ellipsis; overflow:hidden }
 
 td:not(.button_clear).highlight{ background:rgb(253, 239, 187) }
+
+.filler{ width:40px !important; padding:0 !important;background:#f1cf3d !important;border-bottom:1px solid #f1cf3d !important;border-right:1px solid #f1cf3d !important; }
+
+.td_disabled:not(.filler) { background: #333 !important;color: #999;border-color: black !important; }
+.row_check.off { background:#333;color:#999;border-color:black }
 
 /** datepicker specific css **/
 .day, .datepicker-switch, .prev, .next, .dow{ color:black; }

@@ -6,16 +6,36 @@
     </#list>
     <div style="clear:both"></div>
 </div>
-<ul id="lightSlider" style="">
+<ul id="lightSlider">
     <li class="slide">
         <div class="slideInner">
             <table style="width:100%">
                 <tr>
+                    <td style="vertical-align:bottom;text-align:left">
+                        <h1 style="padding:0;margin:0 0 20px">Welcome <span style="font-weight:500">${user.username}</span></h1>
+                    </td>
+                    <td style="vertical-align:bottom;text-align:right">
+                        <a href="#" class="paper_buttons" style="color:white;background:#333;float:right;margin-bottom:20px;padding:15px 30px;">
+                            <div class="iris-logout paper_controls" style="margin-top:0"></div>
+                            <div class="paper_controls small_text" style="margin-bottom:0">Logout</div>
+                        </a>
+                        <a href="#" class="paper_buttons" style="color:white;margin-right:10px;background:#367;float:right;margin-bottom:20px;padding:15px 30px;">
+                            <div class="iris-settings paper_controls" style="margin-top:0"></div>
+                            <div class="paper_controls small_text" style="margin-bottom:0">Settings</div>
+                        </a>
+
+                        <a href="${baseUrl}/user/editPaper" class="paper_buttons" style="margin-right:10px;color:white;background:#009590;float:right;margin-bottom:20px;padding:15px 30px;">
+                            <div class="iris-add paper_controls" style="margin-top:0"></div>
+                            <div class="paper_controls small_text" style="margin-bottom:0">New</div>
+                        </a>
+                    </td>
+<#--
                     <td style="padding:0 0 20px">
                         <a href="${baseUrl}/user/editPaper">
                             <button class="top_buttons button_clear"><div class="iris-add button_icon"></div><div class="button_text">New ${ICN}</div></button>
                         </a>
                     </td>
+                    -->
                 </tr>
             </table>
             <table class="paperList_table">
@@ -27,7 +47,7 @@
                             <td style="background:#fdefbb">${l.year!}</td>
                             <td style="background:#fdefbb;border-right:10px solid #f1cf3d">${l.semester!}</td>
                             <td style="width:8%"><a href="${baseUrl}/user/viewPaper/${l._id}" class="paper_buttons"><div class="iris-open paper_controls"></div><div class="paper_controls small_text">Open</div></a></td>
-                            <td style="width:8%"><a href="${baseUrl}/user/editPaper/${l._id}" class="paper_buttons"><div class="iris-settings paper_controls"></div><div class="paper_controls small_text">Edit</div></a></td>
+                            <td style="width:8%"><a href="${baseUrl}/user/editPaper/${l._id}" class="paper_buttons"><div class="iris-edit paper_controls"></div><div class="paper_controls small_text">Edit</div></a></td>
                             <td style="width:8%"><a href="${baseUrl}/user/sharePaper/${l._id}" class="paper_buttons"><div class="iris-share paper_controls"></div><div class="paper_controls small_text">Share</div></a></td>
                             <td style="width:8%"><a data-id="${l._id}" href="#" class="paper_buttons deleteList"><div class="iris-delete paper_controls"></div><div class="paper_controls small_text">Delete</div></a></td>
                         </tr>

@@ -11,12 +11,25 @@
     <li class="slide">
         <div class="slideInner">
             <form name="editPaperForm" method="post" action="${baseUrl}/user/savePaper">
-                <#if (paper._id)?has_content>
-                    <input type="hidden" name="_id" value="${paper._id}"/>
-                </#if>
-                    <input type="hidden" name="size" value="0"/>
-
-                <h2 style="color:#b19209">Basic info</h2>
+                <table style="width:100%">
+                    <tr>
+                        <td style="vertical-align:bottom;text-align:left">
+                            <h1 style="padding:0;margin:0 0 20px">Basic <span style="font-weight:500">info</span></h1>
+                        </td>
+                        <td style="vertical-align:bottom;text-align:right">
+                            <button type="submit" class="paper_buttons" style="border:none;color:white;background:#009590;float:right;padding:15px 30px;margin-bottom:20px;">
+                                <div class="iris-check paper_controls" style="margin-top:0"></div>
+                                <div class="paper_controls small_text" style="margin-bottom:0">Save</div>
+                            </button>
+                            <div style="clear:both"></div>
+                            <#if (paper._id)?has_content>
+                                <input type="hidden" name="_id" value="${paper._id}"/>
+                            </#if>
+                            <input type="hidden" name="size" value="0"/>
+                        </td>
+                    </tr>
+                </table>
+                <div style="clear:both"></div>
                 <div class="search_bar">
                     <div class="iris-edit text-icon"></div>
                     <input name="name" id="name" value="${(paper.name)!}" size="40" required type="text" class="iris-input" placeholder="${ICN_C} name"/>
@@ -31,24 +44,17 @@
 
                 <div class="search_bar" style="width:calc(33% - 10px);margin-left:20px;float:left">
                     <div class="iris-edit text-icon"></div>
-                    <input name="year" id="year" type="text" class="iris-input" placeholder="Year"/>
+                    <input name="year" id="year" type="text" class="iris-input" placeholder="Year" value="${(paper.year)!}" />
                     <div style="clear:both"></div>
                 </div>
 
                 <div class="search_bar" style="width:calc(33% - 10px);float:right">
                     <div class="iris-edit text-icon"></div>
-                    <input name="semester" id="semester" type="text" class="iris-input" placeholder="Semester"/>
+                    <input name="semester" id="semester" type="text" class="iris-input" placeholder="Semester" value="${(paper.semester)!}" />
                     <div style="clear:both"></div>
                 </div>
 
                 <div style="clear:both"></div>
-
-                <div style="margin-bottom:20px;text-align:right;float:right">
-                    <button class="top_buttons button_clear">
-                        <div class="iris-check button_icon"></div>
-                        <div class="button_text">Save paper</div>
-                    </button>
-                </div>
             </form>
         </div>
     </li>
