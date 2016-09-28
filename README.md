@@ -1,15 +1,18 @@
-# Student Relationship Engagement System
+# Student Relationship Engagement System v2
 
-A collaborative open-source learning analytics project between New Zealand and Australian universities, focussing on a bottom-up approach to build a system that is imminently useful, applicable, and usable by teachers on the ground working with students.
+A collaborative open-source learning analytics project between New Zealand and Australian universities, focussing on a bottom-up approach to build a system that is eminently useful, applicable, and usable by teachers on the ground working with students.
 
 Our philosophy is that learning analytics should be about empowering teachers and students with data, and that good analytics needs to focus on humans, hence the name 'Student Relationship Engagement System'.
 
-This system was born from the SRES originally developed at the University of Sydney (see [poster](https://www.academia.edu/9378207/A_simple_web-based_analytics_system_to_efficiently_capture_analyse_and_respond_to_student_engagement_and_achievement)).
+This system was born from the SRES v1 originally developed at the University of Sydney (see [poster](https://www.academia.edu/9378207/A_simple_web-based_analytics_system_to_efficiently_capture_analyse_and_respond_to_student_engagement_and_achievement)).
 
-Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
+Version 2 builds on version 1 and is designed so that tertiary instituions can customise and implement to meet their own specific needs but benefit from sharing a flexible data architecture and common components. 
 
-## Contributors
+For further information, check out the project [wiki](https://github.com/atomsheep/sres/wiki).
 
+For installation instructions see: https://github.com/atomsheep/sres/wiki/Installation 
+
+## Project Team
 * University of Otago
  * Richard Zeng
 * University of Sydney
@@ -19,14 +22,8 @@ Check out the project [wiki](https://github.com/atomsheep/sres/wiki).
 * Otago Polytechnic
   * Adon Moskal
 * University of Auckland
+ * Steve Leichtweiss
  * Jenny McDonald
+ * Marion Blumenstein
+ * Cathy Gunn 
 
-## Greater project team
-
-* Including contributors as listed above
-* University of Otago
- * Rob Wass
-* University of Auckland
- * Claire Donald
- * Cathy Gunn
- * Steve Leichtweis
