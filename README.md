@@ -12,7 +12,7 @@ For further information, check out the project [wiki](https://github.com/atomshe
 
 For installation instructions see: https://github.com/atomsheep/sres/wiki/Installation 
 
-## Project Team
+## Contributors and Project Team
 * University of Otago
  * Richard Zeng
 * University of Sydney
