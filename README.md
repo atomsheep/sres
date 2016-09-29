@@ -22,8 +22,9 @@ For installation instructions see: https://github.com/atomsheep/sres/wiki/Instal
 * Otago Polytechnic
   * Adon Moskal
 * University of Auckland
- * Steve Leichtweiss
+ * Steve Leichtweis
  * Jenny McDonald
  * Marion Blumenstein
- * Cathy Gunn 
+ * Cathy Gunn
+ * Roshan Pawar
 
