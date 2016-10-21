@@ -12,6 +12,8 @@ For further information, check out the project [wiki](https://github.com/atomshe
 
 For installation instructions see: https://github.com/atomsheep/sres/wiki/Installation 
 
+NB: please note the current code represents a minimal viable product for a research project, and as such there is some functionality that has not been fully implemented. Anyone wishing to use or contribute to the SRES should consult the "Issues" tab for current known issues, and feel free to add new issues or feature requests.
+
 ## Contributors and Project Team
 * University of Otago
  * Richard Zeng
