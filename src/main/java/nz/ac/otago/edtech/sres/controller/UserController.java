@@ -90,6 +90,17 @@ public class UserController {
     @PostConstruct
     public void init() {
         db = mongoClient.getDatabase(dbName);
+        boolean containsIndex = false;
+        for (Document d : db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).listIndexes()) {
+            if (d.getInteger("userref") != null && d.getInteger("userref") == 1) {
+                containsIndex = true;
+                break;
+            }
+        }
+        if (!containsIndex) {            
+        	db.getCollection(MongoUtil.COLLECTION_NAME_USERDATA).createIndex(new Document("userref", 1));
+        }
+
     }
 
     @RequestMapping(method = RequestMethod.GET)
