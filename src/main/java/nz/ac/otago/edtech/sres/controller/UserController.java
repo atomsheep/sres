@@ -53,6 +53,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.mongodb.assertions.Assertions.notNull;
 import static com.mongodb.client.model.Filters.and;
@@ -76,7 +78,8 @@ public class UserController {
 
     public static final String DATE_ONLY_FORMAT = "dd/MM/yyyy";
     private SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_ONLY_FORMAT);
-
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX = 		
+	        Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     @Autowired
@@ -771,8 +774,20 @@ public class UserController {
         ObjectId paperId = new ObjectId(id);
         Document paper = MongoUtil.getPaper(db, paperId);
         String studentName = null;
-        @SuppressWarnings("unchecked")
-        List<String> identifiers = (List<String>) paper.get("identifiers");
+        String emailField = null;		
+		
+		Document userInfo = (Document) MongoUtil
+				.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, new ObjectId(userIds[0])).get("userInfo");
+
+		for (String key : userInfo.keySet()) {
+			Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(userInfo.get(key).toString());
+			if (matcher.find()) {
+				emailField = key;
+				break;
+			}
+		}
+		@SuppressWarnings("unchecked")
+		List<String> identifiers = (List<String>) paper.get("identifiers");
         if (identifiers != null)
             studentName = identifiers.get(0);
         String userName = AuthUtil.getUserName(request);
@@ -789,7 +804,10 @@ public class UserController {
         email.put("created", new Date());
         email.put("subject", "[from " + paper.get("code") + "]");
 
-        String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student." + studentName + "}},";
+        if (null != emailField) {
+            email.put("emailField", emailField);
+          }
+        String introParagraph = (StringUtils.isBlank(studentName)) ? "Dear student," : "Dear {{student.First name}},";
         email.put("introductoryParagraph", introParagraph);
 
         String concludingParagraph = "Regards,\n\n{{user.firstName}}";
