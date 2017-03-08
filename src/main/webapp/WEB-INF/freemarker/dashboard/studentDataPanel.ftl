@@ -21,7 +21,7 @@
 
 <div class='innerPanel' style='top:80px;padding:0;'>
 <#if results?has_content>
-    <form id="resultsForm" method="post" action="${baseUrl}/user/emailStudents">
+    <form id="resultsForm" method="post" action="https://sres.test.auckland.ac.nz/sres/user/emailStudents">
         <input name="id" type="hidden" value="${id}"/>
         <table id="studentList" width=100%>
             <thead>
