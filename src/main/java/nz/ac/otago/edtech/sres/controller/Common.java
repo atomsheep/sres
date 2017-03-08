@@ -75,9 +75,46 @@ public class Common implements ServletContextAware {
     }
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String home(ModelMap model) {
-        model.put("pageName", "home");
-        return DEFAULT_VIEW_NAME;
+    public String home(HttpServletRequest request, HttpServletResponse response, ModelMap model) {
+    	String username = request.getHeader("REMOTE_USER"); 
+        log.debug("Remote User is: " + request.getHeader("REMOTE_USER"));
+        
+        boolean validUser = MongoUtil.authenticate(db, username, request);
+        
+        if (!validUser) {
+            log.warn("Invalid user: username = {} from {}", username, AuthUtil.getIpAddress(request));
+            model.put("error", "Invalid user " + username);
+            // generate a new token
+            String code = CommonUtil.generateRandomCode();
+            model.put(AuthUser.ONE_TIME_TOKEN_KEY, code);
+            HttpSession session = request.getSession();
+            session.setAttribute(AuthUser.ONE_TIME_TOKEN_KEY, code);
+            model.put("pageName", "login");
+            model.put("fromUrl", request.getParameter("from"));
+            
+            // FIXME Well I feel like this code should never be hit, since it will just create a user
+            // but there's probably an error page to show here right? Issue I can foresee if remoteUser
+            // is null, but that shouldn't happen behind SSO? 
+            return null;
+        } else {
+            User user = new User();
+            user.setUserName(username);
+
+            HttpSession session = request.getSession();
+            AuthUser authUser = AuthUtil.getAuthUser(user, session);
+            AuthUtil.setAuthUser(session, authUser);
+
+            String from = request.getParameter("from");
+            if (StringUtils.isNotBlank(from)) {
+                try {
+                    response.sendRedirect(from);
+                } catch (IOException e) {
+                    log.error("IO Exception", e);
+                }
+                return null;
+            } else
+                return "redirect:/user/";
+        }
     }
 
     /**
@@ -103,74 +140,6 @@ public class Common implements ServletContextAware {
         map.put("time", new Date().toString());
         String answer = JSONUtil.toJSONString(map);
         return OtherUtil.outputJSON(answer);
-    }
-
-    /**
-     * Login controller
-     *
-     * @param request request
-     * @param model   data model
-     * @return view name
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public String loginForm(HttpServletRequest request, ModelMap model) {
-
-        String code = CommonUtil.generateRandomCode();
-        model.put(AuthUser.ONE_TIME_TOKEN_KEY, code);
-        HttpSession session = request.getSession();
-        session.setAttribute(AuthUser.ONE_TIME_TOKEN_KEY, code);
-        model.put("fromUrl", request.getParameter("from"));
-        model.put("pageName", "login");
-        return DEFAULT_VIEW_NAME;
-    }
-
-    /**
-     * Login controller
-     *
-     * @param request request
-     * @param model   data model
-     * @return view name
-     */
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String loginSubmit(@RequestParam("username") String username,
-                              @RequestParam("password") String password,
-                              ModelMap model,
-                              HttpServletRequest request, HttpServletResponse response) {
-
-        boolean validUser = MongoUtil.authenticate(db, username, password);
-
-        if (!validUser) {
-            log.warn("Invalid user: username = {} from {}", username, AuthUtil.getIpAddress(request));
-            model.put("error", "Invalid username or password. Please try again.");
-            // generate a new token
-            String code = CommonUtil.generateRandomCode();
-            model.put(AuthUser.ONE_TIME_TOKEN_KEY, code);
-            HttpSession session = request.getSession();
-            session.setAttribute(AuthUser.ONE_TIME_TOKEN_KEY, code);
-            model.put("pageName", "login");
-            model.put("fromUrl", request.getParameter("from"));
-            return DEFAULT_VIEW_NAME;
-        } else {
-            User user = new User();
-            user.setUserName(username);
-            String sha256 = DigestUtils.sha256Hex(password);
-            user.setPassWord(sha256);
-
-            HttpSession session = request.getSession();
-            AuthUser authUser = AuthUtil.getAuthUser(user, session);
-            AuthUtil.setAuthUser(session, authUser);
-
-            String from = request.getParameter("from");
-            if (StringUtils.isNotBlank(from)) {
-                try {
-                    response.sendRedirect(from);
-                } catch (IOException e) {
-                    log.error("IO Exception", e);
-                }
-                return null;
-            } else
-                return "redirect:/user/";
-        }
     }
 
 }

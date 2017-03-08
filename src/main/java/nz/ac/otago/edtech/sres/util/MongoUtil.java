@@ -230,25 +230,16 @@ public class MongoUtil {
         return MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, "_id", id);
     }
 
-    public static boolean authenticate(MongoDatabase db, String username, String password) {
-        if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
-            String sha256 = DigestUtils.sha256Hex(password);
+    public static boolean authenticate(MongoDatabase db, String username, HttpServletRequest request) {
+        if (username != null && StringUtils.isNotBlank(username)) {
             Document userDoc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
             if (userDoc == null) {
                 // if no user in db, create a new one with given username and password
                 // TODO: this part should be deleted in production server, it's for easy testing only
-                createNewUser(db, username, password);
-                return true;
-            } else if (userDoc.get("password") == null) {
-                // if no password in db, add password to db for given username
-                // TODO: this part should be deleted in production server, it's for easy testing only
-                updatePassword(db, username, password);
-                return true;
+            	// TODO: Should this really be deleted? This might be necessary for SSO login
+                createNewUser(db, username, request);
             }
-
-            // TODO: use and only use this on production server
-            if ((userDoc != null) && (userDoc.get("password") != null))
-                return sha256.equals(userDoc.get("password"));
+            return true; 
         }
         return false;
     }
@@ -258,32 +249,15 @@ public class MongoUtil {
      *
      * @param db       mongo database
      * @param username username
-     * @param password password
      */
-    public static void createNewUser(MongoDatabase db, String username, String password) {
-        String sha256 = DigestUtils.sha256Hex(password);
+    public static void createNewUser(MongoDatabase db, String username, HttpServletRequest request) {
         ModelMap userMap = new ModelMap();
         userMap.put(MongoUtil.USERNAME, username);
-        userMap.put("password", sha256);
+        userMap.put("firstName", request.getHeader("GIVENNAME"));
+        userMap.put("lastName", request.getHeader("SN"));
+        userMap.put("email", request.getHeader("MAIL"));
         userMap.put("created", new Date());
         db.getCollection(MongoUtil.COLLECTION_NAME_USERS).insertOne(new Document(userMap));
-    }
-
-    /**
-     * Update existing user's password to given password
-     *
-     * @param db       mongo database
-     * @param username username
-     * @param password new password
-     * @return true if successful, otherwise false
-     */
-    public static boolean updatePassword(MongoDatabase db, String username, String password) {
-        String sha256 = DigestUtils.sha256Hex(password);
-        UpdateResult updateResult = db.getCollection(MongoUtil.COLLECTION_NAME_USERS).updateOne(eq(MongoUtil.USERNAME, username),
-                new Document("$set", new Document("password", sha256)));
-        if (updateResult.getModifiedCount() == 1)
-            return true;
-        return false;
     }
 
     /**

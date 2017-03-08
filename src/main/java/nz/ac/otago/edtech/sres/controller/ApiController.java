@@ -65,13 +65,12 @@ public class ApiController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<Map> login(@RequestParam("username") String username,
-                                     @RequestParam("password") String password,
                                      HttpServletRequest request) {
         ModelMap map = new ModelMap();
         String ipAddress = AuthUtil.getIpAddress(request);
         log.debug("ip address = {}", ipAddress);
-        // check username and password here
-        if (MongoUtil.authenticate(db, username, password)) {
+        // check username here
+        if (MongoUtil.authenticate(db, username, request)) {
             Document userDoc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
             MongoUtil.changeUserObjectId2String(userDoc);
             map.put("user", userDoc);
@@ -412,12 +411,11 @@ public class ApiController {
     public ResponseEntity<Map> loginJson(@RequestBody Map<String, String> user,
                                          HttpServletRequest request) {
         String username = user.get("username");
-        String password = user.get("password");
         ModelMap map = new ModelMap();
         String ipAddress = AuthUtil.getIpAddress(request);
         log.debug("ip address = {}", ipAddress);
-        // check username and password here
-        if (MongoUtil.authenticate(db, username, password)) {
+        // check username
+        if (MongoUtil.authenticate(db, username, request)) {
             Document userDoc = MongoUtil.getDocument(db, MongoUtil.COLLECTION_NAME_USERS, MongoUtil.USERNAME, username);
             userDoc.remove("_id");
             userDoc.remove("password");
