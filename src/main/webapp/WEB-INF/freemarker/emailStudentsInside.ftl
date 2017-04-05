@@ -389,7 +389,7 @@ $(function () {
     });
 
     var numRegEx = new RegExp('{num}', 'g');
-    var totalStudents = ${users?size};
+    var totalStudents = ${users?size?c};
 
     function loadParagraph(result, existingTR){
         var paragraphText = $(result).filter('#paragraphText').html();
